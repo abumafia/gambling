@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register/Login - LuckyBet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0c0f1d 0%, #1a1f3d 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-admin {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .camera-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .camera-preview {
+            width: 100%;
+            max-width: 500px;
+            background: #1a1f3d;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        #cameraVideo {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+        
+        .captured-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #f5576c;
+        }
+        
+        .photo-preview-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .admin-login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .admin-login-content {
+            background: linear-gradient(135deg, #1a1f3d 0%, #0c0f1d 100%);
+            border-radius: 12px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 2px solid #667eea;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="glass-effect rounded-2xl p-8 w-full max-w-4xl">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">LuckyBet</h1>
+            <p class="text-gray-300 mt-2">Create your account or login to start playing</p>
+            <div class="mt-4">
+                <button class="btn-admin" onclick="showAdminLogin()">
+                    <i class="fas fa-user-shield mr-2"></i>Admin Login
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Login Form -->
+            <div>
+                <h2 class="text-xl font-bold mb-6">User Login</h2>
+                <form id="loginForm">
+                    <div class="mb-4">
+                        <label class="block text-sm mb-2">Email</label>
+                        <input type="email" id="loginEmail" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-sm mb-2">Password</label>
+                        <input type="password" id="loginPassword" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
+                    </div>
+                    <button type="submit" class="btn-primary w-full">Login</button>
+                </form>
+            </div>
+
+            <!-- Register Form -->
+            <div>
+                <h2 class="text-xl font-bold mb-6">User Register</h2>
+                <form id="registerForm">
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm mb-2">First Name</label>
+                            <input type="text" id="firstName" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm mb-2">Last Name</label>
+                            <input type="text" id="lastName" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm mb-2">Phone</label>
+                        <input type="tel" id="phone" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm mb-2">Email</label>
+                        <input type="email" id="email" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm mb-2">Password</label>
+                        <input type="password" id="password" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
+                    </div>
+
+                    <!-- Selfie Section -->
+                    <div class="mb-6">
+                        <label class="block text-sm mb-2">Selfie Photo</label>
+                        <div class="flex flex-col space-y-4">
+                            <button type="button" class="btn-secondary" onclick="openCamera('selfie')">
+                                <i class="fas fa-camera mr-2"></i> Take Selfie with Camera
+                            </button>
+                            <div class="photo-preview-container">
+                                <img id="selfiePreview" class="captured-image hidden">
+                            </div>
+                            <input type="file" id="selfieFile" accept="image/*" class="hidden" onchange="handleFileSelect(this, 'selfie')">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('selfieFile').click()">
+                                <i class="fas fa-upload mr-2"></i> Upload Selfie
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ID Front Section -->
+                    <div class="mb-6">
+                        <label class="block text-sm mb-2">ID Front Photo</label>
+                        <div class="flex flex-col space-y-4">
+                            <button type="button" class="btn-secondary" onclick="openCamera('idFront')">
+                                <i class="fas fa-camera mr-2"></i> Take ID Front Photo
+                            </button>
+                            <div class="photo-preview-container">
+                                <img id="idFrontPreview" class="captured-image hidden">
+                            </div>
+                            <input type="file" id="idFrontFile" accept="image/*" class="hidden" onchange="handleFileSelect(this, 'idFront')">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('idFrontFile').click()">
+                                <i class="fas fa-upload mr-2"></i> Upload ID Front
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ID Back Section -->
+                    <div class="mb-6">
+                        <label class="block text-sm mb-2">ID Back Photo</label>
+                        <div class="flex flex-col space-y-4">
+                            <button type="button" class="btn-secondary" onclick="openCamera('idBack')">
+                                <i class="fas fa-camera mr-2"></i> Take ID Back Photo
+                            </button>
+                            <div class="photo-preview-container">
+                                <img id="idBackPreview" class="captured-image hidden">
+                            </div>
+                            <input type="file" id="idBackFile" accept="image/*" class="hidden" onchange="handleFileSelect(this, 'idBack')">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('idBackFile').click()">
+                                <i class="fas fa-upload mr-2"></i> Upload ID Back
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary w-full">Register</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera Modal -->
+    <div id="cameraModal" class="camera-modal">
+        <div class="camera-preview">
+            <video id="cameraVideo" autoplay playsinline></video>
+            <div class="p-4 flex justify-between">
+                <button id="closeCamera" class="btn-secondary">
+                    <i class="fas fa-times mr-2"></i> Close
+                </button>
+                <button id="capturePhoto" class="btn-primary">
+                    <i class="fas fa-camera mr-2"></i> Capture
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div id="adminLoginModal" class="admin-login-modal">
+        <div class="admin-login-content">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
+                    <i class="fas fa-user-shield mr-2"></i>Admin Login
+                </h2>
+                <p class="text-gray-300 mt-2">Access admin dashboard</p>
+            </div>
+            
+            <form id="adminLoginForm">
+                <div class="mb-4">
+                    <label class="block text-sm mb-2">Admin Email</label>
+                    <input type="email" id="adminEmail" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm mb-2">Password</label>
+                    <input type="password" id="adminPassword" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
+                </div>
+                <div class="flex space-x-2">
+                    <button type="button" class="btn-secondary flex-1" onclick="closeAdminLogin()">Cancel</button>
+                    <button type="submit" class="btn-admin flex-1">Login as Admin</button>
+                </div>
+            </form>
+            
+            <div class="mt-6 p-4 bg-blue-900 bg-opacity-30 rounded-lg">
+                <h3 class="text-sm font-semibold mb-2">Default Admin Credentials:</h3>
+                <p class="text-xs text-gray-300">Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5736333a3e39173b22343c2e3532237934383a">[email&#160;protected]</a></p>
+                <p class="text-xs text-gray-300">Password: admin123</p>
+            </div>
+        </div>
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        let currentStream = null;
+        let currentPhotoType = null;
+        const capturedPhotos = {
+            selfie: null,
+            idFront: null,
+            idBack: null
+        };
+
+        // User Login form handler
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    
+                    // Check if user is admin
+                    if (data.user.isAdmin) {
+                        window.location.href = '/admin';
+                    } else {
+                        window.location.href = '/';
+                    }
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Login failed: ' + error.message);
+            }
+        });
+
+        // Admin Login form handler
+        document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.user.isAdmin) {
+                        localStorage.setItem('token', data.token);
+                        window.location.href = '/admin';
+                    } else {
+                        alert('This user is not an administrator');
+                    closeAdminLogin();
+                    // Auto-fill regular login form
+                    document.getElementById('loginEmail').value = email;
+                        document.getElementById('loginPassword').value = password;
+                    }
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Admin login failed: ' + error.message);
+            }
+        });
+
+        // Register form handler
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Validate photos
+            if (!capturedPhotos.selfie || !capturedPhotos.idFront || !capturedPhotos.idBack) {
+                alert('Please take/upload all required photos (Selfie, ID Front, ID Back)');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('firstName', document.getElementById('firstName').value);
+            formData.append('lastName', document.getElementById('lastName').value);
+            formData.append('phone', document.getElementById('phone').value);
+            formData.append('email', document.getElementById('email').value);
+            formData.append('password', document.getElementById('password').value);
+            
+            // Convert base64 to blob and append to formData
+            formData.append('selfie', dataURLtoBlob(capturedPhotos.selfie));
+            formData.append('idFront', dataURLtoBlob(capturedPhotos.idFront));
+            formData.append('idBack', dataURLtoBlob(capturedPhotos.idBack));
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    window.location.href = '/';
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Registration failed: ' + error.message);
+            }
+        });
+
+        // Admin login modal functions
+        function showAdminLogin() {
+            document.getElementById('adminLoginModal').style.display = 'flex';
+        }
+
+        function closeAdminLogin() {
+            document.getElementById('adminLoginModal').style.display = 'none';
+            document.getElementById('adminLoginForm').reset();
+        }
+
+        // Camera functions
+        async function openCamera(photoType) {
+            currentPhotoType = photoType;
+            const modal = document.getElementById('cameraModal');
+            const video = document.getElementById('cameraVideo');
+
+            try {
+                // Stop any existing stream
+                if (currentStream) {
+                    currentStream.getTracks().forEach(track => track.stop());
+                }
+
+                // Get camera stream
+                currentStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: photoType === 'selfie' ? 'user' : 'environment',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
+                });
+                
+                video.srcObject = currentStream;
+                modal.style.display = 'flex';
+
+            } catch (error) {
+                alert('Error accessing camera: ' + error.message);
+                console.error('Camera error:', error);
+            }
+        }
+
+        // Capture photo
+        document.getElementById('capturePhoto').addEventListener('click', function() {
+            const video = document.getElementById('cameraVideo');
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const photoDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            capturedPhotos[currentPhotoType] = photoDataUrl;
+            
+            // Show preview
+            const preview = document.getElementById(currentPhotoType + 'Preview');
+            preview.src = photoDataUrl;
+            preview.classList.remove('hidden');
+            
+            // Close camera
+            closeCamera();
+        });
+
+        // Close camera
+        document.getElementById('closeCamera').addEventListener('click', closeCamera);
+
+        function closeCamera() {
+            const modal = document.getElementById('cameraModal');
+            modal.style.display = 'none';
+            
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+            }
+        }
+
+        // File upload handler
+        function handleFileSelect(input, photoType) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    capturedPhotos[photoType] = e.target.result;
+                    const preview = document.getElementById(photoType + 'Preview');
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Convert base64 to blob for FormData
+        function dataURLtoBlob(dataURL) {
+            const byteString = atob(dataURL.split(',')[1]);
+            const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            
+            return new Blob([ab], { type: mimeString });
+        }
+
+        // Check if already logged in
+        const token = localStorage.getItem('token');
+        if (token) {
+            // Check if user is admin and redirect accordingly
+            fetch('/api/user/profile', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.user.isAdmin) {
+                        window.location.href = '/admin';
+                    } else {
+                        window.location.href = '/';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Profile check failed:', error);
+                localStorage.removeItem('token');
+            });
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('cameraModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCamera();
+            }
+        });
+
+        document.getElementById('adminLoginModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAdminLogin();
+            }
+        });
+
+        // Enter key support for admin login
+        document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('adminLoginForm').dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98baca43b9f707ca',t:'MTc1OTk4MDUyOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

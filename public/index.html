@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuckyBet - Premium Gambling</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0c0f1d 0%, #1a1f3d 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .game-card {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .balance-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a1f3d 0%, #0c0f1d 100%);
+            border-radius: 12px;
+            padding: 25px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .nav-active {
+            color: #f5576c;
+            border-bottom: 2px solid #f5576c;
+        }
+        
+        /* Animation classes */
+        .dice-rolling {
+            animation: diceRoll 1s ease-in-out infinite;
+        }
+        
+        @keyframes diceRoll {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(90deg) scale(1.1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            75% { transform: rotate(270deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        
+        .coin-flipping {
+            animation: coinFlip 1s ease-in-out infinite;
+        }
+        
+        @keyframes coinFlip {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(180deg); }
+            100% { transform: rotateY(360deg); }
+        }
+        
+        .slot-spinning {
+            animation: slotSpin 0.5s linear infinite;
+        }
+        
+        @keyframes slotSpin {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-100px); }
+        }
+        
+        .wheel-spinning {
+            animation: wheelSpin 2s ease-out;
+        }
+        
+        @keyframes wheelSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .card-flip {
+            animation: cardFlip 0.6s ease-in-out;
+        }
+        
+        @keyframes cardFlip {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(90deg); }
+            100% { transform: rotateY(0deg); }
+        }
+        
+        .number-spin {
+            animation: numberSpin 1s ease-in-out;
+        }
+        
+        @keyframes numberSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .color-flash {
+            animation: colorFlash 0.5s ease-in-out;
+        }
+        
+        @keyframes colorFlash {
+            0% { background-color: transparent; }
+            50% { background-color: #f5576c; }
+            100% { background-color: transparent; }
+        }
+        
+        /* Three.js container */
+        #three-container {
+            width: 100%;
+            height: 300px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        /* Slot machine styles */
+        .slot-machine {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .slot-reel {
+            width: 80px;
+            height: 120px;
+            background: linear-gradient(135deg, #2d3748, #4a5568);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        
+        .slot-symbol {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Roulette styles */
+        .roulette-container {
+            width: 300px;
+            height: 300px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+        
+        .roulette-wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                #e53e3e, #dd6b20, #d69e2e, #38a169, #319795, #3182ce, #805ad5, #d53f8c, #e53e3e
+            );
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        
+        .roulette-pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 30px;
+            background: #f5576c;
+            clip-path: polygon(50% 100%, 0 0, 100% 0);
+            z-index: 10;
+        }
+        
+        /* Card game styles */
+        .card-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .playing-card {
+            width: 80px;
+            height: 120px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 5px;
+            color: #333;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .card-top, .card-bottom {
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+        
+        .card-center {
+            font-size: 2rem;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card-red {
+            color: #e53e3e;
+        }
+        
+        .card-back {
+            background: linear-gradient(135deg, #f5576c, #f093fb);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        /* Simple number display */
+        .number-display {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 0 auto;
+        }
+
+        /* Color options */
+        .color-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin: 5px;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .color-option.selected {
+            border-color: #f5576c;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="glass-effect py-4 px-6 flex justify-between items-center">
+        <div class="flex items-center">
+            <h1 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">LuckyBet</h1>
+        </div>
+        <div class="hidden md:flex space-x-6">
+            <a href="/" class="nav-active py-2">Home</a>
+            <a href="/history" class="py-2 hover:text-purple-300">History</a>
+            <a href="/profile" class="py-2 hover:text-purple-300">Profile</a>
+            <a href="/admin" class="py-2 hover:text-purple-300" id="adminLink" style="display: none;">Admin</a>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="balance-card">
+                <div class="text-sm">Balance</div>
+                <div class="text-xl font-bold" id="userBalance">$0.00</div>
+                <div class="text-xs opacity-70">Demo: <span id="demoBalance">$0.00</span></div>
+            </div>
+            <div class="relative">
+                <button id="userMenuButton" class="flex items-center space-x-2 bg-purple-900 bg-opacity-50 rounded-full py-2 px-4">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                        <span class="text-white font-bold" id="userInitials">U</span>
+                    </div>
+                    <span id="userName">User</span>
+                    <i class="fas fa-chevron-down text-xs"></i>
+                </button>
+                <div id="userMenu" class="absolute right-0 mt-2 w-48 glass-effect rounded-lg shadow-lg hidden">
+                    <a href="/profile" class="block px-4 py-3 hover:bg-purple-800 rounded-t-lg">Profile</a>
+                    <a href="/history" class="block px-4 py-3 hover:bg-purple-800">History</a>
+                    <button id="logoutBtn" class="block w-full text-left px-4 py-3 hover:bg-purple-800 rounded-b-lg">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Balance and Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="balance-card col-span-2">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <div class="text-sm">Total Balance</div>
+                        <div class="text-3xl font-bold" id="totalBalance">$0.00</div>
+                        <div class="text-sm opacity-70 mt-1">Demo Balance: <span id="totalDemoBalance">$0.00</span></div>
+                    </div>
+                    <div class="flex space-x-4">
+                        <button class="btn-primary" onclick="showDepositModal()">
+                            <i class="fas fa-plus mr-2"></i> Deposit
+                        </button>
+                        <button class="btn-secondary" onclick="showWithdrawModal()">
+                            <i class="fas fa-download mr-2"></i> Withdraw
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-effect rounded-xl p-6 flex flex-col justify-center">
+                <div class="flex justify-between mb-4">
+                    <span>Today's Winnings</span>
+                    <span class="text-green-400 font-bold" id="todayWinnings">+$0.00</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Today's Losses</span>
+                    <span class="text-red-400 font-bold" id="todayLosses">-$0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Games Section -->
+        <div class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">Popular Games</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="gamesContainer">
+                <!-- Games will be loaded here -->
+                <div class="text-center py-8">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto"></div>
+                    <p class="mt-2">Loading games...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="mb-12">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Recent Transactions</h2>
+                <a href="/history" class="text-purple-400 hover:text-purple-300">View All</a>
+            </div>
+            <div class="glass-effect rounded-xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="py-4 px-6 text-left">Date</th>
+                                <th class="py-4 px-6 text-left">Type</th>
+                                <th class="py-4 px-6 text-left">Amount</th>
+                                <th class="py-4 px-6 text-left">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsTable">
+                            <tr>
+                                <td colspan="4" class="py-8 text-center text-gray-400">
+                                    Loading transactions...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Game Modal -->
+    <div id="gameModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="gameTitle" class="text-xl font-bold">Game Title</h3>
+                <button id="closeModal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="gameContent" class="mb-6">
+                <!-- Game content will be loaded here -->
+            </div>
+            <div class="flex justify-between">
+                <div class="flex space-x-2">
+                    <button class="btn-secondary" onclick="showRules()">
+                        <i class="fas fa-info-circle mr-2"></i> Rules
+                    </button>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="btn-secondary" onclick="resetGame()">
+                        <i class="fas fa-redo mr-2"></i> Reset
+                    </button>
+                    <button class="btn-primary" id="playGameBtn">
+                        <i class="fas fa-play mr-2"></i> Play
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let currentGame = null;
+        let currentChoice = null;
+        let isAnimating = false;
+
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+        });
+
+        // Authentication functions
+        async function checkAuth() {
+            const token = localStorage.getItem('token');
+            console.log('Token:', token);
+            
+            if (!token) {
+                console.log('No token found, redirecting to login');
+                window.location.href = '/register-login';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                console.log('Auth response status:', response.status);
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('User data:', result);
+                    
+                    if (result.success) {
+                        currentUser = result.user;
+                        updateUI(currentUser);
+                        loadGames();
+                        loadRecentTransactions();
+                        loadTodayStats();
+                    } else {
+                        throw new Error(result.error);
+                    }
+                } else {
+                    const errorData = await response.json();
+                    console.error('Auth failed:', errorData);
+                    localStorage.removeItem('token');
+                    window.location.href = '/register-login';
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                localStorage.removeItem('token');
+                window.location.href = '/register-login';
+            }
+        }
+
+        function updateUI(user) {
+            document.getElementById('userBalance').textContent = `$${user.balance.toFixed(2)}`;
+            document.getElementById('demoBalance').textContent = `$${user.demoBalance.toFixed(2)}`;
+            document.getElementById('totalBalance').textContent = `$${user.balance.toFixed(2)}`;
+            document.getElementById('totalDemoBalance').textContent = `$${user.demoBalance.toFixed(2)}`;
+            document.getElementById('userName').textContent = `${user.firstName} ${user.lastName}`;
+            document.getElementById('userInitials').textContent = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+            
+            if (user.isAdmin) {
+                document.getElementById('adminLink').style.display = 'block';
+            }
+        }
+
+        // Load games - Updated with 20 games
+        async function loadGames() {
+            try {
+                const response = await fetch('/api/games');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const games = [
+                        { _id: 'dice', name: 'Dice Roll', icon: 'dice' },
+                        { _id: 'coin', name: 'Coin Flip', icon: 'coins' },
+                        { _id: 'slots', name: 'Slot Machine', icon: 'sliders-h' },
+                        { _id: 'roulette', name: 'Roulette', icon: 'sync' },
+                        { _id: 'cards', name: 'Card Game', icon: 'heart' },
+                        { _id: 'wheel', name: 'Spin Wheel', icon: 'redo' },
+                        { _id: 'blackjack', name: 'Blackjack', icon: 'user' },
+                        { _id: 'poker', name: 'Video Poker', icon: 'gem' },
+                        { _id: 'evenodd', name: 'Even/Odd', icon: 'balance-scale' },
+                        { _id: 'overunder', name: 'Over/Under', icon: 'ruler-horizontal' },
+                        { _id: 'suit', name: 'Suit Guess', icon: 'credit-card' },
+                        { _id: 'redblack', name: 'Red/Black', icon: 'circle' },
+                        { _id: 'range', name: 'Number Range', icon: 'sliders-h' },
+                        { _id: 'colorwheel', name: 'Color Wheel', icon: 'palette' },
+                        { _id: 'crash', name: 'Crash', icon: 'car-crash' },
+                        { _id: 'mines', name: 'Mines', icon: 'bomb' },
+                        { _id: 'plinko', name: 'Plinko', icon: 'arrow-down' },
+                        { _id: 'keno', name: 'Keno', icon: 'list-ol' },
+                        { _id: 'bingo', name: 'Bingo', icon: 'check-square' },
+                        { _id: 'lotto', name: 'Lotto', icon: 'ticket-alt' }
+                    ];
+                    
+                    const container = document.getElementById('gamesContainer');
+                    container.innerHTML = games.map(game => `
+                        <div class="game-card glass-effect rounded-xl overflow-hidden">
+                            <div class="h-40 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                                <i class="fas fa-${game.icon} text-6xl text-white"></i>
+                            </div>
+                            <div class="p-4">
+                                <h3 class="text-lg font-bold mb-2">${game.name}</h3>
+                                <p class="text-sm opacity-70 mb-4">Play and win big!</p>
+                                <button class="btn-primary w-full" onclick="openGameModal('${game._id}', '${game.name}')">
+                                    Play Now
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('Failed to load games:', error);
+                document.getElementById('gamesContainer').innerHTML = `
+                    <div class="col-span-4 text-center py-8 text-red-400">
+                        <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
+                        <p>Failed to load games</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Game modal functions - Updated with new games
+        function openGameModal(gameId, gameName) {
+            currentGame = { id: gameId, name: gameName };
+            currentChoice = null;
+            document.getElementById('gameTitle').textContent = gameName;
+            
+            let gameHTML = '';
+            switch(gameId) {
+                case 'dice':
+                    gameHTML = `
+                        <div class="text-center py-4">
+                            <div class="w-32 h-32 mx-auto bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-4xl font-bold mb-6" id="diceResult">
+                                <i class="fas fa-dice"></i>
+                            </div>
+                            <div class="flex justify-center space-x-4 mb-6">
+                                <button class="btn-secondary choice-btn" data-choice="1" onclick="selectChoice(this, 1)">1-3</button>
+                                <button class="btn-secondary choice-btn" data-choice="2" onclick="selectChoice(this, 2)">4-6</button>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm mb-2">Bet Amount</label>
+                                <input type="number" class="w-full bg-gray-800 rounded-lg py-2 px-4" id="betAmount" value="10" min="1" max="${currentUser.balance}">
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" id="demoBalanceCheck" class="mr-2">
+                                <label for="demoBalanceCheck">Use Demo Balance</label>
+                            </div>
+                            ${!currentChoice ? '<p class="text-yellow-400 text-sm">Please select your bet choice</p>' : ''}
+                        </div>
+                    `;
+                    break;
+                case 'coin':
+                    gameHTML = `
+                        <div class="text-center py-4">
+                            <div class="w-32 h-32 mx-auto bg-gradient-to-r from-yellow-500 to-orange-600 rounded-full flex items-center justify-center text-4xl font-bold mb-6" id="coinResult">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <div class="flex justify-center space-x-4 mb-6">
+                                <button class="btn-secondary choice-btn" data-choice="heads" onclick="selectChoice(this, 'heads')">Heads</button>
+                                <button class="btn-secondary choice-btn" data-choice="tails" onclick="selectChoice(this, 'tails')">Tails</button>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm mb-2">Bet Amount</label>
+                                <input type="number" class="w-full bg-gray-800 rounded-lg py-2 px-4" id="betAmount" value="10" min="1" max="${currentUser.balance}">
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" id="demoBalanceCheck" class="mr-2">
+                                <label for="demoBalanceCheck">Use Demo Balance</label>
+                            </div>
+                            ${!currentChoice ? '<p class="text-yellow-400 text-sm">Please select Heads or Tails</p>' : ''}
+                        </div>
+                    `;
+                    break;
+                case 'slots':
+                    gameHTML = `
+                        <div class="text-center py-4">
+                            <div class="slot-machine">
+                                <div class="slot-reel" id="reel1">
+                                    <div class="slot-symbol">🍒</div>
+                                </div>
+                                <div class="slot-reel" id="reel2">
+                                    <div class="slot-symbol">🍋</div>
+                                </div>
+                                <div class="slot-reel" id="reel3">
+                                    <div class="slot-symbol">🍊</div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm mb-2">Bet Amount</label>
+                                <input type="number" class="w-full bg-gray-800 rounded-lg py-2 px-4" id="betAmount" value="10" min="1" max="${currentUser.balance}">
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" id="demoBalanceCheck" class="mr-2">
+                                <label for="demoBalanceCheck">Use Demo Balance</label>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'roulette':
+                    gameHTML = `
+                        <div class="text-center py-4">
+                            <div class="roulette-container">
+                                <div class="roulette-wheel" id="rouletteWheel"></div>
+                                <div class="roulette-pointer"></div>
+                            </div>
+                            <div class="flex justify-center space-x-4 mb-6">
+                                <button class="btn-secondary choice-btn" data-choice="red" onclick="selectChoice(this, 'red')">Red</button>
+                                <button class="btn-secondary choice-btn" data-choice="black" onclick="selectChoice(this, 'black')">Black</button>
+                                <button class="btn-secondary choice-btn" data-choice="green" onclick="selectChoice(this, 'green')">Green</button>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm mb-2">Bet Amount</label>
+                                <input type="number" class="w-full bg-gray-800 rounded-lg py-2 px-4" id="betAmount" value="10" min="1" max="${currentUser.balance}">
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" id="demoBalanceCheck" class="mr-2">
+                                <label for="demoBalanceCheck">Use Demo Balance</label>
+                            </div>
+                            ${!currentChoice ? '<p class="text-yellow-400 text-sm">Please select your bet color</p>' : ''}
+                        </div>
+                    `;
+                    break;
+                case 'cards':
+                    gameHTML = `
+                        <div class="text-center py-4">
+                            <div class="card-container">
+                                <div class="playing-card card-back" id="card1">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <div class="playing-card card-back" id="card2">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <div class="playing-card card-back" id="card3">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                            </div>
+                            <div class="flex justify-center space-x-4 mb-6">
+                                <button class="btn-secondary choice-btn" data-choice="high" onclick="selectChoice(this, 'high')">High Card</button>
+                                <button class="btn-secondary choice-btn" data-choice="low" onclick="selectChoice(this, 'low')">Low Card</button>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm mb-2">Bet Amount</label>
+                                <input type="number" class="w-full bg-gray-800 rounded-lg py-2 px-4" id="betAmount" value="10" min="1" max="${currentUser.balance}">
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" id="demoBalanceCheck" class="mr-2">
+                                <label for="demoBalanceCheck">Use Demo Balance</label>
+                            </div>
+                            ${!currentChoice ? '<p class="text-yellow-400 text-sm">Please select your bet</p>' : ''}
+                        </div>
+                    `;
+                    break;
+                case 'evenodd':
+                    gameHTML = `
+                        <div class="text-center py-4">
+                            <div class="number-display bg-blue-600 mb-6" id="evenOddResult">?</div>
+                            <div class="flex justify-center space-x-4 mb-6">
+                                <button class="btn-secondary choice-btn" data-choice="even" onclick="selectChoice(this, 'even')">Even</button>
+                                <button class="btn-secondary choice-btn" data-choice="odd" onclick="selectChoice(this, 'odd')">Odd</button>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm mb-2">Bet Amount</label>
+                                <input type="number" class="w-full bg-gray-800 rounded-lg py-2 px-4" id="betAmount" value="10" min="1" max="${currentUser.balance}">
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" id="demoBalanceCheck" class="mr-2">
+                                <label for="demoBalanceCheck">Use Demo Balance</label>
+                            </div>
+                            ${!currentChoice ? '<p class="text-yellow-400 text-sm">Please select Even or Odd</p>' : ''}
+                        </div>
+                    `;
+                    break;
+                case 'overunder':
+                    gameHTML = `
+                        <div class="text-center py-4">
+                            <div class="number-display bg-green-600 mb-6" id="overUnderResult">50</div>
+                            <div class="flex justify-center space-x-4 mb-6">
+                                <button class="btn-secondary choice-btn" data-choice="over" onclick="selectChoice(this, 'over')">Over 50</button>
+                                <button class="btn-secondary choice-btn" data-choice="under" onclick="selectChoice(this, 'under')">Under 50</button>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm mb-2">Bet Amount</label>
+                                <input type="number" class="w-full bg-gray-800 rounded-lg py-2 px-4" id="betAmount" value="10" min="1" max="${currentUser.balance}">
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" id="demoBalanceCheck" class="mr-2">
+                                <label for="demoBalanceCheck">Use Demo Balance</label>
+                            </div>
+                            ${!currentChoice ? '<p class="text-yellow-400 text-sm">Please select Over or Under</p>' : ''}
+                        </div>
+                    `;
+                    break;
+                case 'suit':
+                    gameHTML = `
+                        <div class="text-center py-4">
+                            <div class="playing-card card-back mb-6" id="suitResult">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="flex justify-center space-x-4 mb-6">
+                                <button class="btn-secondary choice-btn" data-choice="hearts" onclick="selectChoice(this, 'hearts')"><i class="fas fa-heart text-red-500"></i></button>
+                                <button class="btn-secondary choice-btn" data-choice="diamonds" onclick="selectChoice(this, 'diamonds')"><i class="fas fa-diamond text-red-500"></i></button>
+                                <button class="btn-secondary choice-btn" data-choice="clubs" onclick="selectChoice(this, 'clubs')"><i class="fas fa-club text-black"></i></button>
+                                <button class="btn-secondary choice-btn" data-choice="spades" onclick="selectChoice(this, 'spades')"><i class="fas fa-spade text-black"></i></button>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm mb-2">Bet Amount</label>
+                                <input type="number" class="w-full bg-gray-800 rounded-lg py-2 px-4" id="betAmount" value="10" min="1" max="${currentUser.balance}">
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" id="demoBalanceCheck" class="mr-2">
+                                <label for="demoBalanceCheck">Use Demo Balance</label>
+                            </div>
+                            ${!currentChoice ? '<p class="text-yellow-400 text-sm">Please select a suit</p>' : ''}
+                        </div>
+                    `;
+                    break;
+                case 'redblack':
+                    gameHTML = `
+                        <div class="text-center py-4">
+                            <div class="w-32 h-32 mx-auto bg-gray-800 rounded-full flex items-center justify-center text-4xl font-bold mb-6" id="redBlackResult">
+                                ?
+                            </div>
+                            <div class="flex justify-center space-x-4 mb-6">
+                                <button class="btn-secondary choice-btn w-20 h-20 bg-red-600 rounded-full text-white" data-choice="red" onclick="selectChoice(this, 'red')">Red</button>
+                                <button class="btn-secondary choice-btn w-20 h-20 bg-black rounded-full text-white" data-choice="black" onclick="selectChoice(this, 'black')">Black</button>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm mb-2">Bet Amount</label>
+                                <input type="number" class="w-full bg-gray-800 rounded-lg py-2 px-4" id="betAmount" value="10" min="1" max="${currentUser.balance}">
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" id="demoBalanceCheck" class="mr-2">
+                                <label for="demoBalanceCheck">Use Demo Balance</label>
+                            </div>
+                            ${!currentChoice ? '<p class="text-yellow-400 text-sm">Please select Red or Black</p>' : ''}
+                        </div>
+                    `;
+                    break;
+                case 'range':
+                    gameHTML = `
+                        <div class="text-center py-4">
+                            <div class="number-display bg-purple-600 mb-6" id="rangeResult">?</div>
+                            <div class="flex justify-center space-x-4 mb-6">
+                                <button class="btn-secondary choice-btn" data-choice="low" onclick="selectChoice(this, 'low')">1-5</button>
+                                <button class="btn-secondary choice-btn" data-choice="high" onclick="selectChoice(this, 'high')">6-10</button>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm mb-2">Bet Amount</label>
+                                <input type="number" class="w-full bg-gray-800 rounded-lg py-2 px-4" id="betAmount" value="10" min="1" max="${currentUser.balance}">
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" id="demoBalanceCheck" class="mr-2">
+                                <label for="demoBalanceCheck">Use Demo Balance</label>
+                            </div>
+                            ${!currentChoice ? '<p class="text-yellow-400 text-sm">Please select range</p>' : ''}
+                        </div>
+                    `;
+                    break;
+                case 'colorwheel':
+                    gameHTML = `
+                        <div class="text-center py-4">
+                            <div class="roulette-container">
+                                <div class="roulette-wheel" id="colorWheel"></div>
+                            </div>
+                            <div class="flex justify-center mb-6">
+                                <div class="color-option bg-red-500" data-choice="red" onclick="selectChoice(this, 'red')"></div>
+                                <div class="color-option bg-blue-500" data-choice="blue" onclick="selectChoice(this, 'blue')"></div>
+                                <div class="color-option bg-green-500" data-choice="green" onclick="selectChoice(this, 'green')"></div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm mb-2">Bet Amount</label>
+                                <input type="number" class="w-full bg-gray-800 rounded-lg py-2 px-4" id="betAmount" value="10" min="1" max="${currentUser.balance}">
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" id="demoBalanceCheck" class="mr-2">
+                                <label for="demoBalanceCheck">Use Demo Balance</label>
+                            </div>
+                            ${!currentChoice ? '<p class="text-yellow-400 text-sm">Please select a color</p>' : ''}
+                        </div>
+                    `;
+                    break;
+                case 'crash':
+                    gameHTML = `
+                        <div class="text-center py-4">
+                            <div class="w-32 h-32 mx-auto bg-red-600 rounded-full flex items-center justify-center text-4xl font-bold mb-6" id="crashResult">1.00x</div>
+                            <div class="mb-4">
+                                <label class="block text-sm mb-2">Bet Amount</label>
+                                <input type="number" class="w-full bg-gray-800 rounded-lg py-2 px-4" id="betAmount" value="10" min="1" max="${currentUser.balance}">
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" id="demoBalanceCheck" class="mr-2">
+                                <label for="demoBalanceCheck">Use Demo Balance</label>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'mines':
+                    gameHTML = `
+                        <div class="text-center py-4">
+                            <div class="grid grid-cols-5 gap-2 mb-6" id="minesGrid">
+                                ${Array.from({length: 25}, (_, i) => `<div class="w-8 h-8 bg-gray-800 rounded flex items-center justify-center" data-mine="${i}">${i+1}</div>`).join('')}
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm mb-2">Bet Amount</label>
+                                <input type="number" class="w-full bg-gray-800 rounded-lg py-2 px-4" id="betAmount" value="10" min="1" max="${currentUser.balance}">
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" id="demoBalanceCheck" class="mr-2">
+                                <label for="demoBalanceCheck">Use Demo Balance</label>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'plinko':
+                    gameHTML = `
+                        <div class="text-center py-4">
+                            <div class="w-32 h-32 mx-auto bg-yellow-600 rounded-full flex items-center justify-center text-4xl font-bold mb-6" id="plinkoResult">?</div>
+                            <div class="mb-4">
+                                <label class="block text-sm mb-2">Bet Amount</label>
+                                <input type="number" class="w-full bg-gray-800 rounded-lg py-2 px-4" id="betAmount" value="10" min="1" max="${currentUser.balance}">
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" id="demoBalanceCheck" class="mr-2">
+                                <label for="demoBalanceCheck">Use Demo Balance</label>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'keno':
+                    gameHTML = `
+                        <div class="text-center py-4">
+                            <div class="grid grid-cols-10 gap-1 mb-6" id="kenoNumbers">
+                                ${Array.from({length: 80}, (_, i) => `<div class="w-6 h-6 bg-gray-800 rounded text-xs flex items-center justify-center">${i+1}</div>`).join('')}
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm mb-2">Bet Amount</label>
+                                <input type="number" class="w-full bg-gray-800 rounded-lg py-2 px-4" id="betAmount" value="10" min="1" max="${currentUser.balance}">
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" id="demoBalanceCheck" class="mr-2">
+                                <label for="demoBalanceCheck">Use Demo Balance</label>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'bingo':
+                    gameHTML = `
+                        <div class="text-center py-4">
+                            <div class="w-32 h-32 mx-auto bg-blue-600 rounded flex items-center justify-center text-4xl font-bold mb-6" id="bingoResult">
+                                B
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm mb-2">Bet Amount</label>
+                                <input type="number" class="w-full bg-gray-800 rounded-lg py-2 px-4" id="betAmount" value="10" min="1" max="${currentUser.balance}">
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" id="demoBalanceCheck" class="mr-2">
+                                <label for="demoBalanceCheck">Use Demo Balance</label>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'lotto':
+                    gameHTML = `
+                        <div class="text-center py-4">
+                            <div class="flex justify-center space-x-2 mb-6" id="lottoBalls">
+                                <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center font-bold">?</div>
+                                <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center font-bold">?</div>
+                                <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center font-bold">?</div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm mb-2">Bet Amount</label>
+                                <input type="number" class="w-full bg-gray-800 rounded-lg py-2 px-4" id="betAmount" value="10" min="1" max="${currentUser.balance}">
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input type="checkbox" id="demoBalanceCheck" class="mr-2">
+                                <label for="demoBalanceCheck">Use Demo Balance</label>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                default:
+                    gameHTML = `
+                        <div class="text-center py-8">
+                            <p class="text-gray-400">This game is coming soon!</p>
+                        </div>
+                    `;
+            }
+            
+            document.getElementById('gameContent').innerHTML = gameHTML;
+            document.getElementById('gameModal').style.display = 'flex';
+            
+            // Update max bet amount based on demo balance selection
+            document.getElementById('demoBalanceCheck').addEventListener('change', function() {
+                const maxAmount = this.checked ? currentUser.demoBalance : currentUser.balance;
+                document.getElementById('betAmount').max = maxAmount;
+            });
+
+            // Add event listeners for color options if applicable
+            if (gameId === 'colorwheel') {
+                document.querySelectorAll('.color-option').forEach(opt => {
+                    opt.addEventListener('click', function() {
+                        document.querySelectorAll('.color-option').forEach(o => o.classList.remove('selected'));
+                        this.classList.add('selected');
+                        currentChoice = this.dataset.choice;
+                    });
+                });
+            }
+        }
+
+        function selectChoice(button, choice) {
+            if (isAnimating) return;
+            
+            currentChoice = choice;
+            document.querySelectorAll('.choice-btn').forEach(btn => {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-secondary');
+            });
+            button.classList.remove('btn-secondary');
+            button.classList.add('btn-primary');
+        }
+
+        function resetGame() {
+            if (currentGame && !isAnimating) {
+                openGameModal(currentGame.id, currentGame.name);
+            }
+        }
+
+        function showRules() {
+            alert('Game Rules:\n\n- Minimum bet: $1\n- Maximum bet: Your balance\n- Demo balance can be used for practice\n- Real balance is used for actual winnings\n- Payouts up to 1.9x on wins');
+        }
+
+        // Play game - Updated to handle new games
+        document.getElementById('playGameBtn').addEventListener('click', async function() {
+            if (isAnimating) return;
+            
+            if (!currentChoice && ['dice', 'coin', 'roulette', 'cards', 'evenodd', 'overunder', 'suit', 'redblack', 'range', 'colorwheel'].includes(currentGame.id)) {
+                alert('Please make a choice first!');
+                return;
+            }
+
+            const betAmount = parseFloat(document.getElementById('betAmount').value);
+            const isDemo = document.getElementById('demoBalanceCheck').checked;
+            
+            if (!betAmount || betAmount <= 0) {
+                alert('Please enter a valid bet amount');
+                return;
+            }
+
+            const maxAmount = isDemo ? currentUser.demoBalance : currentUser.balance;
+            if (betAmount > maxAmount) {
+                alert(`Bet amount cannot exceed your ${isDemo ? 'demo' : 'real'} balance of $${maxAmount}`);
+                return;
+            }
+
+            isAnimating = true;
+            const playBtn = document.getElementById('playGameBtn');
+            playBtn.disabled = true;
+            playBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Playing...';
+
+            try {
+                // Simulate animation based on game type
+                await playAnimation(currentGame.id);
+                
+                // After animation, send API request
+                const response = await fetch(`/api/play/${currentGame.id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        betAmount,
+                        isDemo,
+                        choice: currentChoice
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Show result message
+                    setTimeout(() => {
+                        alert(result.result + (result.winAmount > 0 ? ` You won $${result.winAmount.toFixed(2)}!` : ''));
+                    }, 500);
+                    
+                    // Update balances and UI
+                    currentUser.balance = result.newBalance;
+                    currentUser.demoBalance = result.newDemoBalance;
+                    updateUI(currentUser);
+                    
+                    // Reload transactions
+                    loadRecentTransactions();
+                    loadTodayStats();
+                    
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Game play error:', error);
+                alert('Game play failed: ' + error.message);
+            } finally {
+                isAnimating = false;
+                playBtn.disabled = false;
+                playBtn.innerHTML = '<i class="fas fa-play mr-2"></i> Play';
+            }
+        });
+
+        // Animation functions for different games - Updated with new games
+        async function playAnimation(gameId) {
+            return new Promise((resolve) => {
+                switch(gameId) {
+                    case 'dice':
+                        const diceElement = document.getElementById('diceResult');
+                        diceElement.classList.add('dice-rolling');
+                        
+                        setTimeout(() => {
+                            diceElement.classList.remove('dice-rolling');
+                            const diceNumber = Math.floor(Math.random() * 6) + 1;
+                            diceElement.innerHTML = diceNumber;
+                            resolve();
+                        }, 1000);
+                        break;
+                        
+                    case 'coin':
+                        const coinElement = document.getElementById('coinResult');
+                        coinElement.classList.add('coin-flipping');
+                        
+                        setTimeout(() => {
+                            coinElement.classList.remove('coin-flipping');
+                            const coinResult = Math.random() > 0.5 ? 'H' : 'T';
+                            coinElement.innerHTML = coinResult;
+                            resolve();
+                        }, 1000);
+                        break;
+                        
+                    case 'slots':
+                        const reels = [
+                            document.getElementById('reel1'),
+                            document.getElementById('reel2'),
+                            document.getElementById('reel3')
+                        ];
+                        
+                        const symbols = ['🍒', '🍋', '🍊', '🍇', '🔔', '💎'];
+                        
+                        reels.forEach((reel, index) => {
+                            reel.classList.add('slot-spinning');
+                            
+                            setTimeout(() => {
+                                reel.classList.remove('slot-spinning');
+                                const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+                                reel.innerHTML = `<div class="slot-symbol">${randomSymbol}</div>`;
+                                
+                                if (index === reels.length - 1) {
+                                    resolve();
+                                }
+                            }, 1000 + (index * 300));
+                        });
+                        break;
+                        
+                    case 'roulette':
+                        const wheel = document.getElementById('rouletteWheel');
+                        wheel.classList.add('wheel-spinning');
+                        
+                        setTimeout(() => {
+                            wheel.classList.remove('wheel-spinning');
+                            resolve();
+                        }, 2000);
+                        break;
+                        
+                    case 'cards':
+                        const cards = [
+                            document.getElementById('card1'),
+                            document.getElementById('card2'),
+                            document.getElementById('card3')
+                        ];
+                        
+                        const suits = ['♥', '♦', '♣', '♠'];
+                        const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+                        
+                        cards.forEach((card, index) => {
+                            setTimeout(() => {
+                                card.classList.add('card-flip');
+                                
+                                setTimeout(() => {
+                                    const suit = suits[Math.floor(Math.random() * suits.length)];
+                                    const value = values[Math.floor(Math.random() * values.length)];
+                                    const isRed = suit === '♥' || suit === '♦';
+                                    
+                                    card.classList.remove('card-back');
+                                    card.innerHTML = `
+                                        <div class="card-top ${isRed ? 'card-red' : ''}">${value}${suit}</div>
+                                        <div class="card-center ${isRed ? 'card-red' : ''}">${suit}</div>
+                                        <div class="card-bottom ${isRed ? 'card-red' : ''}">${value}${suit}</div>
+                                    `;
+                                    
+                                    card.classList.remove('card-flip');
+                                    
+                                    if (index === cards.length - 1) {
+                                        resolve();
+                                    }
+                                }, 300);
+                            }, index * 400);
+                        });
+                        break;
+                    case 'evenodd':
+                        const evenOddElement = document.getElementById('evenOddResult');
+                        evenOddElement.classList.add('number-spin');
+                        
+                        setTimeout(() => {
+                            evenOddElement.classList.remove('number-spin');
+                            const num = Math.floor(Math.random() * 10) + 1;
+                            evenOddElement.innerHTML = num;
+                            evenOddElement.style.backgroundColor = num % 2 === 0 ? '#10b981' : '#ef4444';
+                            resolve();
+                        }, 1000);
+                        break;
+                    case 'overunder':
+                        const overUnderElement = document.getElementById('overUnderResult');
+                        overUnderElement.classList.add('number-spin');
+                        
+                        setTimeout(() => {
+                            overUnderElement.classList.remove('number-spin');
+                            const num = Math.floor(Math.random() * 100) + 1;
+                            overUnderElement.innerHTML = num;
+                            overUnderElement.style.backgroundColor = num > 50 ? '#10b981' : '#ef4444';
+                            resolve();
+                        }, 1000);
+                        break;
+                    case 'suit':
+                        const suitElement = document.getElementById('suitResult');
+                        suitElement.classList.add('card-flip');
+                        
+                        setTimeout(() => {
+                            suitElement.classList.remove('card-flip');
+                            suitElement.classList.remove('card-back');
+                            const suits = ['♥', '♦', '♣', '♠'];
+                            const suit = suits[Math.floor(Math.random() * suits.length)];
+                            suitElement.innerHTML = `<div class="card-center text-4xl">${suit}</div>`;
+                            resolve();
+                        }, 800);
+                        break;
+                    case 'redblack':
+                        const redBlackElement = document.getElementById('redBlackResult');
+                        redBlackElement.classList.add('color-flash');
+                        
+                        setTimeout(() => {
+                            redBlackElement.classList.remove('color-flash');
+                            const color = Math.random() > 0.5 ? 'Red' : 'Black';
+                            redBlackElement.innerHTML = color;
+                            redBlackElement.style.backgroundColor = color === 'Red' ? '#ef4444' : '#1f2937';
+                            resolve();
+                        }, 800);
+                        break;
+                    case 'range':
+                        const rangeElement = document.getElementById('rangeResult');
+                        rangeElement.classList.add('number-spin');
+                        
+                        setTimeout(() => {
+                            rangeElement.classList.remove('number-spin');
+                            const num = Math.floor(Math.random() * 10) + 1;
+                            rangeElement.innerHTML = num;
+                            rangeElement.style.backgroundColor = num <= 5 ? '#10b981' : '#ef4444';
+                            resolve();
+                        }, 1000);
+                        break;
+                    case 'colorwheel':
+                        const colorWheel = document.getElementById('colorWheel');
+                        colorWheel.classList.add('wheel-spinning');
+                        
+                        setTimeout(() => {
+                            colorWheel.classList.remove('wheel-spinning');
+                            resolve();
+                        }, 1500);
+                        break;
+                    case 'crash':
+                        const crashElement = document.getElementById('crashResult');
+                        crashElement.classList.add('number-spin');
+                        
+                        setTimeout(() => {
+                            crashElement.classList.remove('number-spin');
+                            const multiplier = (Math.random() * 1.9 + 0.1).toFixed(2);
+                            crashElement.innerHTML = `${multiplier}x`;
+                            resolve();
+                        }, 1500);
+                        break;
+                    case 'mines':
+                        // Simple animation: flash one mine
+                        setTimeout(() => {
+                            const mines = document.querySelectorAll('[data-mine]');
+                            const randomMine = mines[Math.floor(Math.random() * mines.length)];
+                            randomMine.style.backgroundColor = '#ef4444';
+                            randomMine.innerHTML = '💣';
+                            resolve();
+                        }, 1000);
+                        break;
+                    case 'plinko':
+                        const plinkoElement = document.getElementById('plinkoResult');
+                        plinkoElement.classList.add('number-spin');
+                        
+                        setTimeout(() => {
+                            plinkoElement.classList.remove('number-spin');
+                            const slot = Math.floor(Math.random() * 9) + 1;
+                            plinkoElement.innerHTML = slot;
+                            resolve();
+                        }, 1200);
+                        break;
+                    case 'keno':
+                        setTimeout(() => {
+                            const numbers = document.querySelectorAll('#kenoNumbers div');
+                            const winners = [];
+                            for (let i = 0; i < 20; i++) {
+                                const randomNum = numbers[Math.floor(Math.random() * numbers.length)];
+                                randomNum.style.backgroundColor = '#10b981';
+                                winners.push(randomNum.textContent);
+                            }
+                            resolve();
+                        }, 1500);
+                        break;
+                    case 'bingo':
+                        const bingoElement = document.getElementById('bingoResult');
+                        bingoElement.classList.add('color-flash');
+                        
+                        setTimeout(() => {
+                            bingoElement.classList.remove('color-flash');
+                            bingoElement.innerHTML = 'BINGO!';
+                            bingoElement.style.backgroundColor = '#10b981';
+                            resolve();
+                        }, 1000);
+                        break;
+                    case 'lotto':
+                        const lottoBalls = document.querySelectorAll('#lottoBalls div');
+                        lottoBalls.forEach(ball => {
+                            setTimeout(() => {
+                                const num = Math.floor(Math.random() * 49) + 1;
+                                ball.innerHTML = num;
+                            }, Math.random() * 1000);
+                        });
+                        setTimeout(resolve, 1500);
+                        break;
+                    default:
+                        resolve();
+                }
+            });
+        }
+
+        // Close modal
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('gameModal').style.display = 'none';
+            currentChoice = null;
+            isAnimating = false;
+        });
+
+        // Load recent transactions
+        async function loadRecentTransactions() {
+            try {
+                const response = await fetch('/api/transactions', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const tbody = document.getElementById('transactionsTable');
+                    if (result.transactions.length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="4" class="py-8 text-center text-gray-400">
+                                    No transactions yet
+                                </td>
+                            </tr>
+                        `;
+                    } else {
+                        tbody.innerHTML = result.transactions.slice(0, 5).map(transaction => `
+                            <tr class="border-b border-gray-700">
+                                <td class="py-4 px-6">${new Date(transaction.createdAt).toLocaleDateString()}</td>
+                                <td class="py-4 px-6 capitalize">${transaction.type.replace('_', ' ')}</td>
+                                <td class="py-4 px-6 ${transaction.amount > 0 ? 'text-green-400' : 'text-red-400'}">
+                                    ${transaction.amount > 0 ? '+' : ''}$${Math.abs(transaction.amount).toFixed(2)}
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="px-2 py-1 rounded text-xs ${
+                                        transaction.status === 'completed' ? 'bg-green-500' :
+                                        transaction.status === 'pending' ? 'bg-yellow-500' :
+                                        'bg-red-500'
+                                    }">${transaction.status}</span>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load transactions:', error);
+            }
+        }
+
+        // Load today's stats
+        async function loadTodayStats() {
+            // This would typically come from an API endpoint
+            // For now, we'll use placeholder data
+            document.getElementById('todayWinnings').textContent = '+$0.00';
+            document.getElementById('todayLosses').textContent = '-$0.00';
+        }
+
+        function showDepositModal() {
+            alert('Deposit functionality coming soon!');
+        }
+
+        function showWithdrawModal() {
+            alert('Withdrawal functionality coming soon!');
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.removeItem('token');
+            window.location.href = '/register-login';
+        });
+
+        // User menu toggle
+        document.getElementById('userMenuButton').addEventListener('click', function() {
+            const menu = document.getElementById('userMenu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === document.getElementById('gameModal')) {
+                document.getElementById('gameModal').style.display = 'none';
+                currentChoice = null;
+                isAnimating = false;
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98bad0888d50f4e5',t:'MTc1OTk4MDc4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

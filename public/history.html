@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History - LuckyBet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Similar enhanced styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0c0f1d 0%, #1a1f3d 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        
+        .history-filter {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+        }
+        
+        .activity-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .activity-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .win-amount {
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .loss-amount {
+            background: linear-gradient(135deg, #f87171, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation similar to index.html -->
+    
+    <main class="container mx-auto px-4 py-24 pt-32">
+        <div class="text-center mb-16">
+            <h2 class="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">Your History</h2>
+            <p class="text-xl text-gray-300">Track all your transactions, games, and earnings</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="glass-effect rounded-2xl p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <select class="history-filter" id="typeFilter">
+                    <option value="all">All Activities</option>
+                    <option value="deposit">Deposits</option>
+                    <option value="withdrawal">Withdrawals</option>
+                    <option value="game">Games</option>
+                    <option value="referral">Referrals</option>
+                </select>
+                <select class="history-filter" id="statusFilter">
+                    <option value="all">All Status</option>
+                    <option value="completed">Completed</option>
+                    <option value="pending">Pending</option>
+                </select>
+                <input type="date" class="history-filter" id="dateFilter">
+                <button class="btn-primary px-6 py-3" onclick="filterHistory()">
+                    <i class="fas fa-search mr-2"></i> Filter
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabs for different history types -->
+        <div class="glass-effect rounded-2xl mb-8 overflow-hidden">
+            <div class="flex border-b border-gray-700/50">
+                <button class="tab-active py-4 px-8 font-semibold" onclick="switchHistoryTab('transactions')">
+                    <i class="fas fa-exchange-alt mr-2"></i>Transactions
+                </button>
+                <button class="py-4 px-8 font-semibold hover:bg-gray-800/30" onclick="switchHistoryTab('games')">
+                    <i class="fas fa-gamepad mr-2"></i>Game History
+                </button>
+                <button class="py-4 px-8 font-semibold hover:bg-gray-800/30" onclick="switchHistoryTab('referrals')">
+                    <i class="fas fa-users mr-2"></i>Referrals
+                </button>
+            </div>
+        </div>
+
+        <!-- Transactions Tab -->
+        <div id="transactionsTab" class="tab-content">
+            <div class="activity-card p-6 mb-6">
+                <h3 class="text-xl font-bold mb-4">Recent Transactions</h3>
+                <div id="transactionsList">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Game History Tab -->
+        <div id="gamesTab" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="gameHistoryList">
+                <!-- Loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Referrals Tab -->
+        <div id="referralsTab" class="tab-content hidden">
+            <div class="space-y-4" id="referralHistory">
+                <!-- Loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Export button -->
+        <div class="text-center mt-12">
+            <button class="btn-secondary px-8 py-3" onclick="exportHistory()">
+                <i class="fas fa-download mr-2"></i> Export History (CSV)
+            </button>
+        </div>
+    </main>
+
+    <script>
+        // Load history data
+        async function loadHistory() {
+            // Fetch transactions, game history, referrals
+            // Display in respective tabs
+        }
+
+        function switchHistoryTab(tab) {
+            // Switch tabs
+        }
+
+        function filterHistory() {
+            // Apply filters
+        }
+
+        function exportHistory() {
+            // Generate CSV download
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadHistory();
+        });
+    </script>
+</body>
+</html>

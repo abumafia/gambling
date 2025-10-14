@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reklama Joylash</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        main {
+            padding: 30px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .form-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #6a11cb;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .cost-info {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #6a11cb;
+        }
+        
+        .cost-amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #6a11cb;
+        }
+        
+        .history-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .history-table th, .history-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .history-table th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            color: #ff9800;
+        }
+        
+        .status-active {
+            color: #4caf50;
+        }
+        
+        .status-rejected {
+            color: #f44336;
+        }
+        
+        .payment-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .payment-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .payment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #777;
+        }
+        
+        .card-info {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            margin: 15px 0;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: #6a11cb;
+        }
+        
+        .upload-area input {
+            display: none;
+        }
+        
+        .preview {
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .preview img, .preview video {
+            max-width: 100%;
+            max-height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Reklama Joylash</h1>
+        <div class="user-info">
+            <span id="username">Foydalanuvchi</span>
+            <button class="btn" id="home-btn">Asosiy sahifa</button>
+            <button class="btn" id="history-btn">Reklama tarixi</button>
+            <button class="btn" id="logout-btn">Chiqish</button>
+        </div>
+    </header>
+    
+    <main>
+        <div class="form-container">
+            <h1>Yangi Reklama Joylash</h1>
+            
+            <form id="ad-form">
+                <div class="form-group">
+                    <label for="ad-type">Reklama turi</label>
+                    <select id="ad-type" required>
+                        <option value="">Tanlang</option>
+                        <option value="image">Rasm</option>
+                        <option value="video">Video</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ad-title">Reklama nomi</label>
+                    <input type="text" id="ad-title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ad-description">Reklama tavsifi</label>
+                    <textarea id="ad-description" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ad-link">Havola (URL)</label>
+                    <input type="url" id="ad-link" required>
+                </div>
+                
+                <div class="form-group" id="image-upload-group" style="display: none;">
+                    <label>Rasm yuklash</label>
+                    <div class="upload-area" id="image-upload-area">
+                        <p>Rasmni bu yerga torting yoki <span style="color: #6a11cb;">tanlang</span></p>
+                        <input type="file" id="ad-image" accept="image/*">
+                    </div>
+                    <div class="preview" id="image-preview"></div>
+                </div>
+                
+                <div class="form-group" id="video-upload-group" style="display: none;">
+                    <label>Video yuklash</label>
+                    <div class="upload-area" id="video-upload-area">
+                        <p>Videoni bu yerga torting yoki <span style="color: #6a11cb;">tanlang</span></p>
+                        <input type="file" id="ad-video" accept="video/*">
+                    </div>
+                    <div class="preview" id="video-preview"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="max-views">Kuniga necha marta ko'rsatilsin?</label>
+                    <input type="number" id="max-views" min="100" value="1000" required>
+                    <small>Minimal 100 marta</small>
+                </div>
+                
+                <div class="cost-info">
+                    <p>Umumiy narx: <span class="cost-amount" id="total-cost">1500000</span> so'm</p>
+                    <p><small>(Har bir ko'rinish uchun 1500 so'm)</small></p>
+                </div>
+                
+                <button type="submit" class="submit-btn">Reklamani joylash</button>
+            </form>
+        </div>
+        
+        <div class="history-section">
+            <h2>Reklama joylash tarixi</h2>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Nomi</th>
+                        <th>Sana</th>
+                        <th>Ko'rinishlar</th>
+                        <th>Holat</th>
+                    </tr>
+                </thead>
+                <tbody id="history-table-body">
+                    <!-- Tarix ma'lumotlari JavaScript orqali to'ldiriladi -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+    
+    <!-- To'lov modal oynasi -->
+    <div class="payment-modal" id="payment-modal">
+        <div class="payment-content">
+            <div class="payment-header">
+                <h3>To'lovni amalga oshiring</h3>
+                <button class="close-btn" id="close-payment-btn">&times;</button>
+            </div>
+            
+            <div class="card-info">
+                <h4>Admin kartasi ma'lumotlari:</h4>
+                <p><strong>Karta raqami:</strong> 8600 1234 5678 9012</p>
+                <p><strong>Karta egasi:</strong> ADMIN ADMINOV</p>
+                <p><strong>To'lov summasi:</strong> <span id="payment-amount">0</span> so'm</p>
+            </div>
+            
+            <p>To'lovni amalga oshirgach, chek rasmini yuklang:</p>
+            
+            <div class="upload-area" id="receipt-upload-area">
+                <p>Chek rasmini bu yerga torting yoki <span style="color: #6a11cb;">tanlang</span></p>
+                <input type="file" id="receipt-image" accept="image/*">
+            </div>
+            
+            <div class="preview" id="receipt-preview"></div>
+            
+            <button class="submit-btn" id="confirm-payment-btn">Tasdiqlash</button>
+        </div>
+    </div>
+
+    <script>
+        // Foydalanuvchi ma'lumotlari
+        let user = null;
+        let currentAd = null;
+        
+        // DOM elementlari
+        const usernameSpan = document.getElementById('username');
+        const adForm = document.getElementById('ad-form');
+        const adTypeSelect = document.getElementById('ad-type');
+        const imageUploadGroup = document.getElementById('image-upload-group');
+        const videoUploadGroup = document.getElementById('video-upload-group');
+        const imageUploadArea = document.getElementById('image-upload-area');
+        const videoUploadArea = document.getElementById('video-upload-area');
+        const adImageInput = document.getElementById('ad-image');
+        const adVideoInput = document.getElementById('ad-video');
+        const imagePreview = document.getElementById('image-preview');
+        const videoPreview = document.getElementById('video-preview');
+        const maxViewsInput = document.getElementById('max-views');
+        const totalCostSpan = document.getElementById('total-cost');
+        const historyTableBody = document.getElementById('history-table-body');
+        
+        // Modal oynalari
+        const paymentModal = document.getElementById('payment-modal');
+        const closePaymentBtn = document.getElementById('close-payment-btn');
+        const paymentAmountSpan = document.getElementById('payment-amount');
+        const receiptUploadArea = document.getElementById('receipt-upload-area');
+        const receiptImageInput = document.getElementById('receipt-image');
+        const receiptPreview = document.getElementById('receipt-preview');
+        const confirmPaymentBtn = document.getElementById('confirm-payment-btn');
+        
+        // Tugmalar
+        const homeBtn = document.getElementById('home-btn');
+        const historyBtn = document.getElementById('history-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        
+        // Sahifa yuklanganda
+        window.addEventListener('load', function() {
+            // Foydalanuvchi ma'lumotlarini tekshirish
+            const userData = localStorage.getItem('user');
+            if (!userData) {
+                window.location.href = '/';
+                return;
+            }
+            
+            user = JSON.parse(userData);
+            usernameSpan.textContent = user.username;
+            
+            // Reklama tarixini yuklash
+            loadAdHistory();
+        });
+        
+        // Reklama turini o'zgartirish
+        adTypeSelect.addEventListener('change', function() {
+            if (this.value === 'image') {
+                imageUploadGroup.style.display = 'block';
+                videoUploadGroup.style.display = 'none';
+            } else if (this.value === 'video') {
+                imageUploadGroup.style.display = 'none';
+                videoUploadGroup.style.display = 'block';
+            } else {
+                imageUploadGroup.style.display = 'none';
+                videoUploadGroup.style.display = 'none';
+            }
+        });
+        
+        // Rasm yuklash
+        imageUploadArea.addEventListener('click', function() {
+            adImageInput.click();
+        });
+        
+        adImageInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    imagePreview.innerHTML = `<img src="${e.target.result}" alt="Rasm">`;
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+        
+        // Video yuklash
+        videoUploadArea.addEventListener('click', function() {
+            adVideoInput.click();
+        });
+        
+        adVideoInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    videoPreview.innerHTML = `<video controls><source src="${e.target.result}" type="video/mp4">Sizning brauzeringiz video elementini qo'llab-quvvatlamaydi.</video>`;
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+        
+        // Chek rasmini yuklash
+        receiptUploadArea.addEventListener('click', function() {
+            receiptImageInput.click();
+        });
+        
+        receiptImageInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    receiptPreview.innerHTML = `<img src="${e.target.result}" alt="Chek">`;
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+        
+        // Narxni hisoblash
+        maxViewsInput.addEventListener('input', function() {
+            const views = parseInt(this.value) || 0;
+            const cost = views * 1500;
+            totalCostSpan.textContent = cost.toLocaleString();
+        });
+        
+        // Reklama formasi yuborilganda
+        adForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const adType = adTypeSelect.value;
+            const adTitle = document.getElementById('ad-title').value;
+            const adDescription = document.getElementById('ad-description').value;
+            const adLink = document.getElementById('ad-link').value;
+            const maxViews = maxViewsInput.value;
+            
+            // Media fayllarni tekshirish
+            if (adType === 'image' && !adImageInput.files[0]) {
+                alert('Iltimos, reklama uchun rasm yuklang');
+                return;
+            }
+            
+            if (adType === 'video' && !adVideoInput.files[0]) {
+                alert('Iltimos, reklama uchun video yuklang');
+                return;
+            }
+            
+            // Fayllarni base64 formatiga o'tkazish
+            const processMedia = () => {
+                return new Promise((resolve) => {
+                    if (adType === 'image' && adImageInput.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            resolve({
+                                type: adType,
+                                title: adTitle,
+                                description: adDescription,
+                                link: adLink,
+                                image: e.target.result,
+                                video: null,
+                                maxViews: maxViews,
+                                advertiser: user.username
+                            });
+                        };
+                        reader.readAsDataURL(adImageInput.files[0]);
+                    } else if (adType === 'video' && adVideoInput.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            resolve({
+                                type: adType,
+                                title: adTitle,
+                                description: adDescription,
+                                link: adLink,
+                                image: null,
+                                video: e.target.result,
+                                maxViews: maxViews,
+                                advertiser: user.username
+                            });
+                        };
+                        reader.readAsDataURL(adVideoInput.files[0]);
+                    } else {
+                        resolve({
+                            type: adType,
+                            title: adTitle,
+                            description: adDescription,
+                            link: adLink,
+                            image: null,
+                            video: null,
+                            maxViews: maxViews,
+                            advertiser: user.username
+                        });
+                    }
+                });
+            };
+            
+            processMedia().then(adData => {
+                currentAd = adData;
+                paymentAmountSpan.textContent = (parseInt(maxViews) * 1500).toLocaleString();
+                paymentModal.style.display = 'flex';
+            });
+        });
+        
+        // To'lovni tasdiqlash
+        confirmPaymentBtn.addEventListener('click', function() {
+            if (!receiptImageInput.files[0]) {
+                alert('Iltimos, to\'lov chekini yuklang');
+                return;
+            }
+            
+            // Reklamani yaratish
+            fetch('/api/create-ad', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(currentAd)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Reklama muvaffaqiyatli yuborildi! Admin tasdiqlagach faollashadi.');
+                    paymentModal.style.display = 'none';
+                    adForm.reset();
+                    imagePreview.innerHTML = '';
+                    videoPreview.innerHTML = '';
+                    receiptPreview.innerHTML = '';
+                    loadAdHistory();
+                } else {
+                    alert('Xatolik: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Xatolik:', error);
+                alert('Server xatosi');
+            });
+        });
+        
+        // Reklama tarixini yuklash
+        function loadAdHistory() {
+            fetch('/api/admin/ads')
+                .then(response => response.json())
+                .then(ads => {
+                    const myAds = ads.filter(ad => ad.advertiser === user.username);
+                    
+                    // Tarix jadvalini to'ldirish
+                    historyTableBody.innerHTML = '';
+                    myAds.forEach(ad => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${ad.title}</td>
+                            <td>${new Date(ad.createdAt).toLocaleDateString()}</td>
+                            <td>${ad.views}/${ad.maxViews}</td>
+                            <td class="status-${ad.status}">${getStatusText(ad.status)}</td>
+                        `;
+                        historyTableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Xatolik:', error));
+        }
+        
+        // Status matnini olish
+        function getStatusText(status) {
+            switch(status) {
+                case 'pending': return 'Kutilmoqda';
+                case 'active': return 'Faol';
+                case 'rejected': return 'Rad etilgan';
+                default: return status;
+            }
+        }
+        
+        // Modal oynani yopish
+        closePaymentBtn.addEventListener('click', function() {
+            paymentModal.style.display = 'none';
+        });
+        
+        // Tugmalar
+        homeBtn.addEventListener('click', function() {
+            window.location.href = '/index.html';
+        });
+        
+        historyBtn.addEventListener('click', function() {
+            loadAdHistory();
+        });
+        
+        logoutBtn.addEventListener('click', function() {
+            localStorage.removeItem('user');
+            window.location.href = '/';
+        });
+        
+        // Modal tashqarisiga bosilganda yopish
+        window.addEventListener('click', function(e) {
+            if (e.target === paymentModal) {
+                paymentModal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

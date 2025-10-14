@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1760416891464",
+    "username": "Abumafia",
+    "password": "000000",
+    "balance": 934000,
+    "referralCode": "OVUP3Y",
+    "referredBy": null,
+    "createdAt": "2025-10-14T04:41:31.476Z"
+  },
+  {
+    "id": "1760416939612",
+    "username": "abu",
+    "password": "000000",
+    "balance": 0,
+    "referralCode": "FIX6LP",
+    "referredBy": "http://localhost:3000/?ref=OVUP3Y",
+    "createdAt": "2025-10-14T04:42:19.612Z"
+  },
+  {
+    "id": "1760416973654",
+    "username": "Abum",
+    "password": "000000",
+    "balance": 0,
+    "referralCode": "CREIFB",
+    "referredBy": "http://localhost:3000/?ref=OVUP3Y",
+    "createdAt": "2025-10-14T04:42:53.654Z"
+  },
+  {
+    "id": "1760420051946",
+    "username": "Abumafia",
+    "password": "killer0877++",
+    "balance": 0,
+    "referralCode": "YWMB6G",
+    "referredBy": null,
+    "createdAt": "2025-10-14T05:34:11.955Z"
+  }
+]

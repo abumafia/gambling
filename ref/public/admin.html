@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-tabs {
+            display: flex;
+            background-color: white;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            border-bottom-color: #6a11cb;
+            color: #6a11cb;
+            font-weight: 500;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #6a11cb;
+            margin: 10px 0;
+        }
+        
+        .table-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 0 2px;
+        }
+        
+        .btn-approve {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .btn-reject {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .btn-edit {
+            background-color: #2196f3;
+            color: white;
+        }
+        
+        .status-pending {
+            color: #ff9800;
+        }
+        
+        .status-active {
+            color: #4caf50;
+        }
+        
+        .status-rejected {
+            color: #f44336;
+        }
+        
+        .form-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            padding: 10px 20px;
+            background-color: #6a11cb;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #777;
+        }
+        
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            margin: 15px 0;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: #6a11cb;
+        }
+        
+        .upload-area input {
+            display: none;
+        }
+        
+        .preview {
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .preview img, .preview video {
+            max-width: 100%;
+            max-height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Admin Panel</h1>
+        <div>
+            <button class="btn" id="logout-btn">Chiqish</button>
+        </div>
+    </header>
+    
+    <div class="nav-tabs">
+        <div class="tab active" data-tab="dashboard">Dashboard</div>
+        <div class="tab" data-tab="ads">Reklama So'rovlari</div>
+        <div class="tab" data-tab="users">Foydalanuvchilar</div>
+        <div class="tab" data-tab="withdrawals">Pul Yechish So'rovlari</div>
+        <div class="tab" data-tab="create-ad">Reklama Yaratish</div>
+    </div>
+    
+    <!-- Dashboard -->
+    <div class="tab-content active" id="dashboard">
+        <div class="stats-container">
+            <div class="stat-card">
+                <div>Jami Foydalanuvchilar</div>
+                <div class="stat-value" id="total-users">0</div>
+            </div>
+            <div class="stat-card">
+                <div>Ishlab Olingan Pul</div>
+                <div class="stat-value" id="total-earned">0 so'm</div>
+            </div>
+            <div class="stat-card">
+                <div>To'lab Berilgan Pul</div>
+                <div class="stat-value" id="total-paid">0 so'm</div>
+            </div>
+            <div class="stat-card">
+                <div>Foyda</div>
+                <div class="stat-value" id="total-profit">0 so'm</div>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <h2>Kunlik Statistika</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sana</th>
+                        <th>Ishlab Olingan</th>
+                        <th>To'lab Berilgan</th>
+                    </tr>
+                </thead>
+                <tbody id="daily-stats-body">
+                    <!-- Kunlik statistika ma'lumotlari JavaScript orqali to'ldiriladi -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Reklama So'rovlari -->
+    <div class="tab-content" id="ads">
+        <div class="table-container">
+            <h2>Reklama So'rovlari</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nomi</th>
+                        <th>Reklamachi</th>
+                        <th>Sana</th>
+                        <th>Ko'rinishlar</th>
+                        <th>Narx</th>
+                        <th>Holat</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody id="ads-table-body">
+                    <!-- Reklama so'rovlari ma'lumotlari JavaScript orqali to'ldiriladi -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Foydalanuvchilar -->
+    <div class="tab-content" id="users">
+        <div class="table-container">
+            <h2>Foydalanuvchilar</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Foydalanuvchi nomi</th>
+                        <th>Ro'yxatdan o'tgan sana</th>
+                        <th>Balans</th>
+                        <th>Referral kodi</th>
+                        <th>Taklif qilgan</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody id="users-table-body">
+                    <!-- Foydalanuvchilar ma'lumotlari JavaScript orqali to'ldiriladi -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Pul Yechish So'rovlari -->
+    <div class="tab-content" id="withdrawals">
+        <div class="table-container">
+            <h2>Pul Yechish So'rovlari</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Foydalanuvchi</th>
+                        <th>Karta raqami</th>
+                        <th>Summa</th>
+                        <th>Sana</th>
+                        <th>Holat</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody id="withdrawals-table-body">
+                    <!-- Pul yechish so'rovlari ma'lumotlari JavaScript orqali to'ldiriladi -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Reklama Yaratish -->
+    <div class="tab-content" id="create-ad">
+        <div class="form-container">
+            <h2>Reklama Yaratish</h2>
+            <form id="admin-ad-form">
+                <div class="form-group">
+                    <label for="admin-ad-type">Reklama turi</label>
+                    <select id="admin-ad-type" required>
+                        <option value="">Tanlang</option>
+                        <option value="image">Rasm</option>
+                        <option value="video">Video</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="admin-ad-title">Reklama nomi</label>
+                    <input type="text" id="admin-ad-title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="admin-ad-description">Reklama tavsifi</label>
+                    <textarea id="admin-ad-description" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="admin-ad-link">Havola (URL)</label>
+                    <input type="url" id="admin-ad-link" required>
+                </div>
+                
+                <div class="form-group" id="admin-image-upload-group" style="display: none;">
+                    <label>Rasm yuklash</label>
+                    <div class="upload-area" id="admin-image-upload-area">
+                        <p>Rasmni bu yerga torting yoki <span style="color: #6a11cb;">tanlang</span></p>
+                        <input type="file" id="admin-ad-image" accept="image/*">
+                    </div>
+                    <div class="preview" id="admin-image-preview"></div>
+                </div>
+                
+                <div class="form-group" id="admin-video-upload-group" style="display: none;">
+                    <label>Video yuklash</label>
+                    <div class="upload-area" id="admin-video-upload-area">
+                        <p>Videoni bu yerga torting yoki <span style="color: #6a11cb;">tanlang</span></p>
+                        <input type="file" id="admin-ad-video" accept="video/*">
+                    </div>
+                    <div class="preview" id="admin-video-preview"></div>
+                </div>
+                
+                <button type="submit" class="submit-btn">Reklamani Yaratish</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Balansni tahrirlash modal oynasi -->
+    <div class="modal" id="edit-balance-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Balansni Tahrirlash</h3>
+                <button class="close-btn" id="close-edit-balance-btn">&times;</button>
+            </div>
+            <form id="edit-balance-form">
+                <div class="form-group">
+                    <label for="edit-balance-username">Foydalanuvchi nomi</label>
+                    <input type="text" id="edit-balance-username" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="edit-balance-amount">Yangi balans</label>
+                    <input type="number" id="edit-balance-amount" required>
+                </div>
+                <button type="submit" class="submit-btn">Saqlash</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Admin ma'lumotlari
+        let currentEditUserId = null;
+        
+        // DOM elementlari
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        // Dashboard elementlari
+        const totalUsersSpan = document.getElementById('total-users');
+        const totalEarnedSpan = document.getElementById('total-earned');
+        const totalPaidSpan = document.getElementById('total-paid');
+        const totalProfitSpan = document.getElementById('total-profit');
+        const dailyStatsBody = document.getElementById('daily-stats-body');
+        
+        // Reklama so'rovlari elementlari
+        const adsTableBody = document.getElementById('ads-table-body');
+        
+        // Foydalanuvchilar elementlari
+        const usersTableBody = document.getElementById('users-table-body');
+        
+        // Pul yechish so'rovlari elementlari
+        const withdrawalsTableBody = document.getElementById('withdrawals-table-body');
+        
+        // Reklama yaratish elementlari
+        const adminAdForm = document.getElementById('admin-ad-form');
+        const adminAdTypeSelect = document.getElementById('admin-ad-type');
+        const adminImageUploadGroup = document.getElementById('admin-image-upload-group');
+        const adminVideoUploadGroup = document.getElementById('admin-video-upload-group');
+        const adminImageUploadArea = document.getElementById('admin-image-upload-area');
+        const adminVideoUploadArea = document.getElementById('admin-video-upload-area');
+        const adminAdImageInput = document.getElementById('admin-ad-image');
+        const adminAdVideoInput = document.getElementById('admin-ad-video');
+        const adminImagePreview = document.getElementById('admin-image-preview');
+        const adminVideoPreview = document.getElementById('admin-video-preview');
+        
+        // Balansni tahrirlash elementlari
+        const editBalanceModal = document.getElementById('edit-balance-modal');
+        const closeEditBalanceBtn = document.getElementById('close-edit-balance-btn');
+        const editBalanceForm = document.getElementById('edit-balance-form');
+        const editBalanceUsername = document.getElementById('edit-balance-username');
+        const editBalanceAmount = document.getElementById('edit-balance-amount');
+        
+        // Chiqish tugmasi
+        const logoutBtn = document.getElementById('logout-btn');
+        
+        // Tab'larni almashtirish
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+                
+                // Faol tab'ni o'zgartirish
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Faol kontentni o'zgartirish
+                tabContents.forEach(content => content.classList.remove('active'));
+                document.getElementById(tabId).classList.add('active');
+                
+                // Ma'lumotlarni yangilash
+                if (tabId === 'dashboard') {
+                    loadDashboardStats();
+                } else if (tabId === 'ads') {
+                    loadAds();
+                } else if (tabId === 'users') {
+                    loadUsers();
+                } else if (tabId === 'withdrawals') {
+                    loadWithdrawals();
+                }
+            });
+        });
+        
+        // Sahifa yuklanganda
+        window.addEventListener('load', function() {
+            // Dashboard statistikasini yuklash
+            loadDashboardStats();
+        });
+        
+        // Dashboard statistikasini yuklash
+        function loadDashboardStats() {
+            fetch('/api/admin/stats')
+                .then(response => response.json())
+                .then(data => {
+                    totalUsersSpan.textContent = data.totalUsers;
+                    totalEarnedSpan.textContent = data.totalEarned.toLocaleString() + ' so\'m';
+                    totalPaidSpan.textContent = data.totalPaid.toLocaleString() + ' so\'m';
+                    totalProfitSpan.textContent = (data.totalEarned - data.totalPaid).toLocaleString() + ' so\'m';
+                    
+                    // Kunlik statistikani to'ldirish
+                    dailyStatsBody.innerHTML = '';
+                    data.dailyStats.forEach(stat => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${stat.date}</td>
+                            <td>${stat.earned.toLocaleString()} so'm</td>
+                            <td>${stat.paid.toLocaleString()} so'm</td>
+                        `;
+                        dailyStatsBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Xatolik:', error));
+        }
+        
+        // Reklama so'rovlarini yuklash
+        function loadAds() {
+            fetch('/api/admin/ads')
+                .then(response => response.json())
+                .then(ads => {
+                    adsTableBody.innerHTML = '';
+                    ads.forEach(ad => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${ad.title}</td>
+                            <td>${ad.advertiser}</td>
+                            <td>${new Date(ad.createdAt).toLocaleDateString()}</td>
+                            <td>${ad.views}/${ad.maxViews}</td>
+                            <td>${ad.cost ? ad.cost.toLocaleString() + ' so\'m' : 'Bepul'}</td>
+                            <td class="status-${ad.status}">${getStatusText(ad.status)}</td>
+                            <td>
+                                ${ad.status === 'pending' ? `
+                                    <button class="btn btn-approve" onclick="updateAdStatus('${ad.id}', 'active')">Tasdiqlash</button>
+                                    <button class="btn btn-reject" onclick="updateAdStatus('${ad.id}', 'rejected')">Rad etish</button>
+                                ` : ''}
+                            </td>
+                        `;
+                        adsTableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Xatolik:', error));
+        }
+        
+        // Foydalanuvchilarni yuklash
+        function loadUsers() {
+            fetch('/api/admin/users')
+                .then(response => response.json())
+                .then(users => {
+                    usersTableBody.innerHTML = '';
+                    users.forEach(user => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${user.username}</td>
+                            <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+                            <td>${user.balance} so'm</td>
+                            <td>${user.referralCode}</td>
+                            <td>${user.referredBy || '-'}</td>
+                            <td>
+                                <button class="btn btn-edit" onclick="editBalance('${user.id}', '${user.username}', ${user.balance})">Balansni tahrirlash</button>
+                            </td>
+                        `;
+                        usersTableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Xatolik:', error));
+        }
+        
+        // Pul yechish so'rovlarini yuklash
+        function loadWithdrawals() {
+            fetch('/api/admin/withdrawals')
+                .then(response => response.json())
+                .then(withdrawals => {
+                    withdrawalsTableBody.innerHTML = '';
+                    withdrawals.forEach(withdrawal => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${withdrawal.userId}</td>
+                            <td>${withdrawal.cardNumber}</td>
+                            <td>${withdrawal.amount.toLocaleString()} so'm</td>
+                            <td>${new Date(withdrawal.createdAt).toLocaleDateString()}</td>
+                            <td class="status-${withdrawal.status}">${getStatusText(withdrawal.status)}</td>
+                            <td>
+                                ${withdrawal.status === 'pending' ? `
+                                    <button class="btn btn-approve" onclick="updateWithdrawalStatus('${withdrawal.id}', 'approved')">Tasdiqlash</button>
+                                    <button class="btn btn-reject" onclick="updateWithdrawalStatus('${withdrawal.id}', 'rejected')">Rad etish</button>
+                                ` : ''}
+                            </td>
+                        `;
+                        withdrawalsTableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Xatolik:', error));
+        }
+        
+        // Reklama statusini yangilash
+        function updateAdStatus(adId, status) {
+            fetch(`/api/admin/ad/${adId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Reklama statusi yangilandi!');
+                    loadAds();
+                } else {
+                    alert('Xatolik: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Xatolik:', error);
+                alert('Server xatosi');
+            });
+        }
+        
+        // Pul yechish statusini yangilash
+        function updateWithdrawalStatus(withdrawalId, status) {
+            fetch(`/api/admin/withdrawal/${withdrawalId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Pul yechish statusi yangilandi!');
+                    loadWithdrawals();
+                    loadDashboardStats(); // Statistika yangilanishi uchun
+                } else {
+                    alert('Xatolik: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Xatolik:', error);
+                alert('Server xatosi');
+            });
+        }
+        
+        // Balansni tahrirlash
+        function editBalance(userId, username, balance) {
+            currentEditUserId = userId;
+            editBalanceUsername.value = username;
+            editBalanceAmount.value = balance;
+            editBalanceModal.style.display = 'flex';
+        }
+        
+        // Balansni yangilash
+        editBalanceForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newBalance = editBalanceAmount.value;
+            
+            fetch(`/api/admin/user/${currentEditUserId}/balance`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ balance: newBalance })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Balans muvaffaqiyatli yangilandi!');
+                    editBalanceModal.style.display = 'none';
+                    loadUsers();
+                } else {
+                    alert('Xatolik: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Xatolik:', error);
+                alert('Server xatosi');
+            });
+        });
+        
+        // Reklama turini o'zgartirish
+        adminAdTypeSelect.addEventListener('change', function() {
+            if (this.value === 'image') {
+                adminImageUploadGroup.style.display = 'block';
+                adminVideoUploadGroup.style.display = 'none';
+            } else if (this.value === 'video') {
+                adminImageUploadGroup.style.display = 'none';
+                adminVideoUploadGroup.style.display = 'block';
+            } else {
+                adminImageUploadGroup.style.display = 'none';
+                adminVideoUploadGroup.style.display = 'none';
+            }
+        });
+        
+        // Rasm yuklash
+        adminImageUploadArea.addEventListener('click', function() {
+            adminAdImageInput.click();
+        });
+        
+        adminAdImageInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    adminImagePreview.innerHTML = `<img src="${e.target.result}" alt="Rasm">`;
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+        
+        // Video yuklash
+        adminVideoUploadArea.addEventListener('click', function() {
+            adminAdVideoInput.click();
+        });
+        
+        adminAdVideoInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    adminVideoPreview.innerHTML = `<video controls><source src="${e.target.result}" type="video/mp4">Sizning brauzeringiz video elementini qo'llab-quvvatlamaydi.</video>`;
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+        
+        // Admin reklama yaratish
+        adminAdForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const adType = adminAdTypeSelect.value;
+            const adTitle = document.getElementById('admin-ad-title').value;
+            const adDescription = document.getElementById('admin-ad-description').value;
+            const adLink = document.getElementById('admin-ad-link').value;
+            
+            // Media fayllarni tekshirish
+            if (adType === 'image' && !adminAdImageInput.files[0]) {
+                alert('Iltimos, reklama uchun rasm yuklang');
+                return;
+            }
+            
+            if (adType === 'video' && !adminAdVideoInput.files[0]) {
+                alert('Iltimos, reklama uchun video yuklang');
+                return;
+            }
+            
+            // Fayllarni base64 formatiga o'tkazish
+            const processMedia = () => {
+                return new Promise((resolve) => {
+                    if (adType === 'image' && adminAdImageInput.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            resolve({
+                                type: adType,
+                                title: adTitle,
+                                description: adDescription,
+                                link: adLink,
+                                image: e.target.result,
+                                video: null
+                            });
+                        };
+                        reader.readAsDataURL(adminAdImageInput.files[0]);
+                    } else if (adType === 'video' && adminAdVideoInput.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            resolve({
+                                type: adType,
+                                title: adTitle,
+                                description: adDescription,
+                                link: adLink,
+                                image: null,
+                                video: e.target.result
+                            });
+                        };
+                        reader.readAsDataURL(adminAdVideoInput.files[0]);
+                    } else {
+                        resolve({
+                            type: adType,
+                            title: adTitle,
+                            description: adDescription,
+                            link: adLink,
+                            image: null,
+                            video: null
+                        });
+                    }
+                });
+            };
+            
+            processMedia().then(adData => {
+                fetch('/api/admin/ad', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(adData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Reklama muvaffaqiyatli yaratildi!');
+                        adminAdForm.reset();
+                        adminImagePreview.innerHTML = '';
+                        adminVideoPreview.innerHTML = '';
+                    } else {
+                        alert('Xatolik: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Xatolik:', error);
+                    alert('Server xatosi');
+                });
+            });
+        });
+        
+        // Status matnini olish
+        function getStatusText(status) {
+            switch(status) {
+                case 'pending': return 'Kutilmoqda';
+                case 'active': return 'Faol';
+                case 'rejected': return 'Rad etilgan';
+                case 'approved': return 'Tasdiqlangan';
+                default: return status;
+            }
+        }
+        
+        // Modal oynani yopish
+        closeEditBalanceBtn.addEventListener('click', function() {
+            editBalanceModal.style.display = 'none';
+        });
+        
+        // Chiqish
+        logoutBtn.addEventListener('click', function() {
+            window.location.href = '/';
+        });
+        
+        // Modal tashqarisiga bosilganda yopish
+        window.addEventListener('click', function(e) {
+            if (e.target === editBalanceModal) {
+                editBalanceModal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

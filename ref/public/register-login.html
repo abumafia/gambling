@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kirish / Ro'yxatdan o'tish</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            max-width: 90%;
+            padding: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #6a11cb;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #5a0db9;
+        }
+        
+        .switch-form {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .switch-form a {
+            color: #6a11cb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .message {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="form-title">Kirish</h1>
+        <div id="message" class="message"></div>
+        
+        <form id="login-form">
+            <div class="form-group">
+                <label for="username">Foydalanuvchi nomi</label>
+                <input type="text" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Parol</label>
+                <input type="password" id="password" required>
+            </div>
+            <div class="form-group">
+                <label for="referral">Referral kodi (ixtiyoriy)</label>
+                <input type="text" id="referral">
+            </div>
+            <button type="submit">Kirish</button>
+        </form>
+        
+        <div class="switch-form">
+            <p>Akkauntingiz yo'qmi? <a id="switch-link" href="#">Ro'yxatdan o'ting</a></p>
+        </div>
+    </div>
+
+    <script>
+        let isLogin = true;
+        const formTitle = document.getElementById('form-title');
+        const loginForm = document.getElementById('login-form');
+        const switchLink = document.getElementById('switch-link');
+        const messageDiv = document.getElementById('message');
+        const referralField = document.getElementById('referral');
+        
+        // URL dan referral kodini olish
+        const urlParams = new URLSearchParams(window.location.search);
+        const referralCode = urlParams.get('ref');
+        if (referralCode) {
+            referralField.value = referralCode;
+        }
+        
+        // Formani almashtirish
+        switchLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            isLogin = !isLogin;
+            
+            if (isLogin) {
+                formTitle.textContent = 'Kirish';
+                switchLink.textContent = 'Ro\'yxatdan o\'ting';
+                loginForm.querySelector('button').textContent = 'Kirish';
+            } else {
+                formTitle.textContent = 'Ro\'yxatdan o\'tish';
+                switchLink.textContent = 'Kirish';
+                loginForm.querySelector('button').textContent = 'Ro\'yxatdan o\'tish';
+            }
+        });
+        
+        // Formani yuborish
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const referral = document.getElementById('referral').value;
+            
+            fetch('/api/user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password, referral })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Foydalanuvchi ma'lumotlarini saqlash
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    showMessage('Muvaffaqiyatli kirildi!', 'success');
+                    
+                    // Asosiy sahifaga yo'naltirish
+                    setTimeout(() => {
+                        window.location.href = '/index.html';
+                    }, 1000);
+                } else {
+                    showMessage('Xatolik: ' + data.error, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Xatolik:', error);
+                showMessage('Server xatosi', 'error');
+            });
+        });
+        
+        // Xabar ko'rsatish funksiyasi
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Agar oldin kirgan bo'lsa, asosiy sahifaga yo'naltirish
+        window.addEventListener('load', function() {
+            const user = localStorage.getItem('user');
+            if (user) {
+                window.location.href = '/index.html';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asosiy Sahifa - Premium Earn App</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome 7.1.0 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.1.0/css/all.min.css">
+    
+    <!-- AOS 2.3.4 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    
+    <!-- Custom CSS for advanced effects -->
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --dark-bg: #0a0a0a;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-light: #ffffff;
+            --text-dark: #333333;
+            --shadow-light: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --shadow-glow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .bg-dark { background-color: var(--dark-bg); }
+        .bg-glass { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); }
+        .text-gradient-primary { background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .text-gradient-secondary { background: var(--secondary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .text-gradient-success { background: var(--success-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .text-gradient-warning { background: var(--warning-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .shadow-glow { box-shadow: var(--shadow-glow); }
+        .shadow-light { box-shadow: var(--shadow-light); }
+        .animate-pulse-slow { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .earn-btn::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: var(--secondary-gradient); transform: rotate(45deg); transition: all 0.5s; opacity: 0;
+        }
+        .earn-btn:hover::before { opacity: 1; transform: rotate(45deg) translate(20%, 20%); }
+        .timer { animation: countdown 1s infinite; }
+        @keyframes countdown { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .stat-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: var(--primary-gradient); transform: scaleX(0); transition: transform 0.3s ease;
+        }
+        .stat-card:hover::before { transform: scaleX(1); }
+    </style>
+</head>
+<body class="bg-dark text-text-light overflow-x-hidden relative">
+    <!-- Three.js Canvas -->
+    <canvas id="three-canvas" class="fixed top-0 left-0 w-full h-full z-[-2] opacity-30"></canvas>
+    
+    <!-- Particles.js -->
+    <div id="particles-js" class="fixed top-0 left-0 w-full h-full z-[-1]"></div>
+
+    <header id="header" class="fixed top-0 w-full bg-glass px-8 py-4 flex justify-between items-center z-50 transition-all duration-300">
+        <div class="balance text-xl font-bold text-gradient-primary animate-pulse-slow">
+            <i class="fas fa-wallet mr-2"></i> Balans: <span id="balance-amount">0</span> so'm
+        </div>
+        <div class="user-info flex items-center gap-4">
+            <span id="username" class="flex items-center gap-2"><i class="fas fa-user"></i> Foydalanuvchi</span>
+            <button class="btn px-4 py-2 bg-glass border border-glass-border rounded-full text-text-light cursor-pointer transition-all duration-300 backdrop-blur-md font-medium hover:scale-105 hover:shadow-glow hover:-translate-y-1" id="withdraw-btn">
+                <i class="fas fa-money-bill-wave mr-2"></i> Pul yechish
+            </button>
+            <button class="btn px-4 py-2 bg-glass border border-glass-border rounded-full text-text-light cursor-pointer transition-all duration-300 backdrop-blur-md font-medium hover:scale-105 hover:shadow-glow hover:-translate-y-1" id="history-btn">
+                <i class="fas fa-history mr-2"></i> Tarix
+            </button>
+            <button class="btn px-4 py-2 bg-glass border border-glass-border rounded-full text-text-light cursor-pointer transition-all duration-300 backdrop-blur-md font-medium hover:scale-105 hover:shadow-glow hover:-translate-y-1" id="referrals-btn">
+                <i class="fas fa-users mr-2"></i> Referrallar
+            </button>
+            <button class="btn px-4 py-2 bg-glass border border-glass-border rounded-full text-text-light cursor-pointer transition-all duration-300 backdrop-blur-md font-medium hover:scale-105 hover:shadow-glow hover:-translate-y-1" id="logout-btn">
+                <i class="fas fa-sign-out-alt mr-2"></i> Chiqish
+            </button>
+        </div>
+    </header>
+    
+    <main class="pt-32 px-8 max-w-6xl mx-auto">
+        <section class="earn-section text-center mb-16 p-8 bg-glass rounded-3xl" data-aos="zoom-in">
+            <h2 class="text-5xl font-extrabold text-gradient-secondary mb-4"><i class="fas fa-dollar-sign mr-3"></i> Pul ishlash</h2>
+            <p class="text-lg opacity-80 mb-8">Quyidagi tugmani bosing va reklamani tomosha qiling</p>
+            <button class="earn-btn relative bg-gradient-to-br from-purple-600 via-blue-500 to-indigo-600 text-text-light border-none rounded-full w-52 h-52 text-2xl font-bold cursor-pointer shadow-light transition-all duration-500 mx-auto mb-5 overflow-hidden hover:scale-110 hover:rotate-5" id="earn-btn">
+                <i class="fas fa-play-circle text-6xl block mb-2"></i> ISHLA
+            </button>
+            <p class="text-lg opacity-80"><i class="fas fa-star mr-2"></i> Har bir reklama uchun siz 50 so'm olasiz</p>
+        </section>
+        
+        <section class="referral-section bg-glass rounded-3xl p-8 mb-12" data-aos="fade-up" data-aos-delay="200">
+            <h2 class="text-4xl font-bold text-center mb-4 text-gradient-primary"><i class="fas fa-share-alt mr-3"></i> Do'stlaringizni taklif qiling</h2>
+            <p class="text-center opacity-90 mb-6">Har bir taklif qilgan do'stingiz uchun 100 so'm bonus oling</p>
+            <div class="referral-link flex mb-6 rounded-full overflow-hidden bg-glass border border-glass-border">
+                <input type="text" id="referral-link-input" readonly class="flex-1 p-4 border-none bg-transparent text-text-light text-base" placeholder="Referral havolangiz yuklanmoqda...">
+                <button class="copy-btn px-8 py-4 bg-gradient-to-br from-purple-600 to-blue-600 text-text-light border-none font-semibold transition-all duration-300 hover:scale-105 hover:shadow-glow" id="copy-btn">Nusxalash</button>
+            </div>
+            
+            <div class="stats grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="stat-card bg-glass rounded-2xl p-6 text-center border border-glass-border transition-all duration-300 relative overflow-hidden hover:-translate-y-2 hover:shadow-light" data-aos="flip-left">
+                    <div class="text-lg opacity-80 mb-2"><i class="fas fa-user-plus mr-2"></i> Taklif qilinganlar</div>
+                    <div class="stat-value text-4xl font-extrabold text-gradient-success" id="referrals-count">0</div>
+                </div>
+                <div class="stat-card bg-glass rounded-2xl p-6 text-center border border-glass-border transition-all duration-300 relative overflow-hidden hover:-translate-y-2 hover:shadow-light" data-aos="flip-right">
+                    <div class="text-lg opacity-80 mb-2"><i class="fas fa-coins mr-2"></i> Referral daromad</div>
+                    <div class="stat-value text-4xl font-extrabold text-gradient-success" id="referral-earnings">0 so'm</div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Reklama modal oynasi -->
+    <div class="modal fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm z-50 flex justify-center items-center hidden" id="ad-modal">
+        <div class="modal-content bg-glass rounded-3xl w-11/12 max-w-2xl max-h-[90vh] overflow-y-auto p-8 shadow-light">
+            <div class="modal-header flex justify-between items-center mb-6 pb-4 border-b border-glass-border">
+                <h3 class="text-2xl font-bold"><i class="fas fa-ad mr-3"></i> Reklama</h3>
+                <button class="close-btn text-3xl cursor-pointer text-gray-400 hover:text-white transition-colors duration-300" id="close-ad-btn">&times;</button>
+            </div>
+            <div class="ad-container text-center p-8 bg-glass rounded-2xl border border-glass-border mb-6" id="ad-container">
+                <div class="ad-title text-2xl font-bold text-gradient-warning mb-4" id="ad-title"></div>
+                <div class="ad-description mb-6 text-gray-300 opacity-90" id="ad-description"></div>
+                <div id="ad-media" class="mb-6"></div>
+                <div class="timer text-6xl font-extrabold text-gradient-success mb-6" id="timer">10</div>
+                <button class="submit-btn w-full py-4 bg-gradient-to-br from-purple-600 to-blue-600 text-text-light border-none rounded-xl text-lg font-semibold cursor-pointer transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 hover:shadow-glow" id="skip-ad-btn" disabled>O'tkazib yuborish</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pul yechish modal oynasi -->
+    <div class="modal fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm z-50 flex justify-center items-center hidden" id="withdraw-modal">
+        <div class="modal-content bg-glass rounded-3xl w-11/12 max-w-md max-h-[90vh] overflow-y-auto p-8 shadow-light">
+            <div class="modal-header flex justify-between items-center mb-6 pb-4 border-b border-glass-border">
+                <h3 class="text-2xl font-bold"><i class="fas fa-credit-card mr-3"></i> Pul yechish</h3>
+                <button class="close-btn text-3xl cursor-pointer text-gray-400 hover:text-white transition-colors duration-300" id="close-withdraw-btn">&times;</button>
+            </div>
+            <form id="withdraw-form">
+                <div class="form-group mb-6">
+                    <label for="card-number" class="block mb-2 font-medium text-text-light"><i class="fas fa-credit-card mr-2"></i> Karta raqami</label>
+                    <input type="text" id="card-number" placeholder="8600 1234 5678 9012" required class="w-full p-4 border border-glass-border rounded-xl bg-glass text-text-light text-base focus:outline-none focus:border-purple-500 focus:shadow-glow transition-all duration-300">
+                </div>
+                <div class="form-group mb-6">
+                    <label for="card-holder" class="block mb-2 font-medium text-text-light"><i class="fas fa-user mr-2"></i> Karta egasi ismi</label>
+                    <input type="text" id="card-holder" placeholder="ALIYEV ALIJON" required class="w-full p-4 border border-glass-border rounded-xl bg-glass text-text-light text-base focus:outline-none focus:border-purple-500 focus:shadow-glow transition-all duration-300">
+                </div>
+                <div class="form-group mb-6">
+                    <label for="withdraw-amount" class="block mb-2 font-medium text-text-light"><i class="fas fa-money-bill mr-2"></i> Yechmoqchi bo'lgan summa (minimal 5000 so'm)</label>
+                    <input type="number" id="withdraw-amount" min="5000" required class="w-full p-4 border border-glass-border rounded-xl bg-glass text-text-light text-base focus:outline-none focus:border-purple-500 focus:shadow-glow transition-all duration-300">
+                </div>
+                <button type="submit" class="submit-btn w-full py-4 bg-gradient-to-br from-purple-600 to-blue-600 text-text-light border-none rounded-xl text-lg font-semibold cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-glow hover:-translate-y-1">So'rov yuborish</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Tarix modal oynasi -->
+    <div class="modal fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm z-50 flex justify-center items-center hidden" id="history-modal">
+        <div class="modal-content bg-glass rounded-3xl w-11/12 max-w-4xl max-h-[90vh] overflow-y-auto p-8 shadow-light">
+            <div class="modal-header flex justify-between items-center mb-6 pb-4 border-b border-glass-border">
+                <h3 class="text-2xl font-bold"><i class="fas fa-history mr-3"></i> Pul yechish tarixi</h3>
+                <button class="close-btn text-3xl cursor-pointer text-gray-400 hover:text-white transition-colors duration-300" id="close-history-btn">&times;</button>
+            </div>
+            <div id="history-content">
+                <table class="history-table w-full border-collapse bg-glass rounded-xl overflow-hidden">
+                    <thead>
+                        <tr class="bg-gradient-to-r from-purple-600 to-blue-600">
+                            <th class="p-4 text-left font-semibold text-white">Sana</th>
+                            <th class="p-4 text-left font-semibold text-white">Summa</th>
+                            <th class="p-4 text-left font-semibold text-white">Holat</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body" class="divide-y divide-glass-border">
+                        <!-- Tarix ma'lumotlari JavaScript orqali to'ldiriladi -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Referrallar modal oynasi -->
+    <div class="modal fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm z-50 flex justify-center items-center hidden" id="referrals-modal">
+        <div class="modal-content bg-glass rounded-3xl w-11/12 max-w-4xl max-h-[90vh] overflow-y-auto p-8 shadow-light">
+            <div class="modal-header flex justify-between items-center mb-6 pb-4 border-b border-glass-border">
+                <h3 class="text-2xl font-bold"><i class="fas fa-users mr-3"></i> Taklif qilingan do'stlar</h3>
+                <button class="close-btn text-3xl cursor-pointer text-gray-400 hover:text-white transition-colors duration-300" id="close-referrals-btn">&times;</button>
+            </div>
+            <div id="referrals-content">
+                <table class="history-table w-full border-collapse bg-glass rounded-xl overflow-hidden">
+                    <thead>
+                        <tr class="bg-gradient-to-r from-purple-600 to-blue-600">
+                            <th class="p-4 text-left font-semibold text-white">Foydalanuvchi nomi</th>
+                            <th class="p-4 text-left font-semibold text-white">Sana</th>
+                        </tr>
+                    </thead>
+                    <tbody id="referrals-table-body" class="divide-y divide-glass-border">
+                        <!-- Referrallar ma'lumotlari JavaScript orqali to'ldiriladi -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <!-- Three.js 0.180.0 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.180.0/three.min.js"></script>
+    
+    <!-- GSAP 3.13.0 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+    
+    <!-- Particles.js 2.0.0 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    
+    <!-- AOS 2.3.4 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+    <script>
+        // Foydalanuvchi ma'lumotlari
+        let user = null;
+        
+        // DOM elementlari
+        const balanceAmount = document.getElementById('balance-amount');
+        const usernameSpan = document.getElementById('username');
+        const earnBtn = document.getElementById('earn-btn');
+        const referralLinkInput = document.getElementById('referral-link-input');
+        const copyBtn = document.getElementById('copy-btn');
+        const referralsCount = document.getElementById('referrals-count');
+        const referralEarnings = document.getElementById('referral-earnings');
+        
+        // Modal oynalari
+        const adModal = document.getElementById('ad-modal');
+        const withdrawModal = document.getElementById('withdraw-modal');
+        const historyModal = document.getElementById('history-modal');
+        const referralsModal = document.getElementById('referrals-modal');
+        
+        // Tugmalar
+        const withdrawBtn = document.getElementById('withdraw-btn');
+        const historyBtn = document.getElementById('history-btn');
+        const referralsBtn = document.getElementById('referrals-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        
+        // Reklama elementlari
+        const adTitle = document.getElementById('ad-title');
+        const adDescription = document.getElementById('ad-description');
+        const adMedia = document.getElementById('ad-media');
+        const timer = document.getElementById('timer');
+        const skipAdBtn = document.getElementById('skip-ad-btn');
+        const closeAdBtn = document.getElementById('close-ad-btn');
+        
+        // Pul yechish elementlari
+        const closeWithdrawBtn = document.getElementById('close-withdraw-btn');
+        const withdrawForm = document.getElementById('withdraw-form');
+        
+        // Tarix elementlari
+        const closeHistoryBtn = document.getElementById('close-history-btn');
+        const historyTableBody = document.getElementById('history-table-body');
+        
+        // Referrallar elementlari
+        const closeReferralsBtn = document.getElementById('close-referrals-btn');
+        const referralsTableBody = document.getElementById('referrals-table-body');
+
+        // Three.js Scene Setup
+        let scene, camera, renderer, geometry, material, mesh;
+        function initThreeJS() {
+            const canvas = document.getElementById('three-canvas');
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
+            material = new THREE.MeshBasicMaterial({ color: 0x667eea, wireframe: true });
+            mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+
+            camera.position.z = 50;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                mesh.rotation.x += 0.005;
+                mesh.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        // Particles.js Setup
+        function initParticles() {
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: '#667eea' },
+                    shape: { type: 'circle' },
+                    opacity: { value: 0.5, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: { enable: true, distance: 150, color: '#667eea', opacity: 0.4, width: 1 },
+                    move: { enable: true, speed: 2, direction: 'none', random: false, straight: false, out_mode: 'out', bounce: false }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' }, resize: true },
+                    modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
+                },
+                retina_detect: true
+            });
+        }
+
+        // GSAP Animations
+        function initGSAP() {
+            gsap.from('.earn-section', { duration: 1, y: 100, opacity: 0, ease: 'back.out(1.7)' });
+            gsap.from('.stat-card', { duration: 0.8, y: 50, opacity: 0, stagger: 0.2, ease: 'power3.out' });
+
+            // Header scroll effect
+            let lastScroll = 0;
+            window.addEventListener('scroll', () => {
+                const currentScroll = window.pageYOffset;
+                if (currentScroll > lastScroll && currentScroll > 100) {
+                    gsap.to('header', { duration: 0.3, y: -100, ease: 'power2.out' });
+                } else {
+                    gsap.to('header', { duration: 0.3, y: 0, ease: 'power2.out' });
+                }
+                lastScroll = currentScroll;
+            });
+
+            // Button hover effects
+            gsap.utils.toArray('.btn').forEach(btn => {
+                btn.addEventListener('mouseenter', () => gsap.to(btn, { duration: 0.3, scale: 1.05, y: -2, ease: 'power2.out' }));
+                btn.addEventListener('mouseleave', () => gsap.to(btn, { duration: 0.3, scale: 1, y: 0, ease: 'power2.out' }));
+            });
+        }
+
+        // AOS Init
+        AOS.init({ duration: 1000, once: true });
+
+        // Sahifa yuklanganda
+        window.addEventListener('load', function() {
+            initThreeJS();
+            initParticles();
+            initGSAP();
+
+            // Foydalanuvchi ma'lumotlarini tekshirish
+            const userData = localStorage.getItem('user');
+            if (!userData) {
+                window.location.href = '/';
+                return;
+            }
+            
+            user = JSON.parse(userData);
+            updateUserInfo();
+            loadReferrals();
+            loadWithdrawalHistory();
+        });
+        
+        // Foydalanuvchi ma'lumotlarini yangilash
+        function updateUserInfo() {
+            gsap.to(balanceAmount, { duration: 0.5, scale: 1.2, yoyo: true, repeat: 1 });
+            balanceAmount.textContent = user.balance;
+            usernameSpan.innerHTML = `<i class="fas fa-user mr-2"></i> ${user.username}`;
+            
+            // Referral havolasini yaratish
+            const referralLink = `${window.location.origin}/?ref=${user.referralCode}`;
+            referralLinkInput.value = referralLink;
+            
+            // Foydalanuvchi ma'lumotlarini serverdan yangilash
+            fetch(`/api/user/${user.id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.id) {
+                        user = data;
+                        localStorage.setItem('user', JSON.stringify(user));
+                        balanceAmount.textContent = user.balance;
+                    }
+                })
+                .catch(error => console.error('Xatolik:', error));
+        }
+        
+        // Reklama ko'rish
+        earnBtn.addEventListener('click', function() {
+            gsap.to(earnBtn, { duration: 0.3, scale: 0.95, rotation: 360, ease: 'back.inOut(1.7)' });
+            earnBtn.disabled = true;
+            
+            fetch('/api/watch-ad', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: user.id })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Reklamani ko'rsatish
+                    showAd(data.ad);
+                } else {
+                    alert('Xatolik: ' + data.error);
+                    earnBtn.disabled = false;
+                    gsap.to(earnBtn, { duration: 0.3, scale: 1, rotation: 0 });
+                }
+            })
+            .catch(error => {
+                console.error('Xatolik:', error);
+                alert('Server xatosi');
+                earnBtn.disabled = false;
+                gsap.to(earnBtn, { duration: 0.3, scale: 1, rotation: 0 });
+            });
+        });
+        
+        // Reklamani ko'rsatish
+        function showAd(ad) {
+            gsap.from('.modal-content', { duration: 0.5, scale: 0.8, rotation: -10, ease: 'back.out(1.7)' });
+            adTitle.textContent = ad.title;
+            adDescription.textContent = ad.description;
+            
+            // Media kontentni tozalash
+            adMedia.innerHTML = '';
+            
+            if (ad.type === 'image') {
+                const img = document.createElement('img');
+                img.src = ad.image;
+                img.alt = ad.title;
+                img.className = 'ad-media max-w-full max-h-80 mx-auto block rounded-xl shadow-light mb-6';
+                adMedia.appendChild(img);
+                gsap.from(img, { duration: 0.5, scale: 0, opacity: 0, ease: 'back.out(1.7)' });
+            } else if (ad.type === 'video') {
+                const video = document.createElement('video');
+                video.src = ad.video;
+                video.controls = false;
+                video.autoplay = true;
+                video.className = 'ad-media max-w-full max-h-80 mx-auto block rounded-xl shadow-light mb-6';
+                adMedia.appendChild(video);
+                gsap.from(video, { duration: 0.5, scale: 0, opacity: 0, ease: 'back.out(1.7)' });
+            }
+            
+            // Taymerni boshlash
+            let timeLeft = 10;
+            timer.textContent = timeLeft;
+            
+            const countdown = setInterval(() => {
+                timeLeft--;
+                timer.textContent = timeLeft;
+                gsap.to(timer, { duration: 0.2, scale: 1.1, yoyo: true, repeat: 1 });
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    skipAdBtn.disabled = false;
+                    skipAdBtn.innerHTML = '<i class="fas fa-times mr-2"></i> Yopish';
+                    
+                    // Balansni yangilash
+                    user.balance += 50;
+                    updateUserInfo();
+                }
+            }, 1000);
+            
+            // Reklama modal oynasini ko'rsatish
+            adModal.classList.remove('hidden');
+            adModal.classList.add('flex');
+            
+            // Reklamani yopish
+            skipAdBtn.onclick = function() {
+                if (timeLeft > 0) return; // Taymer tugaguncha yopish mumkin emas
+                
+                clearInterval(countdown);
+                gsap.to('.modal-content', { duration: 0.3, scale: 0.8, rotation: 10, ease: 'back.in(1.7)' });
+                setTimeout(() => { 
+                    adModal.classList.add('hidden');
+                    adModal.classList.remove('flex');
+                }, 300);
+                earnBtn.disabled = false;
+                gsap.to(earnBtn, { duration: 0.3, scale: 1, rotation: 0 });
+            };
+            
+            closeAdBtn.onclick = function() {
+                if (timeLeft > 0) return; // Taymer tugaguncha yopish mumkin emas
+                
+                clearInterval(countdown);
+                gsap.to('.modal-content', { duration: 0.3, scale: 0.8, rotation: 10, ease: 'back.in(1.7)' });
+                setTimeout(() => { 
+                    adModal.classList.add('hidden');
+                    adModal.classList.remove('flex');
+                }, 300);
+                earnBtn.disabled = false;
+                gsap.to(earnBtn, { duration: 0.3, scale: 1, rotation: 0 });
+            };
+        }
+        
+        // Referral havolasini nusxalash
+        copyBtn.addEventListener('click', function() {
+            referralLinkInput.select();
+            document.execCommand('copy');
+            gsap.to(copyBtn, { duration: 0.3, scale: 1.2, yoyo: true, repeat: 1 });
+            alert('Havola nusxalandi!');
+        });
+        
+        // Referrallarni yuklash
+        function loadReferrals() {
+            fetch(`/api/admin/users`)
+                .then(response => response.json())
+                .then(users => {
+                    const myReferrals = users.filter(u => u.referredBy === user.referralCode);
+                    referralsCount.textContent = myReferrals.length;
+                    referralEarnings.textContent = (myReferrals.length * 100) + ' so\'m';
+                    
+                    gsap.from([referralsCount, referralEarnings], { duration: 0.8, scale: 0, opacity: 0, stagger: 0.2, ease: 'back.out(1.7)' });
+                    
+                    // Referrallar jadvalini to'ldirish
+                    referralsTableBody.innerHTML = '';
+                    myReferrals.forEach(ref => {
+                        const row = document.createElement('tr');
+                        row.className = 'hover:bg-white hover:bg-opacity-5 transition-all duration-200 transform hover:scale-[1.01]';
+                        row.innerHTML = `
+                            <td class="p-4">${ref.username}</td>
+                            <td class="p-4">${new Date(ref.createdAt).toLocaleDateString()}</td>
+                        `;
+                        referralsTableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Xatolik:', error));
+        }
+        
+        // Pul yechish so'rovini yuborish
+        withdrawForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const cardNumber = document.getElementById('card-number').value;
+            const cardHolder = document.getElementById('card-holder').value;
+            const amount = document.getElementById('withdraw-amount').value;
+            
+            gsap.to('.submit-btn', { duration: 0.3, scale: 0.95 });
+            
+            fetch('/api/withdraw', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: user.id,
+                    cardNumber,
+                    cardHolder,
+                    amount
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                gsap.to('.submit-btn', { duration: 0.3, scale: 1 });
+                if (data.success) {
+                    alert('So\'rov muvaffaqiyatli yuborildi!');
+                    withdrawModal.classList.add('hidden');
+                    withdrawModal.classList.remove('flex');
+                    withdrawForm.reset();
+                    loadWithdrawalHistory();
+                } else {
+                    alert('Xatolik: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Xatolik:', error);
+                alert('Server xatosi');
+                gsap.to('.submit-btn', { duration: 0.3, scale: 1 });
+            });
+        });
+        
+        // Pul yechish tarixini yuklash
+        function loadWithdrawalHistory() {
+            fetch(`/api/admin/withdrawals`)
+                .then(response => response.json())
+                .then(withdrawals => {
+                    const myWithdrawals = withdrawals.filter(w => w.userId === user.id);
+                    
+                    // Tarix jadvalini to'ldirish
+                    historyTableBody.innerHTML = '';
+                    myWithdrawals.forEach(w => {
+                        const row = document.createElement('tr');
+                        row.className = 'hover:bg-white hover:bg-opacity-5 transition-all duration-200 transform hover:scale-[1.01]';
+                        row.innerHTML = `
+                            <td class="p-4">${new Date(w.createdAt).toLocaleDateString()}</td>
+                            <td class="p-4">${w.amount} so'm</td>
+                            <td class="p-4 status-${w.status}">${getStatusText(w.status)}</td>
+                        `;
+                        historyTableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Xatolik:', error));
+        }
+        
+        // Status matnini olish
+        function getStatusText(status) {
+            switch(status) {
+                case 'pending': return 'Kutilmoqda';
+                case 'approved': return 'Tasdiqlangan';
+                case 'rejected': return 'Rad etilgan';
+                default: return status;
+            }
+        }
+        
+        // Modal oynalarni ochish/yopish
+        withdrawBtn.addEventListener('click', function() {
+            gsap.from('.modal-content', { duration: 0.5, scale: 0.8, rotation: -5, ease: 'back.out(1.7)' });
+            withdrawModal.classList.remove('hidden');
+            withdrawModal.classList.add('flex');
+        });
+        
+        historyBtn.addEventListener('click', function() {
+            gsap.from('.modal-content', { duration: 0.5, scale: 0.8, rotation: -5, ease: 'back.out(1.7)' });
+            historyModal.classList.remove('hidden');
+            historyModal.classList.add('flex');
+        });
+        
+        referralsBtn.addEventListener('click', function() {
+            gsap.from('.modal-content', { duration: 0.5, scale: 0.8, rotation: -5, ease: 'back.out(1.7)' });
+            referralsModal.classList.remove('hidden');
+            referralsModal.classList.add('flex');
+        });
+        
+        closeWithdrawBtn.addEventListener('click', function() {
+            gsap.to('.modal-content', { duration: 0.3, scale: 0.8, rotation: 5, ease: 'back.in(1.7)' });
+            setTimeout(() => { 
+                withdrawModal.classList.add('hidden');
+                withdrawModal.classList.remove('flex');
+            }, 300);
+        });
+        
+        closeHistoryBtn.addEventListener('click', function() {
+            gsap.to('.modal-content', { duration: 0.3, scale: 0.8, rotation: 5, ease: 'back.in(1.7)' });
+            setTimeout(() => { 
+                historyModal.classList.add('hidden');
+                historyModal.classList.remove('flex');
+            }, 300);
+        });
+        
+        closeReferralsBtn.addEventListener('click', function() {
+            gsap.to('.modal-content', { duration: 0.3, scale: 0.8, rotation: 5, ease: 'back.in(1.7)' });
+            setTimeout(() => { 
+                referralsModal.classList.add('hidden');
+                referralsModal.classList.remove('flex');
+            }, 300);
+        });
+        
+        // Chiqish
+        logoutBtn.addEventListener('click', function() {
+            gsap.to('body', { duration: 1, opacity: 0, scale: 0.8, ease: 'power2.inOut' });
+            setTimeout(() => {
+                localStorage.removeItem('user');
+                window.location.href = '/';
+            }, 1000);
+        });
+        
+        // Modal tashqarisiga bosilganda yopish
+        window.addEventListener('click', function(e) {
+            if (e.target === adModal) {
+                if (skipAdBtn.disabled) return; // Taymer tugaguncha yopish mumkin emas
+                gsap.to('.modal-content', { duration: 0.3, scale: 0.8, rotation: 10, ease: 'back.in(1.7)' });
+                setTimeout(() => { 
+                    adModal.classList.add('hidden');
+                    adModal.classList.remove('flex');
+                }, 300);
+                earnBtn.disabled = false;
+                gsap.to(earnBtn, { duration: 0.3, scale: 1, rotation: 0 });
+            }
+            if (e.target === withdrawModal) {
+                gsap.to('.modal-content', { duration: 0.3, scale: 0.8, rotation: 5, ease: 'back.in(1.7)' });
+                setTimeout(() => { 
+                    withdrawModal.classList.add('hidden');
+                    withdrawModal.classList.remove('flex');
+                }, 300);
+            }
+            if (e.target === historyModal) {
+                gsap.to('.modal-content', { duration: 0.3, scale: 0.8, rotation: 5, ease: 'back.in(1.7)' });
+                setTimeout(() => { 
+                    historyModal.classList.add('hidden');
+                    historyModal.classList.remove('flex');
+                }, 300);
+            }
+            if (e.target === referralsModal) {
+                gsap.to('.modal-content', { duration: 0.3, scale: 0.8, rotation: 5, ease: 'back.in(1.7)' });
+                setTimeout(() => { 
+                    referralsModal.classList.add('hidden');
+                    referralsModal.classList.remove('flex');
+                }, 300);
+            }
+        });
+
+        // Input masking for card number
+        document.getElementById('card-number').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
+    </script>
+</body>
+</html>
