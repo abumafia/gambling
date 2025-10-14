@@ -433,7 +433,7 @@
             }
 
             try {
-                const response = await fetch('/api/user/profile', {
+                const response = await fetch('https://gambling-h78m.onrender.com/api/user/profile', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -512,7 +512,7 @@
         // Load users
         async function loadUsers() {
             try {
-                const response = await fetch('/api/admin/users', {
+                const response = await fetch('https://gambling-h78m.onrender.com/api/admin/users', {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'application/json'
@@ -655,7 +655,7 @@
             const demoBalance = parseFloat(document.getElementById('demoBalance').value);
 
             try {
-                const response = await fetch(`/api/admin/users/${editingUserId}/balance`, {
+                const response = await fetch(`https://gambling-h78m.onrender.com/api/admin/users/${editingUserId}/balance`, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -734,7 +734,7 @@ async function verifyUser(userId) {
     if (!confirm("Are you sure you want to verify this user?")) return;
 
     try {
-        const res = await fetch(`/api/admin/verify-user/${userId}`, {
+        const res = await fetch(`https://gambling-h78m.onrender.com/api/admin/verify-user/${userId}`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -760,7 +760,7 @@ async function approveWithdrawal(withdrawalId) {
     if (!confirm("Approve this withdrawal request?")) return;
 
     try {
-        const res = await fetch(`/api/admin/approve-withdrawal/${withdrawalId}`, {
+        const res = await fetch(`https://gambling-h78m.onrender.com/api/admin/approve-withdrawal/${withdrawalId}`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -785,7 +785,7 @@ async function approveWithdrawal(withdrawalId) {
         // Load transactions
         async function loadTransactions() {
             try {
-                const response = await fetch('/api/admin/transactions', {
+                const response = await fetch('https://gambling-h78m.onrender.com/api/admin/transactions', {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'application/json'
@@ -856,7 +856,7 @@ async function approveWithdrawal(withdrawalId) {
         // Load games
         async function loadGames() {
             try {
-                const response = await fetch('/api/games');
+                const response = await fetch('https://gambling-h78m.onrender.com/api/games');
                 const result = await response.json();
                 
                 if (result.success) {
@@ -922,7 +922,7 @@ async function approveWithdrawal(withdrawalId) {
             const code = document.getElementById('gameCode').value;
 
             try {
-                const response = await fetch('/api/admin/games', {
+                const response = await fetch('https://gambling-h78m.onrender.com/api/admin/games', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -1008,7 +1008,7 @@ async function approveWithdrawal(withdrawalId) {
         async function updateWithdrawalStatus(withdrawalId, status) {
             if (confirm(`Are you sure you want to ${status} this withdrawal?`)) {
                 try {
-                    const response = await fetch(`/api/admin/withdrawals/${withdrawalId}/status`, {
+                    const response = await fetch(`https://gambling-h78m.onrender.com/api/admin/withdrawals/${withdrawalId}/status`, {
                         method: 'PUT',
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`,
