@@ -134,7 +134,7 @@
     <div class="glass-effect rounded-2xl p-8 w-full max-w-4xl">
         <div class="text-center mb-8">
             <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">LuckyBet</h1>
-            <p class="text-gray-300 mt-2">Create your account or login to start playing</p>
+            <p class="text-gray-300 mt-2">O\'yinni boshlash uchun hisob yarating yoki tizimga kiring!</p>
             <div class="mt-4">
                 <button class="btn-admin" onclick="showAdminLogin()">
                     <i class="fas fa-user-shield mr-2"></i>Admin Login
@@ -145,36 +145,36 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Login Form -->
             <div>
-                <h2 class="text-xl font-bold mb-6">User Login</h2>
+                <h2 class="text-xl font-bold mb-6">Foydalanuvchi kirish</h2>
                 <form id="loginForm">
                     <div class="mb-4">
                         <label class="block text-sm mb-2">Email</label>
                         <input type="email" id="loginEmail" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
                     </div>
                     <div class="mb-6">
-                        <label class="block text-sm mb-2">Password</label>
+                        <label class="block text-sm mb-2">Parol</label>
                         <input type="password" id="loginPassword" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
                     </div>
-                    <button type="submit" class="btn-primary w-full">Login</button>
+                    <button type="submit" class="btn-primary w-full">Kirish</button>
                 </form>
             </div>
 
             <!-- Register Form -->
             <div>
-                <h2 class="text-xl font-bold mb-6">User Register</h2>
+                <h2 class="text-xl font-bold mb-6">Foydalanuvchi ro'yxatdan o'tkazish</h2>
                 <form id="registerForm">
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label class="block text-sm mb-2">First Name</label>
+                            <label class="block text-sm mb-2">Ismi</label>
                             <input type="text" id="firstName" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
                         </div>
                         <div>
-                            <label class="block text-sm mb-2">Last Name</label>
+                            <label class="block text-sm mb-2">Familiyasi</label>
                             <input type="text" id="lastName" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
                         </div>
                     </div>
                     <div class="mb-4">
-                        <label class="block text-sm mb-2">Phone</label>
+                        <label class="block text-sm mb-2">Telefon raqami</label>
                         <input type="tel" id="phone" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
                     </div>
                     <div class="mb-4">
@@ -182,62 +182,62 @@
                         <input type="email" id="email" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
                     </div>
                     <div class="mb-4">
-                        <label class="block text-sm mb-2">Password</label>
+                        <label class="block text-sm mb-2">Parol</label>
                         <input type="password" id="password" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
                     </div>
 
                     <!-- Selfie Section -->
                     <div class="mb-6">
-                        <label class="block text-sm mb-2">Selfie Photo</label>
+                        <label class="block text-sm mb-2">Selfie Rasm (Yuz qiyofasi)</label>
                         <div class="flex flex-col space-y-4">
                             <button type="button" class="btn-secondary" onclick="openCamera('selfie')">
-                                <i class="fas fa-camera mr-2"></i> Take Selfie with Camera
+                                <i class="fas fa-camera mr-2"></i> Kamera bilan rasmga olish
                             </button>
                             <div class="photo-preview-container">
                                 <img id="selfiePreview" class="captured-image hidden">
                             </div>
                             <input type="file" id="selfieFile" accept="image/*" class="hidden" onchange="handleFileSelect(this, 'selfie')">
                             <button type="button" class="btn-secondary" onclick="document.getElementById('selfieFile').click()">
-                                <i class="fas fa-upload mr-2"></i> Upload Selfie
+                                <i class="fas fa-upload mr-2"></i> Qurilmadan rasm yuklash
                             </button>
                         </div>
                     </div>
 
                     <!-- ID Front Section -->
                     <div class="mb-6">
-                        <label class="block text-sm mb-2">ID Front Photo</label>
+                        <label class="block text-sm mb-2">ID karta oldi rasmi</label>
                         <div class="flex flex-col space-y-4">
                             <button type="button" class="btn-secondary" onclick="openCamera('idFront')">
-                                <i class="fas fa-camera mr-2"></i> Take ID Front Photo
+                                <i class="fas fa-camera mr-2"></i> Rasmga olish Kamera bilan
                             </button>
                             <div class="photo-preview-container">
                                 <img id="idFrontPreview" class="captured-image hidden">
                             </div>
                             <input type="file" id="idFrontFile" accept="image/*" class="hidden" onchange="handleFileSelect(this, 'idFront')">
                             <button type="button" class="btn-secondary" onclick="document.getElementById('idFrontFile').click()">
-                                <i class="fas fa-upload mr-2"></i> Upload ID Front
+                                <i class="fas fa-upload mr-2"></i> Qurilmadan yuklash
                             </button>
                         </div>
                     </div>
 
                     <!-- ID Back Section -->
                     <div class="mb-6">
-                        <label class="block text-sm mb-2">ID Back Photo</label>
+                        <label class="block text-sm mb-2">ID karta orqa qismi rasmi</label>
                         <div class="flex flex-col space-y-4">
                             <button type="button" class="btn-secondary" onclick="openCamera('idBack')">
-                                <i class="fas fa-camera mr-2"></i> Take ID Back Photo
+                                <i class="fas fa-camera mr-2"></i> Kamera bilan rasmga olish
                             </button>
                             <div class="photo-preview-container">
                                 <img id="idBackPreview" class="captured-image hidden">
                             </div>
                             <input type="file" id="idBackFile" accept="image/*" class="hidden" onchange="handleFileSelect(this, 'idBack')">
                             <button type="button" class="btn-secondary" onclick="document.getElementById('idBackFile').click()">
-                                <i class="fas fa-upload mr-2"></i> Upload ID Back
+                                <i class="fas fa-upload mr-2"></i> Qurilmadan rasmga olish
                             </button>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-primary w-full">Register</button>
+                    <button type="submit" class="btn-primary w-full">Ro'yxatdan o'tish</button>
                 </form>
             </div>
         </div>
@@ -249,10 +249,10 @@
             <video id="cameraVideo" autoplay playsinline></video>
             <div class="p-4 flex justify-between">
                 <button id="closeCamera" class="btn-secondary">
-                    <i class="fas fa-times mr-2"></i> Close
+                    <i class="fas fa-times mr-2"></i> Yopish
                 </button>
                 <button id="capturePhoto" class="btn-primary">
-                    <i class="fas fa-camera mr-2"></i> Capture
+                    <i class="fas fa-camera mr-2"></i> Rasmga olish
                 </button>
             </div>
         </div>
@@ -265,7 +265,7 @@
                 <h2 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
                     <i class="fas fa-user-shield mr-2"></i>Admin Login
                 </h2>
-                <p class="text-gray-300 mt-2">Access admin dashboard</p>
+                <p class="text-gray-300 mt-2">Admin panelga kirish ruxsati</p>
             </div>
             
             <form id="adminLoginForm">
@@ -274,17 +274,17 @@
                     <input type="email" id="adminEmail" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
                 </div>
                 <div class="mb-6">
-                    <label class="block text-sm mb-2">Password</label>
+                    <label class="block text-sm mb-2">Parol</label>
                     <input type="password" id="adminPassword" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
                 </div>
                 <div class="flex space-x-2">
-                    <button type="button" class="btn-secondary flex-1" onclick="closeAdminLogin()">Cancel</button>
-                    <button type="submit" class="btn-admin flex-1">Login as Admin</button>
+                    <button type="button" class="btn-secondary flex-1" onclick="closeAdminLogin()">Bekor qilish</button>
+                    <button type="submit" class="btn-admin flex-1">Admin sifatida tizimga kirish</button>
                 </div>
             </form>
             
             <div class="mt-6 p-4 bg-blue-900 bg-opacity-30 rounded-lg">
-                <h3 class="text-sm font-semibold mb-2">Default Admin Credentials:</h3>
+                <h3 class="text-sm font-semibold mb-2">Urinmang</h3>
                 <p class="text-xs text-gray-300">This is only for Admin</p>
             </div>
         </div>
