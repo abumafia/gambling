@@ -155,7 +155,7 @@
                     <i class="fas fa-chevron-down text-xs"></i>
                 </button>
                 <div id="userMenu" class="absolute right-0 mt-2 w-48 glass-effect rounded-lg shadow-lg hidden">
-                    <a href="/profile" class="block px-4 py-3 hover:bg-purple-800 rounded-t-lg">Profile</a>
+                    <a href="/profile" class="block px-4 py-3 hover:bg-purple-800 rounded-t-lg">Profil</a>
                     <a href="/" class="block px-4 py-3 hover:bg-purple-800">Main Site</a>
                     <button id="logoutBtn" class="block w-full text-left px-4 py-3 hover:bg-purple-800 rounded-b-lg">Logout</button>
                 </div>
@@ -170,7 +170,7 @@
             <div class="stats-card">
                 <div class="flex items-center justify-between">
                     <div>
-                        <div class="text-sm opacity-80">Total Users</div>
+                        <div class="text-sm opacity-80">Umumiy foydalanuvchilar</div>
                         <div class="text-2xl font-bold" id="totalUsers">0</div>
                     </div>
                     <i class="fas fa-users text-2xl opacity-70"></i>
@@ -179,8 +179,8 @@
             <div class="stats-card">
                 <div class="flex items-center justify-between">
                     <div>
-                        <div class="text-sm opacity-80">Total Balance</div>
-                        <div class="text-2xl font-bold" id="totalBalance">$0</div>
+                        <div class="text-sm opacity-80">Umumiy Balans</div>
+                        <div class="text-2xl font-bold" id="totalBalance">0sum</div>
                     </div>
                     <i class="fas fa-wallet text-2xl opacity-70"></i>
                 </div>
@@ -188,8 +188,8 @@
             <div class="stats-card">
                 <div class="flex items-center justify-between">
                     <div>
-                        <div class="text-sm opacity-80">Today's Profit</div>
-                        <div class="text-2xl font-bold" id="todayProfit">$0</div>
+                        <div class="text-sm opacity-80">Bugunlik foyda</div>
+                        <div class="text-2xl font-bold" id="todayProfit">0sum</div>
                     </div>
                     <i class="fas fa-chart-line text-2xl opacity-70"></i>
                 </div>
@@ -197,7 +197,7 @@
             <div class="stats-card">
                 <div class="flex items-center justify-between">
                     <div>
-                        <div class="text-sm opacity-80">Pending Withdrawals</div>
+                        <div class="text-sm opacity-80">Jarayondagi pul yechish so'rovlari</div>
                         <div class="text-2xl font-bold" id="pendingWithdrawals">0</div>
                     </div>
                     <i class="fas fa-clock text-2xl opacity-70"></i>
@@ -209,16 +209,16 @@
         <div class="glass-effect rounded-xl mb-6">
             <div class="flex border-b border-gray-700">
                 <button class="tab-active py-4 px-6 font-semibold" onclick="switchTab('users')">
-                    <i class="fas fa-users mr-2"></i>Users
+                    <i class="fas fa-users mr-2"></i>Foydalanuvchilar
                 </button>
                 <button class="py-4 px-6 font-semibold hover:bg-gray-800" onclick="switchTab('transactions')">
-                    <i class="fas fa-exchange-alt mr-2"></i>Transactions
+                    <i class="fas fa-exchange-alt mr-2"></i>O'tkazmalar
                 </button>
                 <button class="py-4 px-6 font-semibold hover:bg-gray-800" onclick="switchTab('games')">
-                    <i class="fas fa-gamepad mr-2"></i>Games
+                    <i class="fas fa-gamepad mr-2"></i>O'yinlar
                 </button>
                 <button class="py-4 px-6 font-semibold hover:bg-gray-800" onclick="switchTab('withdrawals')">
-                    <i class="fas fa-money-bill-wave mr-2"></i>Withdrawals
+                    <i class="fas fa-money-bill-wave mr-2"></i>Pul chiqarish so'rovlari
                 </button>
             </div>
         </div>
@@ -226,11 +226,11 @@
         <!-- Users Tab -->
         <div id="usersTab" class="tab-content">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">User Management</h2>
+                <h2 class="text-2xl font-bold">Foydalanuvchilarni boshqarish</h2>
                 <div class="flex space-x-4">
                     <input type="text" id="userSearch" placeholder="Search users..." class="bg-gray-800 rounded-lg py-2 px-4 w-64" onkeyup="searchUsers()">
                     <button class="btn-primary" onclick="refreshUsers()">
-                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                        <i class="fas fa-sync-alt mr-2"></i>Qayta yuklash
                     </button>
                 </div>
             </div>
@@ -251,7 +251,7 @@
                             <tr>
                                 <td colspan="5" class="py-8 text-center text-gray-400">
                                     <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto"></div>
-                                    <p class="mt-2">Loading users...</p>
+                                    <p class="mt-2">Foydalanuvchilar yuklanmoqda...</p>
                                 </td>
                             </tr>
                         </tbody>
@@ -263,17 +263,17 @@
         <!-- Transactions Tab -->
         <div id="transactionsTab" class="tab-content hidden">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">Transaction History</h2>
+                <h2 class="text-2xl font-bold">O'tkazmalar tarixi</h2>
                 <div class="flex space-x-4">
                     <select id="transactionFilter" class="bg-gray-800 rounded-lg py-2 px-4" onchange="filterTransactions()">
-                        <option value="all">All Transactions</option>
-                        <option value="deposit">Deposits</option>
-                        <option value="withdrawal">Withdrawals</option>
-                        <option value="game_win">Game Wins</option>
-                        <option value="game_loss">Game Losses</option>
+                        <option value="all">Barcha o'tkazmalar</option>
+                        <option value="deposit">Pul qo'shish so'rovlari</option>
+                        <option value="withdrawal">Pul yechish so'rovlari</option>
+                        <option value="game_win">Yutgan o'yinlar</option>
+                        <option value="game_loss">Yutqazilgan o'yinlar</option>
                     </select>
                     <button class="btn-primary" onclick="refreshTransactions()">
-                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                        <i class="fas fa-sync-alt mr-2"></i>Qayta yuklash
                     </button>
                 </div>
             </div>
@@ -283,7 +283,7 @@
                     <table class="w-full">
                         <thead>
                             <tr class="border-b border-gray-700">
-                                <th class="py-4 px-6 text-left">Date</th>
+                                <th class="py-4 px-6 text-left">Vaqti</th>
                                 <th class="py-4 px-6 text-left">User</th>
                                 <th class="py-4 px-6 text-left">Type</th>
                                 <th class="py-4 px-6 text-left">Amount</th>
@@ -294,7 +294,7 @@
                         <tbody id="transactionsTable">
                             <tr>
                                 <td colspan="6" class="py-8 text-center text-gray-400">
-                                    Loading transactions...
+                                    O'tkazmalar yuklanmoqda...
                                 </td>
                             </tr>
                         </tbody>
@@ -306,16 +306,16 @@
         <!-- Games Tab -->
         <div id="gamesTab" class="tab-content hidden">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">Game Management</h2>
+                <h2 class="text-2xl font-bold">O'yin boshqaruvi</h2>
                 <button class="btn-primary" onclick="showAddGameModal()">
-                    <i class="fas fa-plus mr-2"></i>Add New Game
+                    <i class="fas fa-plus mr-2"></i>Yangi o'yin qo'shish
                 </button>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="gamesContainer">
                 <div class="text-center py-8">
                     <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto"></div>
-                    <p class="mt-2">Loading games...</p>
+                    <p class="mt-2">O'yinlarni yuklash...</p>
                 </div>
             </div>
         </div>
@@ -323,9 +323,9 @@
         <!-- Withdrawals Tab -->
         <div id="withdrawalsTab" class="tab-content hidden">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">Withdrawal Requests</h2>
+                <h2 class="text-2xl font-bold">Pul yechish so'rovlari</h2>
                 <button class="btn-primary" onclick="refreshWithdrawals()">
-                    <i class="fas fa-sync-alt mr-2"></i>Refresh
+                    <i class="fas fa-sync-alt mr-2"></i>Qayta yuklash
                 </button>
             </div>
             
@@ -359,7 +359,7 @@
     <div id="editBalanceModal" class="modal">
         <div class="modal-content">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold">Edit User Balance</h3>
+                <h3 class="text-xl font-bold">Foydalanuvchi balansini tahrirlash</h3>
                 <button class="text-gray-400 hover:text-white" onclick="closeEditBalanceModal()">
                     <i class="fas fa-times text-xl"></i>
                 </button>
@@ -374,18 +374,18 @@
     <div id="addGameModal" class="modal">
         <div class="modal-content">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold">Add New Game</h3>
+                <h3 class="text-xl font-bold">Yangi o'yin qo'shish</h3>
                 <button class="text-gray-400 hover:text-white" onclick="closeAddGameModal()">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
             <form id="addGameForm">
                 <div class="mb-4">
-                    <label class="block text-sm mb-2">Game Name</label>
+                    <label class="block text-sm mb-2">O'yin nomi</label>
                     <input type="text" id="gameName" class="w-full bg-gray-800 rounded-lg py-2 px-4" required>
                 </div>
                 <div class="mb-6">
-                    <label class="block text-sm mb-2">Game Code</label>
+                    <label class="block text-sm mb-2">O'yin kodi</label>
                     <input type="text" id="gameCode" class="w-full bg-gray-800 rounded-lg py-2 px-4" required>
                     <p class="text-xs text-gray-400 mt-1">Unique identifier for the game</p>
                 </div>
@@ -534,7 +534,7 @@
                     <tr>
                         <td colspan="5" class="py-8 text-center text-red-400">
                             <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
-                            <p>Failed to load users</p>
+                            <p>Foydalanuvchilarni yuklashda xatolik</p>
                         </td>
                     </tr>
                 `;
@@ -548,7 +548,7 @@
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="5" class="py-8 text-center text-gray-400">
-                            No users found
+                            Foydalanuvchilar topilmadi
                         </td>
                     </tr>
                 `;
@@ -629,11 +629,11 @@
                     <div class="text-sm text-gray-400">${user.email}</div>
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm mb-2">Real Balance ($)</label>
+                    <label class="block text-sm mb-2">Real Balance (UZS)</label>
                     <input type="number" id="realBalance" class="w-full bg-gray-800 rounded-lg py-2 px-4" value="${user.balance}" step="0.01" min="0">
                 </div>
                 <div class="mb-6">
-                    <label class="block text-sm mb-2">Demo Balance ($)</label>
+                    <label class="block text-sm mb-2">Demo Balance (UZS)</label>
                     <input type="number" id="demoBalance" class="w-full bg-gray-800 rounded-lg py-2 px-4" value="${user.demoBalance}" step="0.01" min="0">
                 </div>
                 <div class="flex justify-end space-x-2">
@@ -697,13 +697,13 @@
                     ` : ''}
                     ${user.idFront ? `
                         <div>
-                            <label class="block text-sm mb-2 font-semibold">ID Front</label>
+                            <label class="block text-sm mb-2 font-semibold">ID OLDI</label>
                             <img src="/uploads/${user.idFront}" alt="ID Front" class="w-full rounded-lg border-2 border-purple-500">
                         </div>
                     ` : ''}
                     ${user.idBack ? `
                         <div class="col-span-2">
-                            <label class="block text-sm mb-2 font-semibold">ID Back</label>
+                            <label class="block text-sm mb-2 font-semibold">ID ORQA</label>
                             <img src="/uploads/${user.idBack}" alt="ID Back" class="w-full max-w-md rounded-lg border-2 border-purple-500">
                         </div>
                     ` : ''}
