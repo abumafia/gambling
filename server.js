@@ -6,8 +6,10 @@ const path = require('path');
 const multer = require('multer');
 const cors = require('cors');
 const fs = require('fs');
+const http = require('http'); // Added missing require
+const socketIo = require('socket.io');
 
-const app = express();
+const app = express(); // Moved app definition earlier
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = 'your_jwt_secret_key_change_in_production';
 
@@ -43,6 +45,7 @@ const UserSchema = new mongoose.Schema({
     promoCode: { type: String, unique: true },
     referredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     referralEarnings: { type: Number, default: 0 },
+    currentBet: { type: Number, default: 0 }, // Added for aviator tracking
     createdAt: { type: Date, default: Date.now }
 });
 
@@ -124,6 +127,207 @@ const authenticateToken = async (req, res, next) => {
         res.status(401).json({ error: 'Token yaroqsiz' });
     }
 };
+
+// Existing routes...
+app.get('/api/games', (req, res) => {
+  res.json({ success: true, games: [] }); // Update as needed
+});
+
+// New routes for games
+app.post('/api/games/chickenroad/play', authenticateToken, async (req, res) => {
+  const { betAmount, isDemo, score } = req.body; // Score from frontend
+  const multiplier = score / 100; // Example: based on survival distance
+  const profit = betAmount * multiplier;
+  const balanceField = isDemo ? 'demoBalance' : 'balance';
+  
+  // Update user balance
+  await User.findByIdAndUpdate(req.user._id, { $inc: { [balanceField]: profit } });
+  
+  // Save game history
+  await new GameHistory({
+    userId: req.user._id,
+    gameId: null, // Or find game ID
+    betAmount,
+    winAmount: profit > 0 ? betAmount * multiplier : 0,
+    result: profit > 0 ? 'win' : 'loss',
+    isDemo
+  }).save();
+  
+  // Save transaction
+  await new Transaction({
+    userId: req.user._id,
+    type: profit > 0 ? 'game_win' : 'game_loss',
+    amount: profit,
+    status: 'completed',
+    description: `Chicken Road - Multiplier: ${multiplier.toFixed(2)}x`
+  }).save();
+  
+  res.json({ success: true, profit, multiplier });
+});
+
+app.post('/api/games/aviator/bet', authenticateToken, async (req, res) => {
+  const { betAmount, isDemo } = req.body;
+  const balanceField = isDemo ? 'demoBalance' : 'balance';
+  const currentBalance = req.user[balanceField];
+  
+  if (betAmount > currentBalance) {
+    return res.status(400).json({ error: 'Not enough balance' });
+  }
+  
+  // Deduct bet
+  await User.findByIdAndUpdate(req.user._id, { 
+    $inc: { [balanceField]: -betAmount },
+    currentBet: betAmount 
+  });
+  
+  // Emit via socket
+  io.emit('aviator:bet', { user: `${req.user.firstName} ${req.user.lastName}`, bet: betAmount });
+  res.json({ success: true });
+});
+
+app.post('/api/games/aviator/cashout', authenticateToken, async (req, res) => {
+  const { multiplier } = req.body;
+  const betAmount = req.user.currentBet;
+  if (betAmount === 0) {
+    return res.status(400).json({ error: 'No active bet' });
+  }
+  
+  const isDemo = req.body.isDemo || false;
+  const balanceField = isDemo ? 'demoBalance' : 'balance';
+  const profit = betAmount * multiplier - betAmount;
+  
+  // Update balance and reset currentBet
+  await User.findByIdAndUpdate(req.user._id, { 
+    $inc: { [balanceField]: betAmount * multiplier },
+    currentBet: 0 
+  });
+  
+  // Save history and transaction (similar to chickenroad)
+  await new GameHistory({
+    userId: req.user._id,
+    gameId: null,
+    betAmount,
+    winAmount: betAmount * multiplier,
+    result: 'cashout',
+    isDemo
+  }).save();
+  
+  await new Transaction({
+    userId: req.user._id,
+    type: 'game_win',
+    amount: profit,
+    status: 'completed',
+    description: `Aviator Cashout - ${multiplier.toFixed(2)}x`
+  }).save();
+  
+  res.json({ success: true, profit });
+});
+
+app.post('/api/games/baccarat/play', authenticateToken, async (req, res) => {
+  const { betAmount, choice, isDemo } = req.body;
+  // Generate hands, determine winner
+  const playerHand = (Math.floor(Math.random() * 10) + Math.floor(Math.random() * 10)) % 10;
+  const bankerHand = (Math.floor(Math.random() * 10) + Math.floor(Math.random() * 10)) % 10;
+  const win = (choice === 'player' && playerHand > bankerHand) || 
+              (choice === 'banker' && bankerHand > playerHand) || 
+              (choice === 'tie' && playerHand === bankerHand);
+  const payout = choice === 'tie' ? 8 : 1.95;
+  const profit = win ? betAmount * payout : -betAmount;
+  const balanceField = isDemo ? 'demoBalance' : 'balance';
+  
+  await User.findByIdAndUpdate(req.user._id, { $inc: { [balanceField]: profit } });
+  
+  await new GameHistory({
+    userId: req.user._id,
+    gameId: null,
+    betAmount,
+    winAmount: win ? betAmount * payout : 0,
+    result: win ? 'win' : 'loss',
+    isDemo
+  }).save();
+  
+  await new Transaction({
+    userId: req.user._id,
+    type: win ? 'game_win' : 'game_loss',
+    amount: profit,
+    status: 'completed',
+    description: `Baccarat - Choice: ${choice}, Player: ${playerHand}, Banker: ${bankerHand}`
+  }).save();
+  
+  res.json({ success: true, playerHand, bankerHand, win, profit });
+});
+
+app.post('/api/games/sicbo/play', authenticateToken, async (req, res) => {
+  const { betAmount, choice, isDemo } = req.body;
+  const d1 = Math.floor(Math.random() * 6) + 1;
+  const d2 = Math.floor(Math.random() * 6) + 1;
+  const d3 = Math.floor(Math.random() * 6) + 1;
+  const total = d1 + d2 + d3;
+  const win = (choice === 'big' && total > 10 && total <= 17) || (choice === 'small' && total >= 4 && total < 11);
+  const profit = win ? betAmount : -betAmount;
+  const balanceField = isDemo ? 'demoBalance' : 'balance';
+  
+  await User.findByIdAndUpdate(req.user._id, { $inc: { [balanceField]: profit } });
+  
+  await new GameHistory({
+    userId: req.user._id,
+    gameId: null,
+    betAmount,
+    winAmount: win ? betAmount : 0,
+    result: win ? 'win' : 'loss',
+    isDemo
+  }).save();
+  
+  await new Transaction({
+    userId: req.user._id,
+    type: win ? 'game_win' : 'game_loss',
+    amount: profit,
+    status: 'completed',
+    description: `Sic Bo - Total: ${total}, Choice: ${choice}`
+  }).save();
+  
+  res.json({ success: true, dice: [d1, d2, d3], total, win, profit });
+});
+
+// Create server after routes
+const server = http.createServer(app);
+const io = socketIo(server, { cors: { origin: '*' } });
+
+// WebSocket for Aviator real-time
+let aviatorRound = { active: false, crashPoint: 0, bets: [], participants: 0 };
+
+io.on('connection', (socket) => {
+  socket.on('aviator:join', () => {
+    socket.emit('aviator:state', aviatorRound);
+  });
+
+  socket.on('aviator:bet', (data) => {
+    aviatorRound.bets.push(data);
+    aviatorRound.participants++;
+    io.emit('aviator:bets-update', { bets: aviatorRound.bets, participants: aviatorRound.participants });
+  });
+});
+
+// Auto start every 30s - Moved outside connection handler to run once
+setInterval(() => {
+  if (!aviatorRound.active) {
+    aviatorRound.crashPoint = Math.random() * 100 + 1; // Simplified crash gen
+    aviatorRound.active = true;
+    aviatorRound.multiplier = 1.0;
+    io.emit('aviator:start', aviatorRound);
+    const interval = setInterval(() => {
+      aviatorRound.multiplier += 0.1;
+      io.emit('aviator:update', { multiplier: aviatorRound.multiplier });
+      if (aviatorRound.multiplier >= aviatorRound.crashPoint) {
+        clearInterval(interval);
+        io.emit('aviator:crash', { crashPoint: aviatorRound.crashPoint });
+        aviatorRound.active = false;
+        aviatorRound.bets = [];
+        aviatorRound.participants = 0;
+      }
+    }, 1000);
+  }
+}, 30000);
 
 // Admin middleware
 const adminMiddleware = async (req, res, next) => {

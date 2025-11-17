@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/Register</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #scene { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-500 to-purple-600 min-h-screen flex items-center justify-center">
+    <!-- Three.js 3D fon -->
+    <canvas id="scene"></canvas>
+    <script>
+        // Oddiy 3D animatsiya (kub aylanishi)
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('scene'), alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        
+        const geometry = new THREE.BoxGeometry();
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+        
+        camera.position.z = 5;
+        function animate() {
+            requestAnimationFrame(animate);
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+
+    <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full mx-4" id="formContainer">
+        <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">Chatbotga Kirish</h2>
+        
+        <!-- Register form (default ko'rsatiladi) -->
+        <form id="registerForm" action="/register" method="POST" class="space-y-4">
+            <input type="text" name="username" placeholder="Foydalanuvchi nomi" required class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <input type="password" name="password" placeholder="Parol" required class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button type="submit" class="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600">Ro'yxatdan o'tish</button>
+        </form>
+        
+        <!-- Login form (yashirin) -->
+        <form id="loginForm" action="/login" method="POST" class="space-y-4 hidden">
+            <input type="text" name="username" placeholder="Foydalanuvchi nomi" required class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <input type="password" name="password" placeholder="Parol" required class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button type="submit" class="w-full bg-green-500 text-white py-3 rounded-md hover:bg-green-600">Kirish</button>
+        </form>
+        
+        <p class="text-center mt-4">
+            <a href="#" id="toggleForm" class="text-blue-500 hover:underline">Allaqachon ro'yxatdan o'tganmisiz? Login qiling</a>
+        </p>
+    </div>
+
+    <script>
+        // Session tekshirish va redirect
+        fetch('/session-check', { credentials: 'include' }).then(res => {
+            if (res.ok) window.location.href = '/index.html';
+        });
+
+        // Form toggle
+        document.getElementById('toggleForm').addEventListener('click', (e) => {
+            e.preventDefault();
+            const reg = document.getElementById('registerForm');
+            const log = document.getElementById('loginForm');
+            if (reg.classList.contains('hidden')) {
+                reg.classList.remove('hidden');
+                log.classList.add('hidden');
+                document.getElementById('toggleForm').textContent = 'Allaqachon ro\'yxatdan o\'tganmisiz? Login qiling';
+            } else {
+                reg.classList.add('hidden');
+                log.classList.remove('hidden');
+                document.getElementById('toggleForm').textContent = 'Yangi foydalanuvchimisiz? Ro\'yxatdan o\'ting';
+            }
+        });
+    </script>
+</body>
+</html>

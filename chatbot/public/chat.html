@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Suhbati</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        /* Yaxshilangan Glassmorphism va Neon */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .neon-glow {
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+        .neon-glow:hover {
+            box-shadow: 0 0 40px rgba(59, 130, 246, 0.8), inset 0 0 30px rgba(255, 255, 255, 0.2);
+        }
+        #robot-canvas {
+            position: fixed;
+            bottom: 120px; /* Inputdan yuqori */
+            right: 20px;
+            width: 120px;
+            height: 160px;
+            z-index: 20;
+            border-radius: 50% 50% 20% 20%;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        #scene { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        body { 
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            overflow: hidden; /* Saqlab qoldik, lekin messages scroll ishlaydi */
+        }
+        .message-bubble {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .typing-indicator {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            margin: 0 2px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        .typing-indicator:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="text-white min-h-screen flex flex-col">
+    <!-- Fon sahifasi -->
+    <canvas id="scene"></canvas>
+    <script>
+        // Three.js: Kengaytirilgan fon (ko'proq partikullar, rang o'zgarishi)
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('scene'), alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        // Torus: Neon rang o'zgarishi
+        const torusGeometry = new THREE.TorusGeometry(2, 0.6, 16, 100);
+        const torusMaterial = new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true });
+        const torus = new THREE.Mesh(torusGeometry, torusMaterial);
+        scene.add(torus);
+
+        // Partikullar: Ko'paytirilgan va rangli
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 1000;
+        const posArray = new Float32Array(particlesCount * 3);
+        const colorsArray = new Float32Array(particlesCount * 3);
+        for (let i = 0; i < particlesCount * 3; i += 3) {
+            posArray[i] = (Math.random() - 0.5) * 20;
+            posArray[i+1] = (Math.random() - 0.5) * 20;
+            posArray[i+2] = (Math.random() - 0.5) * 20;
+            colorsArray[i] = Math.random(); // R
+            colorsArray[i+1] = Math.random(); // G
+            colorsArray[i+2] = 1; // B (ko'k ton)
+        }
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
+        const particlesMaterial = new THREE.PointsMaterial({ size: 0.01, vertexColors: true });
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        camera.position.z = 5;
+
+        // Robot uchun alohida sahna va renderer (kichik canvas)
+        const robotScene = new THREE.Scene();
+        const robotCamera = new THREE.PerspectiveCamera(75, 120/160, 0.1, 1000);
+        const robotRenderer = new THREE.WebGLRenderer({ canvas: document.getElementById('robot-canvas'), alpha: true });
+        robotRenderer.setSize(120, 160);
+
+        // Robot modeli (oldingidek, lekin kichikroq)
+        const robot = new THREE.Group();
+        const bodyGeometry = new THREE.BoxGeometry(0.6, 1.0, 0.3);
+        const bodyMaterial = new THREE.MeshBasicMaterial({ color: 0x4a90e2, wireframe: true });
+        const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+        robot.add(body);
+        const headGeometry = new THREE.SphereGeometry(0.4, 32, 32);
+        const headMaterial = new THREE.MeshBasicMaterial({ color: 0xffd700, wireframe: true });
+        const head = new THREE.Mesh(headGeometry, headMaterial);
+        head.position.y = 0.8;
+        robot.add(head);
+        const armGeometry = new THREE.CylinderGeometry(0.08, 0.08, 0.6);
+        const armMaterial = new THREE.MeshBasicMaterial({ color: 0x4a90e2, wireframe: true });
+        const leftArm = new THREE.Mesh(armGeometry, armMaterial);
+        leftArm.position.set(-0.5, 0.3, 0);
+        leftArm.rotation.z = Math.PI / 4;
+        robot.add(leftArm);
+        const rightArm = new THREE.Mesh(armGeometry, armMaterial);
+        rightArm.position.set(0.5, 0.3, 0);
+        rightArm.rotation.z = -Math.PI / 4;
+        robot.add(rightArm);
+        const legGeometry = new THREE.CylinderGeometry(0.12, 0.12, 0.6);
+        const legMaterial = new THREE.MeshBasicMaterial({ color: 0x4a90e2, wireframe: true });
+        const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
+        leftLeg.position.set(-0.25, -0.8, 0);
+        robot.add(leftLeg);
+        const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
+        rightLeg.position.set(0.25, -0.8, 0);
+        robot.add(rightLeg);
+
+        robot.scale.set(0.8, 0.8, 0.8);
+        robot.position.set(0, 0, 0);
+        robotScene.add(robot);
+
+        robotCamera.position.z = 2;
+
+        // Global emotsiyalar
+        window.setEmotion = function(emotion) {
+            isHappy = emotion === 'happy';
+            isThinking = emotion === 'thinking';
+        };
+
+        let isHappy = false;
+        let isThinking = false;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            // Fon animatsiyasi
+            torus.rotation.x += 0.003;
+            torus.rotation.y += 0.004;
+            particlesMesh.rotation.y += 0.002;
+            torusMaterial.color.setHSL((Date.now() * 0.0001) % 1, 0.7, 0.5); // Rang o'zgarishi
+
+            // Robot animatsiyasi
+            if (isHappy) {
+                leftArm.rotation.z = Math.sin(Date.now() * 0.008) * 0.6;
+                rightArm.rotation.z = -Math.sin(Date.now() * 0.008) * 0.6;
+                head.rotation.y = Math.sin(Date.now() * 0.005) * 0.3;
+                robot.rotation.y += 0.01;
+            } else if (isThinking) {
+                head.rotation.x = Math.sin(Date.now() * 0.003) * 0.2;
+                robot.rotation.x += 0.005;
+            } else {
+                head.rotation.y += 0.002;
+                robot.rotation.y += 0.005;
+            }
+
+            renderer.render(scene, camera);
+            robotRenderer.render(robotScene, robotCamera);
+        }
+        animate();
+
+        // Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            robotCamera.aspect = 120 / 160;
+            robotCamera.updateProjectionMatrix();
+            robotRenderer.setSize(120, 160);
+        });
+    </script>
+
+    <!-- Fixed Header -->
+    <header class="fixed top-0 left-0 right-0 glass p-4 flex justify-between items-center neon-glow rounded-b-xl mx-4 mt-4 z-10">
+        <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">🤖 Ultra AI Chatbot</h1>
+        <a href="/logout" class="text-blue-300 hover:text-white transition duration-300 flex items-center gap-1">🚪 Chiqish</a>
+    </header>
+
+    <!-- Messages: To'liq height, scroll ishlaydi -->
+    <div id="messages" class="flex-1 overflow-y-auto p-6 space-y-4 mx-4 mt-20 mb-24 pt-20" style="backdrop-filter: blur(20px);">
+        <!-- Xabarlar bu yerga qo'shiladi -->
+        <div class="text-center text-gray-400 mt-8">Suhbatni boshlang... ✨</div>
+    </div>
+
+    <!-- Fixed Input Bottom -->
+    <form id="form" class="fixed bottom-0 left-0 right-0 glass p-4 flex mx-4 mb-4 rounded-t-2xl neon-glow z-10">
+        <input id="input" autocomplete="off" placeholder="Xabar yozing... 💭" 
+               class="flex-1 bg-gray-800/20 border border-gray-500/30 p-4 rounded-l-2xl text-white focus:outline-none focus:ring-2 focus:ring-blue-400/50 placeholder-gray-400 transition duration-300 text-lg">
+        <button type="submit" class="bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 px-8 py-4 rounded-r-2xl hover:from-blue-600 hover:via-purple-700 hover:to-pink-600 transition duration-300 font-semibold text-lg shadow-lg">🚀 Yuborish</button>
+    </form>
+
+    <!-- Robot Canvas -->
+    <canvas id="robot-canvas"></canvas>
+
+    <script>
+        const socket = io();
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+        const messages = document.getElementById('messages');
+
+        // Typing indicator ko'rsatish
+        let typingIndicator = null;
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (input.value.trim()) {
+                const msg = input.value.trim();
+                socket.emit('chat message', msg);
+                
+                // O'z xabaringiz
+                const userBubble = document.createElement('div');
+                userBubble.className = 'flex justify-start message-bubble';
+                userBubble.innerHTML = `
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-700 p-4 rounded-2xl max-w-md shadow-xl neon-glow">
+                        <div class="text-xs opacity-80 mb-1">Siz:</div>
+                        <div class="font-semibold">${msg}</div>
+                    </div>
+                `;
+                messages.appendChild(userBubble);
+                input.value = '';
+                messages.scrollTop = messages.scrollHeight;
+                
+                // Thinking emotsiya
+                window.setEmotion('thinking');
+                setTimeout(() => window.setEmotion(''), 1500);
+            }
+        });
+
+        socket.on('chat message', (data) => {
+            // Typing indicator ni olib tashlash
+            if (typingIndicator) {
+                typingIndicator.remove();
+                typingIndicator = null;
+            }
+            
+            // Bot xabari
+            const isUser = data.user === 'Siz';
+            const align = isUser ? 'justify-start' : 'justify-end';
+            const bgColor = isUser ? 'from-blue-500 to-blue-700' : 'from-emerald-500 to-teal-600';
+            
+            const botBubble = document.createElement('div');
+            botBubble.className = `flex ${align} message-bubble`;
+            botBubble.innerHTML = `
+                <div class="bg-gradient-to-r ${bgColor} p-4 rounded-2xl max-w-md shadow-xl neon-glow">
+                    <div class="text-xs opacity-80 mb-1">${data.user}:</div>
+                    <div class="font-semibold">${data.msg}</div>
+                </div>
+            `;
+            messages.appendChild(botBubble);
+            messages.scrollTop = messages.scrollHeight;
+            
+            // Happy emotsiya
+            window.setEmotion('happy');
+            setTimeout(() => window.setEmotion(''), 2500);
+            
+            // Matnga qarab emotsiya
+            const lowerMsg = data.msg.toLowerCase();
+            if (lowerMsg.includes('salom') || lowerMsg.includes('rahmat')) {
+                window.setEmotion('happy');
+            } else if (lowerMsg.includes('yordam') || lowerMsg.includes('savol')) {
+                window.setEmotion('thinking');
+            }
+        });
+    </script>
+</body>
+</html>
