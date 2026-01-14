@@ -7,73 +7,64 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #0c0f1d 0%, #1a1f3d 100%);
-            color: #fff;
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f5f5;
+            color: #333;
         }
         
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            border: none;
+            background: #3b82f6;
             color: white;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 14px;
         }
         
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
-        }
-        
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-        
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: #2563eb;
         }
         
         .btn-success {
-            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
-            border: none;
+            background: #10b981;
             color: white;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 14px;
         }
         
         .btn-danger {
-            background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
-            border: none;
+            background: #ef4444;
             color: white;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 14px;
         }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
         
         .modal {
             display: none;
@@ -82,351 +73,347 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0,0,0,0.5);
             z-index: 1000;
             align-items: center;
             justify-content: center;
         }
         
         .modal-content {
-            background: linear-gradient(135deg, #1a1f3d 0%, #0c0f1d 100%);
-            border-radius: 12px;
-            padding: 25px;
+            background: white;
+            border-radius: 10px;
             width: 90%;
             max-width: 500px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            max-height: 90vh;
+            overflow-y: auto;
         }
         
-        .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        .tab-btn {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
         }
         
-        .tab-active {
-            background: rgba(255, 255, 255, 0.1);
-            border-bottom: 2px solid #f5576c;
+        .tab-btn.active {
+            border-bottom: 3px solid #3b82f6;
+            color: #3b82f6;
         }
         
-        .user-image {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 2px solid #f5576c;
+        @media (max-width: 768px) {
+            .card {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            
+            .table-container {
+                overflow-x: auto;
+            }
+            
+            table {
+                font-size: 14px;
+            }
+            
+            .btn {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
         }
-        
-        .status-completed {
-            color: #4ade80;
-        }
-        
-        .status-pending {
-            color: #fbbf24;
-        }
-        
-        .status-rejected {
-            color: #f87171;
-        }
+        /* Responsive tables */
+@media (max-width: 768px) {
+    table {
+        font-size: 14px;
+    }
+    
+    th, td {
+        padding: 8px !important;
+    }
+    
+    .btn {
+        padding: 6px 12px !important;
+        font-size: 13px !important;
+    }
+    
+    .modal-content {
+        width: 95% !important;
+        padding: 15px !important;
+    }
+}
+
+/* Game cards responsive */
+@media (max-width: 640px) {
+    .game-card {
+        padding: 10px !important;
+        font-size: 14px !important;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .stat-item {
+        padding: 10px !important;
+    }
+}
     </style>
 </head>
-<body class="min-h-screen">
+<body>
     <!-- Navigation -->
-    <nav class="glass-effect py-4 px-6 flex justify-between items-center">
-        <div class="flex items-center space-x-4">
-            <h1 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">LuckyBet Admin</h1>
-            <div class="flex space-x-2">
-                <a href="/" class="btn-secondary text-sm">
-                    <i class="fas fa-home mr-1"></i> Site
-                </a>
+    <nav style="background: #1e293b; color: white; padding: 15px 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <div>
+                <h1 style="font-size: 20px; font-weight: bold;">LuckyBet Admin</h1>
+                <div style="font-size: 12px; opacity: 0.8;">Welcome, <span id="adminName">Admin</span></div>
             </div>
-        </div>
-        <div class="flex items-center space-x-4">
-            <div class="stats-card">
-                <div class="text-sm">Admin Panel</div>
-                <div class="text-lg font-bold" id="adminGreeting">Welcome Admin</div>
-            </div>
-            <div class="relative">
-                <button id="userMenuButton" class="flex items-center space-x-2 bg-purple-900 bg-opacity-50 rounded-full py-2 px-4">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                        <span class="text-white font-bold" id="userInitials">A</span>
-                    </div>
-                    <span id="userName">Admin</span>
-                    <i class="fas fa-chevron-down text-xs"></i>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button onclick="window.location.href='/'" class="btn btn-secondary">
+                    <i class="fas fa-home"></i> Site
                 </button>
-                <div id="userMenu" class="absolute right-0 mt-2 w-48 glass-effect rounded-lg shadow-lg hidden">
-                    <a href="/profile" class="block px-4 py-3 hover:bg-purple-800 rounded-t-lg">Profile</a>
-                    <a href="/" class="block px-4 py-3 hover:bg-purple-800">Main Site</a>
-                    <button id="logoutBtn" class="block w-full text-left px-4 py-3 hover:bg-purple-800 rounded-b-lg">Logout</button>
-                </div>
+                <button onclick="logout()" class="btn btn-danger">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
             </div>
         </div>
     </nav>
 
+    <!-- Mobile Menu Button -->
+    <div style="display: none;" id="mobileMenuBtn">
+        <button onclick="toggleMobileMenu()" style="background: none; border: none; font-size: 20px; padding: 10px;">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
-        <!-- Stats Overview -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="stats-card">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="text-sm opacity-80">Total Users</div>
-                        <div class="text-2xl font-bold" id="totalUsers">0</div>
-                    </div>
-                    <i class="fas fa-users text-2xl opacity-70"></i>
-                </div>
-            </div>
-            <div class="stats-card">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="text-sm opacity-80">Total Balance</div>
-                        <div class="text-2xl font-bold" id="totalBalance">$0</div>
-                    </div>
-                    <i class="fas fa-wallet text-2xl opacity-70"></i>
-                </div>
-            </div>
-            <div class="stats-card">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="text-sm opacity-80">Today's Profit</div>
-                        <div class="text-2xl font-bold" id="todayProfit">$0</div>
-                    </div>
-                    <i class="fas fa-chart-line text-2xl opacity-70"></i>
-                </div>
-            </div>
-            <div class="stats-card">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="text-sm opacity-80">Pending Withdrawals</div>
-                        <div class="text-2xl font-bold" id="pendingWithdrawals">0</div>
-                    </div>
-                    <i class="fas fa-clock text-2xl opacity-70"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tabs -->
-        <div class="glass-effect rounded-xl mb-6">
-            <div class="flex border-b border-gray-700">
-                <button class="tab-active py-4 px-6 font-semibold" onclick="switchTab('users')">
-                    <i class="fas fa-users mr-2"></i>Users
-                </button>
-                <button class="py-4 px-6 font-semibold hover:bg-gray-800" onclick="switchTab('transactions')">
-                    <i class="fas fa-exchange-alt mr-2"></i>Transactions
-                </button>
-                <button class="py-4 px-6 font-semibold hover:bg-gray-800" onclick="switchTab('games')">
-                    <i class="fas fa-gamepad mr-2"></i>Games
-                </button>
-                <button class="py-4 px-6 font-semibold hover:bg-gray-800" onclick="switchTab('withdrawals')">
-                    <i class="fas fa-money-bill-wave mr-2"></i>Withdrawals
-                </button>
-            </div>
-        </div>
-
-        <!-- Users Tab -->
-        <div id="usersTab" class="tab-content">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">User Management</h2>
-                <div class="flex space-x-4">
-                    <input type="text" id="userSearch" placeholder="Search users..." class="bg-gray-800 rounded-lg py-2 px-4 w-64" onkeyup="searchUsers()">
-                    <button class="btn-primary" onclick="refreshUsers()">
-                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+    <div style="display: flex; min-height: calc(100vh - 70px);">
+        <!-- Sidebar -->
+        <div id="sidebar" style="width: 250px; background: white; border-right: 1px solid #e5e7eb; padding: 20px; display: flex; flex-direction: column;">
+            <div style="margin-bottom: 30px;">
+                <h3 style="font-weight: 600; margin-bottom: 15px;">Main Menu</h3>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <button onclick="switchTab('dashboard')" class="tab-btn active" id="tab-dashboard">
+                        <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+                    </button>
+                    <button onclick="switchTab('users')" class="tab-btn" id="tab-users">
+                        <i class="fas fa-users mr-2"></i> Users
+                    </button>
+                    <button onclick="switchTab('verifications')" class="tab-btn" id="tab-verifications">
+                        <i class="fas fa-user-check mr-2"></i> Verifications
+                    </button>
+                    <button onclick="switchTab('deposits')" class="tab-btn" id="tab-deposits">
+                        <i class="fas fa-money-bill-wave mr-2"></i> Deposits
+                    </button>
+                    <button onclick="switchTab('withdrawals')" class="tab-btn" id="tab-withdrawals">
+                        <i class="fas fa-wallet mr-2"></i> Withdrawals
+                    </button>
+                    <button onclick="switchTab('games')" class="tab-btn" id="tab-games">
+                        <i class="fas fa-gamepad mr-2"></i> Games
+                    </button>
+                    <button onclick="switchTab('transactions')" class="tab-btn" id="tab-transactions">
+                        <i class="fas fa-exchange-alt mr-2"></i> Transactions
                     </button>
                 </div>
             </div>
-            
-            <div class="glass-effect rounded-xl overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="border-b border-gray-700">
-                                <th class="py-4 px-6 text-left">User</th>
-                                <th class="py-4 px-6 text-left">Contact</th>
-                                <th class="py-4 px-6 text-left">Balances</th>
-                                <th class="py-4 px-6 text-left">Verification</th>
-                                <th class="py-4 px-6 text-left">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="usersTable">
-                            <tr>
-                                <td colspan="5" class="py-8 text-center text-gray-400">
-                                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto"></div>
-                                    <p class="mt-2">Loading users...</p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
 
-        <!-- Transactions Tab -->
-        <div id="transactionsTab" class="tab-content hidden">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">Transaction History</h2>
-                <div class="flex space-x-4">
-                    <select id="transactionFilter" class="bg-gray-800 rounded-lg py-2 px-4" onchange="filterTransactions()">
-                        <option value="all">All Transactions</option>
-                        <option value="deposit">Deposits</option>
-                        <option value="withdrawal">Withdrawals</option>
-                        <option value="game_win">Game Wins</option>
-                        <option value="game_loss">Game Losses</option>
-                    </select>
-                    <button class="btn-primary" onclick="refreshTransactions()">
-                        <i class="fas fa-sync-alt mr-2"></i>Refresh
-                    </button>
+        <!-- Content Area -->
+        <div style="flex: 1; padding: 20px; overflow-y: auto;">
+            <!-- Dashboard Tab -->
+            <div id="dashboardTab" class="tab-content">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <div class="card">
+                        <div style="font-size: 14px; color: #6b7280;">Total Users</div>
+                        <div style="font-size: 24px; font-weight: bold;" id="statUsers">0</div>
+                    </div>
+                    <div class="card">
+                        <div style="font-size: 14px; color: #6b7280;">Total Balance</div>
+                        <div style="font-size: 24px; font-weight: bold;" id="statBalance">$0</div>
+                    </div>
+                    <div class="card">
+                        <div style="font-size: 14px; color: #6b7280;">Pending Verifications</div>
+                        <div style="font-size: 24px; font-weight: bold;" id="statPendingVerify">0</div>
+                    </div>
+                    <div class="card">
+                        <div style="font-size: 14px; color: #6b7280;">Pending Withdrawals</div>
+                        <div style="font-size: 24px; font-weight: bold;" id="statPendingWithdraw">0</div>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="glass-effect rounded-xl overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="border-b border-gray-700">
-                                <th class="py-4 px-6 text-left">Date</th>
-                                <th class="py-4 px-6 text-left">User</th>
-                                <th class="py-4 px-6 text-left">Type</th>
-                                <th class="py-4 px-6 text-left">Amount</th>
-                                <th class="py-4 px-6 text-left">Status</th>
-                                <th class="py-4 px-6 text-left">Description</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transactionsTable">
-                            <tr>
-                                <td colspan="6" class="py-8 text-center text-gray-400">
-                                    Loading transactions...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
 
-        <!-- Games Tab -->
-        <div id="gamesTab" class="tab-content hidden">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">Game Management</h2>
-                <button class="btn-primary" onclick="showAddGameModal()">
-                    <i class="fas fa-plus mr-2"></i>Add New Game
-                </button>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="gamesContainer">
-                <div class="text-center py-8">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto"></div>
-                    <p class="mt-2">Loading games...</p>
+                <div class="card">
+                    <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 15px;">Recent Activity</h2>
+                    <div id="recentActivity">
+                        Loading recent activity...
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Withdrawals Tab -->
-        <div id="withdrawalsTab" class="tab-content hidden">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">Withdrawal Requests</h2>
-                <button class="btn-primary" onclick="refreshWithdrawals()">
-                    <i class="fas fa-sync-alt mr-2"></i>Refresh
-                </button>
+            <!-- Users Tab -->
+            <div id="usersTab" class="tab-content" style="display: none;">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+                        <h2 style="font-size: 18px; font-weight: 600;">User Management</h2>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="searchUsers" placeholder="Search users..." style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;">
+                            <button onclick="refreshUsers()" class="btn btn-primary">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: #f9fafb; border-bottom: 2px solid #e5e7eb;">
+                                    <th style="padding: 12px; text-align: left;">User</th>
+                                    <th style="padding: 12px; text-align: left;">Status</th>
+                                    <th style="padding: 12px; text-align: left;">Balance</th>
+                                    <th style="padding: 12px; text-align: left;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable">
+                                <tr>
+                                    <td colspan="4" style="padding: 20px; text-align: center;">Loading users...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            
-            <div class="glass-effect rounded-xl overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="border-b border-gray-700">
-                                <th class="py-4 px-6 text-left">Date</th>
-                                <th class="py-4 px-6 text-left">User</th>
-                                <th class="py-4 px-6 text-left">Amount</th>
-                                <th class="py-4 px-6 text-left">Status</th>
-                                <th class="py-4 px-6 text-left">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="withdrawalsTable">
-                            <tr>
-                                <td colspan="5" class="py-8 text-center text-gray-400">
-                                    Loading withdrawal requests...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+            <!-- Verifications Tab -->
+            <div id="verificationsTab" class="tab-content" style="display: none;">
+                <div class="card">
+                    <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 20px;">User Verifications</h2>
+                    <div id="verificationsTable">
+                        Loading verifications...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deposits Tab -->
+            <div id="depositsTab" class="tab-content" style="display: none;">
+                <div class="card">
+                    <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 20px;">Deposit Requests</h2>
+                    <div id="depositsTable">
+                        Loading deposits...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Withdrawals Tab -->
+            <div id="withdrawalsTab" class="tab-content" style="display: none;">
+                <div class="card">
+                    <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 20px;">Withdrawal Requests</h2>
+                    <div id="withdrawalsTable">
+                        Loading withdrawals...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Games Tab -->
+            <div id="gamesTab" class="tab-content" style="display: none;">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="font-size: 18px; font-weight: 600;">Game Management</h2>
+                        <button onclick="showAddGameModal()" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Game
+                        </button>
+                    </div>
+                    <div id="gamesTable">
+                        Loading games...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions Tab -->
+            <div id="transactionsTab" class="tab-content" style="display: none;">
+                <div class="card">
+                    <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 20px;">All Transactions</h2>
+                    <div id="transactionsTable">
+                        Loading transactions...
+                    </div>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
     <!-- Modals -->
-    <!-- Edit User Balance Modal -->
     <div id="editBalanceModal" class="modal">
         <div class="modal-content">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold">Edit User Balance</h3>
-                <button class="text-gray-400 hover:text-white" onclick="closeEditBalanceModal()">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            <div id="editBalanceContent">
-                <!-- Content will be loaded here -->
+            <div style="padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="font-size: 18px; font-weight: 600;">Edit User Balance</h3>
+                    <button onclick="closeModal('editBalanceModal')" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+                </div>
+                <div id="editBalanceForm"></div>
             </div>
         </div>
     </div>
 
-    <!-- Add Game Modal -->
-    <div id="addGameModal" class="modal">
+    <div id="verifyModal" class="modal">
         <div class="modal-content">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold">Add New Game</h3>
-                <button class="text-gray-400 hover:text-white" onclick="closeAddGameModal()">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
+            <div style="padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="font-size: 18px; font-weight: 600;">Verify User</h3>
+                    <button onclick="closeModal('verifyModal')" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+                </div>
+                <div id="verifyForm"></div>
             </div>
-            <form id="addGameForm">
-                <div class="mb-4">
-                    <label class="block text-sm mb-2">Game Name</label>
-                    <input type="text" id="gameName" class="w-full bg-gray-800 rounded-lg py-2 px-4" required>
-                </div>
-                <div class="mb-6">
-                    <label class="block text-sm mb-2">Game Code</label>
-                    <input type="text" id="gameCode" class="w-full bg-gray-800 rounded-lg py-2 px-4" required>
-                    <p class="text-xs text-gray-400 mt-1">Unique identifier for the game</p>
-                </div>
-                <div class="flex justify-end space-x-2">
-                    <button type="button" class="btn-secondary" onclick="closeAddGameModal()">Cancel</button>
-                    <button type="submit" class="btn-primary">Add Game</button>
-                </div>
-            </form>
         </div>
     </div>
 
-    <!-- User Details Modal -->
     <div id="userDetailsModal" class="modal">
         <div class="modal-content">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold">User Details</h3>
-                <button class="text-gray-400 hover:text-white" onclick="closeUserDetailsModal()">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
+            <div style="padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="font-size: 18px; font-weight: 600;">User Details</h3>
+                    <button onclick="closeModal('userDetailsModal')" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+                </div>
+                <div id="userDetailsContent"></div>
             </div>
-            <div id="userDetailsContent">
-                <!-- Content will be loaded here -->
+        </div>
+    </div>
+
+    <div id="addGameModal" class="modal">
+        <div class="modal-content">
+            <div style="padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="font-size: 18px; font-weight: 600;">Add New Game</h3>
+                    <button onclick="closeModal('addGameModal')" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+                </div>
+                <form id="addGameForm" onsubmit="addGame(event)">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-size: 14px;">Game Name</label>
+                        <input type="text" id="gameName" required style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-size: 14px;">Game Code</label>
+                        <input type="text" id="gameCode" required style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px;">
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" onclick="closeModal('addGameModal')" class="btn btn-secondary">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Game</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
     <script>
+        // Global variables
         let currentAdmin = null;
         let allUsers = [];
         let allTransactions = [];
-        let editingUserId = null;
 
-        // Check authentication on page load
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             checkAdminAuth();
+            setupMobileMenu();
         });
 
-        // Admin authentication check
+        // Check admin authentication
         async function checkAdminAuth() {
             const token = localStorage.getItem('token');
-            
             if (!token) {
                 window.location.href = '/register-login';
                 return;
@@ -442,15 +429,10 @@
 
                 if (response.ok) {
                     const result = await response.json();
-                    
                     if (result.success && result.user.isAdmin) {
                         currentAdmin = result.user;
-                        updateAdminUI();
-                        loadStats();
-                        loadUsers();
-                        loadTransactions();
-                        loadGames();
-                        loadWithdrawals();
+                        document.getElementById('adminName').textContent = currentAdmin.firstName;
+                        loadDashboard();
                     } else {
                         window.location.href = '/';
                     }
@@ -458,54 +440,113 @@
                     window.location.href = '/register-login';
                 }
             } catch (error) {
-                console.error('Admin auth check failed:', error);
+                console.error('Auth error:', error);
                 window.location.href = '/register-login';
             }
         }
 
-        function updateAdminUI() {
-            document.getElementById('userName').textContent = currentAdmin.firstName + ' ' + currentAdmin.lastName;
-            document.getElementById('userInitials').textContent = (currentAdmin.firstName[0] + currentAdmin.lastName[0]).toUpperCase();
-            document.getElementById('adminGreeting').textContent = `Welcome, ${currentAdmin.firstName}`;
+        // Setup mobile menu
+        function setupMobileMenu() {
+            if (window.innerWidth < 768) {
+                document.getElementById('mobileMenuBtn').style.display = 'block';
+                document.getElementById('sidebar').style.display = 'none';
+            }
         }
 
-        // Tab management
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.style.display = sidebar.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        // Switch tabs
         function switchTab(tabName) {
             // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.add('hidden');
+                tab.style.display = 'none';
             });
             
             // Remove active class from all tabs
-            document.querySelectorAll('.flex.border-b button').forEach(btn => {
-                btn.classList.remove('tab-active');
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
             });
             
             // Show selected tab and set active
-            document.getElementById(tabName + 'Tab').classList.remove('hidden');
-            event.target.classList.add('tab-active');
+            document.getElementById(tabName + 'Tab').style.display = 'block';
+            document.getElementById('tab-' + tabName).classList.add('active');
+            
+            // Load tab data
+            if (tabName === 'dashboard') loadDashboard();
+            else if (tabName === 'users') loadUsers();
+            else if (tabName === 'verifications') loadVerifications();
+            else if (tabName === 'deposits') loadDeposits();
+            else if (tabName === 'withdrawals') loadWithdrawals();
+            else if (tabName === 'games') loadGames();
+            else if (tabName === 'transactions') loadTransactions();
+            
+            // Close sidebar on mobile
+            if (window.innerWidth < 768) {
+                document.getElementById('sidebar').style.display = 'none';
+            }
         }
 
-        // Load stats
-        async function loadStats() {
+        // Load dashboard
+        async function loadDashboard() {
             try {
-                // In a real app, these would come from API endpoints
-                document.getElementById('totalUsers').textContent = '0';
-                document.getElementById('totalBalance').textContent = '$0';
-                document.getElementById('todayProfit').textContent = '$0';
-                document.getElementById('pendingWithdrawals').textContent = '0';
+                // Load stats
+                const usersRes = await fetch('/api/admin/users', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
                 
-                // Simulate loading data
-                setTimeout(() => {
-                    document.getElementById('totalUsers').textContent = allUsers.length;
-                    const totalBalance = allUsers.reduce((sum, user) => sum + user.balance, 0);
-                    document.getElementById('totalBalance').textContent = '$' + totalBalance.toFixed(2);
-                    document.getElementById('todayProfit').textContent = '+$' + (Math.random() * 1000).toFixed(2);
-                    document.getElementById('pendingWithdrawals').textContent = allTransactions.filter(t => t.type === 'withdrawal' && t.status === 'pending').length;
-                }, 1000);
-                
+                const transRes = await fetch('/api/admin/transactions', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (usersRes.ok && transRes.ok) {
+                    const usersData = await usersRes.json();
+                    const transData = await transRes.json();
+                    
+                    allUsers = usersData.users || [];
+                    allTransactions = transData.transactions || [];
+                    
+                    // Update stats
+                    document.getElementById('statUsers').textContent = allUsers.length;
+                    
+                    const totalBalance = allUsers.reduce((sum, user) => sum + (user.balance || 0), 0);
+                    document.getElementById('statBalance').textContent = '$' + totalBalance.toFixed(2);
+                    
+                    const pendingVerify = allUsers.filter(u => !u.isVerified).length;
+                    document.getElementById('statPendingVerify').textContent = pendingVerify;
+                    
+                    const pendingWithdraw = allTransactions.filter(t => 
+                        t.type === 'withdrawal' && t.status === 'pending'
+                    ).length;
+                    document.getElementById('statPendingWithdraw').textContent = pendingWithdraw;
+                    
+                    // Recent activity
+                    const recentActivity = allTransactions.slice(0, 10);
+                    document.getElementById('recentActivity').innerHTML = recentActivity.map(t => `
+                        <div style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-size: 14px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>${t.userId?.firstName || 'User'} - ${t.description || t.type}</span>
+                                <span style="font-weight: 500; color: ${t.amount > 0 ? '#10b981' : '#ef4444'}">
+                                    ${t.amount > 0 ? '+' : ''}$${Math.abs(t.amount).toFixed(2)}
+                                </span>
+                            </div>
+                            <div style="font-size: 12px; color: #6b7280;">
+                                ${new Date(t.createdAt).toLocaleString()}
+                            </div>
+                        </div>
+                    `).join('');
+                }
             } catch (error) {
-                console.error('Failed to load stats:', error);
+                console.error('Dashboard error:', error);
             }
         }
 
@@ -519,22 +560,17 @@
                     }
                 });
 
-                const result = await response.json();
-                
-                if (result.success) {
-                    allUsers = result.users;
+                if (response.ok) {
+                    const result = await response.json();
+                    allUsers = result.users || [];
                     displayUsers(allUsers);
-                    loadStats(); // Refresh stats after loading users
-                } else {
-                    throw new Error(result.error);
                 }
             } catch (error) {
-                console.error('Failed to load users:', error);
+                console.error('Users error:', error);
                 document.getElementById('usersTable').innerHTML = `
                     <tr>
-                        <td colspan="5" class="py-8 text-center text-red-400">
-                            <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
-                            <p>Failed to load users</p>
+                        <td colspan="4" style="padding: 20px; text-align: center; color: #ef4444;">
+                            Error loading users
                         </td>
                     </tr>
                 `;
@@ -547,55 +583,37 @@
             if (users.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="5" class="py-8 text-center text-gray-400">
-                            No users found
-                        </td>
+                        <td colspan="4" style="padding: 20px; text-align: center;">No users found</td>
                     </tr>
                 `;
                 return;
             }
 
             tbody.innerHTML = users.map(user => `
-                <tr class="border-b border-gray-700 hover:bg-gray-800">
-                    <td class="py-4 px-6">
-                        <div class="flex items-center space-x-3">
-                            ${user.selfie ? `
-                                <img src="/uploads/${user.selfie}" alt="Selfie" class="user-image" onerror="this.style.display='none'">
-                            ` : `
-                                <div class="user-image bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
-                                    ${user.firstName[0]}${user.lastName[0]}
-                                </div>
-                            `}
-                            <div>
-                                <div class="font-semibold">${user.firstName} ${user.lastName}</div>
-                                <div class="text-sm text-gray-400">ID: ${user._id}</div>
-                            </div>
-                        </div>
+                <tr style="border-bottom: 1px solid #e5e7eb;">
+                    <td style="padding: 12px;">
+                        <div style="font-weight: 500;">${user.firstName} ${user.lastName}</div>
+                        <div style="font-size: 12px; color: #6b7280;">${user.email}</div>
                     </td>
-                    <td class="py-4 px-6">
-                        <div class="text-sm">${user.email}</div>
-                        <div class="text-sm text-gray-400">${user.phone}</div>
-                    </td>
-                    <td class="py-4 px-6">
-                        <div class="text-sm">Real: $${user.balance.toFixed(2)}</div>
-                        <div class="text-sm text-gray-400">Demo: $${user.demoBalance.toFixed(2)}</div>
-                    </td>
-                    <td class="py-4 px-6">
-                        <span class="px-2 py-1 rounded text-xs ${user.isVerified ? 'bg-green-500' : 'bg-yellow-500'}">
+                    <td style="padding: 12px;">
+                        <span class="badge ${user.isVerified ? 'badge-success' : 'badge-warning'}">
                             ${user.isVerified ? 'Verified' : 'Pending'}
                         </span>
                     </td>
-                    <td class="py-4 px-6">
-                        <div class="flex space-x-2">
-                            <button class="btn-secondary text-xs" onclick="editUserBalance('${user._id}')">
-                                <i class="fas fa-edit mr-1"></i>Balance
+                    <td style="padding: 12px;">
+                        <div>$${user.balance?.toFixed(2) || '0.00'}</div>
+                    </td>
+                    <td style="padding: 12px;">
+                        <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                            <button onclick="viewUserDetails('${user._id}')" class="btn" style="background: #3b82f6; color: white; padding: 5px 10px;">
+                                <i class="fas fa-eye"></i>
                             </button>
-                            <button class="btn-primary text-xs" onclick="viewUserDetails('${user._id}')">
-                                <i class="fas fa-eye mr-1"></i>View
+                            <button onclick="editBalance('${user._id}')" class="btn" style="background: #10b981; color: white; padding: 5px 10px;">
+                                <i class="fas fa-edit"></i>
                             </button>
                             ${!user.isVerified ? `
-                                <button class="btn-success text-xs" onclick="verifyUser('${user._id}')">
-                                    <i class="fas fa-check mr-1"></i>Verify
+                                <button onclick="verifyUser('${user._id}')" class="btn" style="background: #f59e0b; color: white; padding: 5px 10px;">
+                                    <i class="fas fa-check"></i>
                                 </button>
                             ` : ''}
                         </div>
@@ -604,487 +622,372 @@
             `).join('');
         }
 
-        // Search users
-        function searchUsers() {
-            const searchTerm = document.getElementById('userSearch').value.toLowerCase();
-            const filteredUsers = allUsers.filter(user => 
-                user.firstName.toLowerCase().includes(searchTerm) ||
-                user.lastName.toLowerCase().includes(searchTerm) ||
-                user.email.toLowerCase().includes(searchTerm) ||
-                user.phone.includes(searchTerm)
-            );
-            displayUsers(filteredUsers);
-        }
-
-        // Edit user balance
-        async function editUserBalance(userId) {
-            const user = allUsers.find(u => u._id === userId);
-            if (!user) return;
-
-            editingUserId = userId;
-            
-            document.getElementById('editBalanceContent').innerHTML = `
-                <div class="mb-4">
-                    <div class="font-semibold">${user.firstName} ${user.lastName}</div>
-                    <div class="text-sm text-gray-400">${user.email}</div>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm mb-2">Real Balance ($)</label>
-                    <input type="number" id="realBalance" class="w-full bg-gray-800 rounded-lg py-2 px-4" value="${user.balance}" step="0.01" min="0">
-                </div>
-                <div class="mb-6">
-                    <label class="block text-sm mb-2">Demo Balance ($)</label>
-                    <input type="number" id="demoBalance" class="w-full bg-gray-800 rounded-lg py-2 px-4" value="${user.demoBalance}" step="0.01" min="0">
-                </div>
-                <div class="flex justify-end space-x-2">
-                    <button type="button" class="btn-secondary" onclick="closeEditBalanceModal()">Cancel</button>
-                    <button type="button" class="btn-primary" onclick="saveUserBalance()">Save Changes</button>
-                </div>
-            `;
-            
-            document.getElementById('editBalanceModal').style.display = 'flex';
-        }
-
-        function closeEditBalanceModal() {
-            document.getElementById('editBalanceModal').style.display = 'none';
-            editingUserId = null;
-        }
-
-        async function saveUserBalance() {
-            const realBalance = parseFloat(document.getElementById('realBalance').value);
-            const demoBalance = parseFloat(document.getElementById('demoBalance').value);
-
+        // Load verifications
+        async function loadVerifications() {
             try {
-                const response = await fetch(`/api/admin/users/${editingUserId}/balance`, {
-                    method: 'PUT',
+                const usersRes = await fetch('/api/admin/users', {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        balance: realBalance,
-                        demoBalance: demoBalance
-                    })
+                    }
                 });
 
-                const result = await response.json();
-                
-                if (result.success) {
-                    alert('Balance updated successfully!');
-                    closeEditBalanceModal();
-                    loadUsers(); // Refresh users list
-                } else {
-                    alert('Error: ' + result.error);
+                if (usersRes.ok) {
+                    const result = await usersRes.json();
+                    const pendingUsers = (result.users || []).filter(u => !u.isVerified);
+                    
+                    document.getElementById('verificationsTable').innerHTML = `
+                        <div style="display: grid; gap: 15px;">
+                            ${pendingUsers.map(user => `
+                                <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                        <div>
+                                            <div style="font-weight: 500;">${user.firstName} ${user.lastName}</div>
+                                            <div style="font-size: 14px; color: #6b7280;">${user.email}</div>
+                                        </div>
+                                        <span class="badge badge-warning">Pending</span>
+                                    </div>
+                                    <div style="font-size: 14px; margin-bottom: 10px;">
+                                        Phone: ${user.phone || 'N/A'}
+                                    </div>
+                                    <div style="display: flex; gap: 10px;">
+                                        <button onclick="viewUserVerification('${user._id}')" class="btn btn-primary">
+                                            <i class="fas fa-eye mr-1"></i> View Documents
+                                        </button>
+                                        <button onclick="approveVerification('${user._id}')" class="btn btn-success">
+                                            <i class="fas fa-check mr-1"></i> Approve
+                                        </button>
+                                        <button onclick="rejectVerification('${user._id}')" class="btn btn-danger">
+                                            <i class="fas fa-times mr-1"></i> Reject
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                            ${pendingUsers.length === 0 ? `
+                                <div style="text-align: center; padding: 40px; color: #6b7280;">
+                                    No pending verifications
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
                 }
             } catch (error) {
-                console.error('Failed to update balance:', error);
-                alert('Failed to update balance');
+                console.error('Verifications error:', error);
             }
         }
 
-        // View user details
-        async function viewUserDetails(userId) {
+        // Load deposits
+        async function loadDeposits() {
+            try {
+                const response = await fetch('/api/admin/transactions?type=deposit', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    const deposits = result.transactions || [];
+                    
+                    document.getElementById('depositsTable').innerHTML = `
+                        <div style="display: grid; gap: 15px;">
+                            ${deposits.map(deposit => `
+                                <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                        <div>
+                                            <div style="font-weight: 500;">${deposit.userId?.firstName || 'User'} ${deposit.userId?.lastName || ''}</div>
+                                            <div style="font-size: 14px; color: #6b7280;">${deposit.description || 'Deposit'}</div>
+                                        </div>
+                                        <span class="badge ${deposit.status === 'completed' ? 'badge-success' : 
+                                                             deposit.status === 'pending' ? 'badge-warning' : 'badge-danger'}">
+                            ${deposit.status}
+                        </span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                        <div style="font-size: 18px; font-weight: bold; color: #10b981;">
+                                            +$${deposit.amount?.toFixed(2) || '0.00'}
+                                        </div>
+                                        <div style="font-size: 14px; color: #6b7280;">
+                                            ${new Date(deposit.createdAt).toLocaleDateString()}
+                                        </div>
+                                    </div>
+                                    ${deposit.status === 'pending' ? `
+                                        <div style="display: flex; gap: 10px;">
+                                            <button onclick="approveDeposit('${deposit._id}')" class="btn btn-success" style="flex: 1;">
+                                                <i class="fas fa-check mr-1"></i> Approve
+                                            </button>
+                                            <button onclick="rejectDeposit('${deposit._id}')" class="btn btn-danger" style="flex: 1;">
+                                                <i class="fas fa-times mr-1"></i> Reject
+                                            </button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                            ${deposits.length === 0 ? `
+                                <div style="text-align: center; padding: 40px; color: #6b7280;">
+                                    No deposit requests
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Deposits error:', error);
+            }
+        }
+
+        // Load withdrawals
+        async function loadWithdrawals() {
+            try {
+                const response = await fetch('/api/admin/transactions?type=withdrawal', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    const withdrawals = result.transactions || [];
+                    
+                    document.getElementById('withdrawalsTable').innerHTML = `
+                        <div style="display: grid; gap: 15px;">
+                            ${withdrawals.map(withdrawal => `
+                                <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                        <div>
+                                            <div style="font-weight: 500;">${withdrawal.userId?.firstName || 'User'} ${withdrawal.userId?.lastName || ''}</div>
+                                            <div style="font-size: 14px; color: #6b7280;">${withdrawal.description || 'Withdrawal'}</div>
+                                        </div>
+                                        <span class="badge ${withdrawal.status === 'completed' ? 'badge-success' : 
+                                                              withdrawal.status === 'pending' ? 'badge-warning' : 'badge-danger'}">
+                            ${withdrawal.status}
+                        </span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                        <div style="font-size: 18px; font-weight: bold; color: #ef4444;">
+                                            -$${Math.abs(withdrawal.amount || 0).toFixed(2)}
+                                        </div>
+                                        <div style="font-size: 14px; color: #6b7280;">
+                                            ${new Date(withdrawal.createdAt).toLocaleDateString()}
+                                        </div>
+                                    </div>
+                                    ${withdrawal.status === 'pending' ? `
+                                        <div style="display: flex; gap: 10px;">
+                                            <button onclick="approveWithdrawal('${withdrawal._id}')" class="btn btn-success" style="flex: 1;">
+                                                <i class="fas fa-check mr-1"></i> Approve
+                                            </button>
+                                            <button onclick="rejectWithdrawal('${withdrawal._id}')" class="btn btn-danger" style="flex: 1;">
+                                                <i class="fas fa-times mr-1"></i> Reject
+                                            </button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                            ${withdrawals.length === 0 ? `
+                                <div style="text-align: center; padding: 40px; color: #6b7280;">
+                                    No withdrawal requests
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Withdrawals error:', error);
+            }
+        }
+
+        // User functions
+        function viewUserDetails(userId) {
             const user = allUsers.find(u => u._id === userId);
             if (!user) return;
-
+            
             document.getElementById('userDetailsContent').innerHTML = `
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    ${user.selfie ? `
-                        <div>
-                            <label class="block text-sm mb-2 font-semibold">Selfie</label>
-                            <img src="/uploads/${user.selfie}" alt="Selfie" class="w-full rounded-lg border-2 border-purple-500">
-                        </div>
-                    ` : ''}
-                    ${user.idFront ? `
-                        <div>
-                            <label class="block text-sm mb-2 font-semibold">ID Front</label>
-                            <img src="/uploads/${user.idFront}" alt="ID Front" class="w-full rounded-lg border-2 border-purple-500">
-                        </div>
-                    ` : ''}
-                    ${user.idBack ? `
-                        <div class="col-span-2">
-                            <label class="block text-sm mb-2 font-semibold">ID Back</label>
-                            <img src="/uploads/${user.idBack}" alt="ID Back" class="w-full max-w-md rounded-lg border-2 border-purple-500">
-                        </div>
-                    ` : ''}
+                <div style="margin-bottom: 20px;">
+                    <div style="font-weight: 500; margin-bottom: 5px;">${user.firstName} ${user.lastName}</div>
+                    <div style="color: #6b7280; font-size: 14px;">${user.email}</div>
                 </div>
-                <div class="grid grid-cols-2 gap-4 text-sm">
-                    <div><strong>Name:</strong> ${user.firstName} ${user.lastName}</div>
-                    <div><strong>Email:</strong> ${user.email}</div>
-                    <div><strong>Phone:</strong> ${user.phone}</div>
-                    <div><strong>Joined:</strong> ${new Date(user.createdAt).toLocaleDateString()}</div>
-                    <div><strong>Real Balance:</strong> $${user.balance.toFixed(2)}</div>
-                    <div><strong>Demo Balance:</strong> $${user.demoBalance.toFixed(2)}</div>
-                    <div><strong>Status:</strong> <span class="${user.isVerified ? 'text-green-400' : 'text-yellow-400'}">${user.isVerified ? 'Verified' : 'Pending Verification'}</span></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div>
+                        <div style="font-size: 14px; color: #6b7280;">Phone</div>
+                        <div>${user.phone || 'N/A'}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 14px; color: #6b7280;">Status</div>
+                        <span class="badge ${user.isVerified ? 'badge-success' : 'badge-warning'}">
+                            ${user.isVerified ? 'Verified' : 'Pending'}
+                        </span>
+                    </div>
+                    <div>
+                        <div style="font-size: 14px; color: #6b7280;">Real Balance</div>
+                        <div>$${user.balance?.toFixed(2) || '0.00'}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 14px; color: #6b7280;">Demo Balance</div>
+                        <div>$${user.demoBalance?.toFixed(2) || '0.00'}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 14px; color: #6b7280;">Joined</div>
+                        <div>${new Date(user.createdAt).toLocaleDateString()}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 14px; color: #6b7280;">Admin</div>
+                        <div>${user.isAdmin ? 'Yes' : 'No'}</div>
+                    </div>
                 </div>
-                <div class="flex justify-end mt-6">
-                    <button class="btn-secondary" onclick="closeUserDetailsModal()">Close</button>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="editBalance('${user._id}')" class="btn btn-primary">
+                        <i class="fas fa-edit mr-1"></i> Edit Balance
+                    </button>
+                    <button onclick="closeModal('userDetailsModal')" class="btn btn-secondary">Close</button>
                 </div>
             `;
             
             document.getElementById('userDetailsModal').style.display = 'flex';
         }
 
-        function closeUserDetailsModal() {
-            document.getElementById('userDetailsModal').style.display = 'none';
-        }
-
-        // ✅ Foydalanuvchini tasdiqlash
-async function verifyUser(userId) {
-    if (!confirm("Are you sure you want to verify this user?")) return;
-
-    try {
-        const res = await fetch(`/api/admin/verify-user/${userId}`, {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                "Content-Type": "application/json"
-            }
-        });
-        const data = await res.json();
-
-        if (data.success) {
-            alert("✅ User verified successfully!");
-            loadUsers();
-        } else {
-            alert("❌ " + data.message);
-        }
-    } catch (err) {
-        console.error(err);
-        alert("Error verifying user.");
-    }
-}
-
-// ✅ Pul chiqarish so‘rovini tasdiqlash
-async function approveWithdrawal(withdrawalId) {
-    if (!confirm("Approve this withdrawal request?")) return;
-
-    try {
-        const res = await fetch(`/api/admin/approve-withdrawal/${withdrawalId}`, {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                "Content-Type": "application/json"
-            }
-        });
-        const data = await res.json();
-
-        if (data.success) {
-            alert("✅ Withdrawal approved and user balance updated!");
-            loadWithdrawals();
-            loadUsers(); // balans yangilanishi uchun
-        } else {
-            alert("❌ " + data.message);
-        }
-    } catch (err) {
-        console.error(err);
-        alert("Error approving withdrawal.");
-    }
-}
-
-        // Load transactions
-        async function loadTransactions() {
-            try {
-                const response = await fetch('/api/admin/transactions', {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const result = await response.json();
-                
-                if (result.success) {
-                    allTransactions = result.transactions;
-                    displayTransactions(allTransactions);
-                } else {
-                    throw new Error(result.error);
-                }
-            } catch (error) {
-                console.error('Failed to load transactions:', error);
-            }
-        }
-
-        function displayTransactions(transactions) {
-            const tbody = document.getElementById('transactionsTable');
+        function editBalance(userId) {
+            const user = allUsers.find(u => u._id === userId);
+            if (!user) return;
             
-            if (transactions.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="py-8 text-center text-gray-400">
-                            No transactions found
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            tbody.innerHTML = transactions.map(transaction => `
-                <tr class="border-b border-gray-700 hover:bg-gray-800">
-                    <td class="py-4 px-6">${new Date(transaction.createdAt).toLocaleDateString()}</td>
-                    <td class="py-4 px-6">
-                        <div class="text-sm font-semibold">${transaction.userId?.firstName || 'N/A'} ${transaction.userId?.lastName || ''}</div>
-                        <div class="text-xs text-gray-400">${transaction.userId?.email || 'N/A'}</div>
-                    </td>
-                    <td class="py-4 px-6 capitalize">${transaction.type.replace('_', ' ')}</td>
-                    <td class="py-4 px-6 ${transaction.amount > 0 ? 'text-green-400' : 'text-red-400'} font-semibold">
-                        ${transaction.amount > 0 ? '+' : ''}$${Math.abs(transaction.amount).toFixed(2)}
-                    </td>
-                    <td class="py-4 px-6">
-                        <span class="px-2 py-1 rounded text-xs ${
-                            transaction.status === 'completed' ? 'bg-green-500' :
-                            transaction.status === 'pending' ? 'bg-yellow-500' :
-                            'bg-red-500'
-                        }">${transaction.status}</span>
-                    </td>
-                    <td class="py-4 px-6 text-sm text-gray-400">${transaction.description || 'N/A'}</td>
-                </tr>
-            `).join('');
-        }
-
-        function filterTransactions() {
-            const filter = document.getElementById('transactionFilter').value;
-            let filtered = allTransactions;
-            
-            if (filter !== 'all') {
-                filtered = allTransactions.filter(t => t.type === filter);
-            }
-            
-            displayTransactions(filtered);
-        }
-
-        // Load games
-        async function loadGames() {
-            try {
-                const response = await fetch('/api/games');
-                const result = await response.json();
-                
-                if (result.success) {
-                    displayGames(result.games);
-                }
-            } catch (error) {
-                console.error('Failed to load games:', error);
-            }
-        }
-
-        function displayGames(games) {
-            const container = document.getElementById('gamesContainer');
-            
-            if (games.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-3 text-center py-8 text-gray-400">
-                        <i class="fas fa-gamepad text-4xl mb-4"></i>
-                        <p>No games available</p>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = games.map(game => `
-                <div class="glass-effect rounded-xl p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-bold">${game.name}</h3>
-                        <span class="px-2 py-1 rounded text-xs ${game.isActive ? 'bg-green-500' : 'bg-red-500'}">
-                            ${game.isActive ? 'Active' : 'Inactive'}
-                        </span>
-                    </div>
-                    <div class="text-sm text-gray-400 mb-4">
-                        <div>Code: ${game.code}</div>
-                        <div>Created: ${new Date(game.createdAt).toLocaleDateString()}</div>
-                    </div>
-                    <div class="flex space-x-2">
-                        <button class="btn-secondary text-xs" onclick="toggleGameStatus('${game._id}', ${!game.isActive})">
-                            <i class="fas fa-power-off mr-1"></i>${game.isActive ? 'Deactivate' : 'Activate'}
-                        </button>
-                        <button class="btn-danger text-xs" onclick="deleteGame('${game._id}')">
-                            <i class="fas fa-trash mr-1"></i>Delete
-                        </button>
-                    </div>
+            document.getElementById('editBalanceForm').innerHTML = `
+                <div style="margin-bottom: 15px;">
+                    <div style="font-weight: 500;">${user.firstName} ${user.lastName}</div>
+                    <div style="font-size: 14px; color: #6b7280;">Current balance: $${user.balance?.toFixed(2)}</div>
                 </div>
-            `).join('');
-        }
-
-        // Add game modal
-        function showAddGameModal() {
-            document.getElementById('addGameModal').style.display = 'flex';
-        }
-
-        function closeAddGameModal() {
-            document.getElementById('addGameModal').style.display = 'none';
-            document.getElementById('addGameForm').reset();
-        }
-
-        // Add game form submission
-        document.getElementById('addGameForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+                <form onsubmit="updateBalance(event, '${user._id}')">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-size: 14px;">New Balance</label>
+                        <input type="number" step="0.01" value="${user.balance}" required 
+                               style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px;">
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" class="btn btn-primary" style="flex: 1;">Save</button>
+                        <button type="button" onclick="closeModal('editBalanceModal')" class="btn btn-secondary">Cancel</button>
+                    </div>
+                </form>
+            `;
             
-            const name = document.getElementById('gameName').value;
-            const code = document.getElementById('gameCode').value;
+            document.getElementById('editBalanceModal').style.display = 'flex';
+        }
 
+        async function updateBalance(event, userId) {
+            event.preventDefault();
+            const newBalance = event.target.querySelector('input').value;
+            
             try {
-                const response = await fetch('/api/admin/games', {
-                    method: 'POST',
+                const response = await fetch(`/api/admin/users/${userId}/balance`, {
+                    method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ name, code })
+                    body: JSON.stringify({ balance: parseFloat(newBalance) })
                 });
-
-                const result = await response.json();
                 
-                if (result.success) {
-                    alert('Game added successfully!');
-                    closeAddGameModal();
-                    loadGames();
-                } else {
-                    alert('Error: ' + result.error);
+                if (response.ok) {
+                    alert('Balance updated successfully!');
+                    closeModal('editBalanceModal');
+                    loadUsers();
+                    loadDashboard();
                 }
             } catch (error) {
-                console.error('Failed to add game:', error);
-                alert('Failed to add game');
-            }
-        });
-
-        // Load withdrawals
-        async function loadWithdrawals() {
-            try {
-                // Filter transactions for withdrawals
-                const withdrawals = allTransactions.filter(t => t.type === 'withdrawal');
-                displayWithdrawals(withdrawals);
-            } catch (error) {
-                console.error('Failed to load withdrawals:', error);
+                console.error('Update balance error:', error);
+                alert('Error updating balance');
             }
         }
 
-        function displayWithdrawals(withdrawals) {
-            const tbody = document.getElementById('withdrawalsTable');
+        // Verification functions
+        async function approveVerification(userId) {
+            if (!confirm('Approve this user?')) return;
             
-            if (withdrawals.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="py-8 text-center text-gray-400">
-                            No withdrawal requests
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            tbody.innerHTML = withdrawals.map(withdrawal => `
-                <tr class="border-b border-gray-700 hover:bg-gray-800">
-                    <td class="py-4 px-6">${new Date(withdrawal.createdAt).toLocaleDateString()}</td>
-                    <td class="py-4 px-6">
-                        <div class="text-sm font-semibold">${withdrawal.userId?.firstName || 'N/A'} ${withdrawal.userId?.lastName || ''}</div>
-                        <div class="text-xs text-gray-400">${withdrawal.userId?.email || 'N/A'}</div>
-                    </td>
-                    <td class="py-4 px-6 font-semibold text-red-400">
-                        -$${Math.abs(withdrawal.amount).toFixed(2)}
-                    </td>
-                    <td class="py-4 px-6">
-                        <span class="px-2 py-1 rounded text-xs ${
-                            withdrawal.status === 'completed' ? 'bg-green-500' :
-                            withdrawal.status === 'pending' ? 'bg-yellow-500' :
-                            'bg-red-500'
-                        }">${withdrawal.status}</span>
-                    </td>
-                    <td class="py-4 px-6">
-                        ${withdrawal.status === 'pending' ? `
-                            <div class="flex space-x-2">
-                                <button class="btn-success text-xs" onclick="updateWithdrawalStatus('${withdrawal._id}', 'completed')">
-                                    <i class="fas fa-check mr-1"></i>Approve
-                                </button>
-                                <button class="btn-danger text-xs" onclick="updateWithdrawalStatus('${withdrawal._id}', 'rejected')">
-                                    <i class="fas fa-times mr-1"></i>Reject
-                                </button>
-                            </div>
-                        ` : 'No actions available'}
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        // Update withdrawal status
-        async function updateWithdrawalStatus(withdrawalId, status) {
-            if (confirm(`Are you sure you want to ${status} this withdrawal?`)) {
-                try {
-                    const response = await fetch(`/api/admin/withdrawals/${withdrawalId}/status`, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ status })
-                    });
-
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        // Update local data for immediate UI change
-                        const transaction = allTransactions.find(t => t._id === withdrawalId);
-                        if (transaction) {
-                            transaction.status = status;
-                            if (status === 'completed') {
-                                const user = allUsers.find(u => u._id === transaction.userId?._id);
-                                if (user) {
-                                    user.balance -= Math.abs(transaction.amount);
-                                }
-                            }
-                        }
-                        // Refresh displays immediately
-                        displayUsers(allUsers);
-                        displayTransactions(allTransactions);
-                        const withdrawals = allTransactions.filter(t => t.type === 'withdrawal');
-                        displayWithdrawals(withdrawals);
-                        loadStats(); // Update stats
-                        alert(`Withdrawal ${status} successfully!`);
-                    } else {
-                        alert('Error: ' + result.error);
-                    }
-                } catch (error) {
-                    console.error('Failed to update withdrawal status:', error);
-                    alert('Failed to update withdrawal status');
+            try {
+                const response = await fetch(`/api/admin/users/${userId}/verify`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ isVerified: true })
+                });
+                
+                if (response.ok) {
+                    alert('User verified successfully!');
+                    loadVerifications();
+                    loadDashboard();
                 }
+            } catch (error) {
+                console.error('Approve verification error:', error);
+                alert('Error approving user');
             }
         }
 
-        // Refresh functions
-        function refreshUsers() {
-            loadUsers();
+        // Transaction functions
+        async function approveDeposit(transactionId) {
+            if (!confirm('Approve this deposit?')) return;
+            
+            try {
+                const response = await fetch(`/api/admin/transactions/${transactionId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: 'completed' })
+                });
+                
+                if (response.ok) {
+                    alert('Deposit approved!');
+                    loadDeposits();
+                    loadDashboard();
+                }
+            } catch (error) {
+                console.error('Approve deposit error:', error);
+                alert('Error approving deposit');
+            }
         }
 
-        function refreshTransactions() {
-            loadTransactions();
+        async function approveWithdrawal(transactionId) {
+            if (!confirm('Approve this withdrawal?')) return;
+            
+            try {
+                const response = await fetch(`/api/admin/transactions/${transactionId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: 'completed' })
+                });
+                
+                if (response.ok) {
+                    alert('Withdrawal approved!');
+                    loadWithdrawals();
+                    loadDashboard();
+                }
+            } catch (error) {
+                console.error('Approve withdrawal error:', error);
+                alert('Error approving withdrawal');
+            }
         }
 
-        function refreshWithdrawals() {
-            loadWithdrawals();
+        // Utility functions
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
         }
 
-        // Logout
-        document.getElementById('logoutBtn').addEventListener('click', function() {
+        function showAddGameModal() {
+            document.getElementById('addGameModal').style.display = 'flex';
+        }
+
+        function logout() {
             localStorage.removeItem('token');
             window.location.href = '/register-login';
-        });
+        }
 
-        // User menu toggle
-        document.getElementById('userMenuButton').addEventListener('click', function() {
-            const menu = document.getElementById('userMenu');
-            menu.classList.toggle('hidden');
-        });
-
-        // Close modals when clicking outside
-        window.addEventListener('click', function(event) {
-            if (event.target === document.getElementById('editBalanceModal')) {
-                closeEditBalanceModal();
-            }
-            if (event.target === document.getElementById('addGameModal')) {
-                closeAddGameModal();
-            }
-            if (event.target === document.getElementById('userDetailsModal')) {
-                closeUserDetailsModal();
-            }
-        });
+        // Window resize handler
+        window.addEventListener('resize', setupMobileMenu);
     </script>
 </body>
 </html>

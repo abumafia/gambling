@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roulette - LuckyBet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0c0f1d 0%, #1a1f3d 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+        .game-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .roulette-wheel {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #e53e3e 0deg 120deg,
+                #000 120deg 240deg,
+                #10b981 240deg 360deg
+            );
+            position: relative;
+            margin: 0 auto;
+            transition: transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .roulette-ball {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+        .roulette-pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #f5576c;
+        }
+        .bet-choice {
+            padding: 12px 20px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .bet-choice:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        .bet-choice.active {
+            border-color: #f5576c;
+            background: rgba(245, 87, 108, 0.2);
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        }
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 4px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .number-cell {
+            padding: 8px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .number-cell:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        .number-cell.red { background: #e53e3e; }
+        .number-cell.black { background: #2d3748; }
+        .number-cell.green { background: #10b981; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <nav class="bg-gradient-to-r from-red-900 to-green-800 py-4 px-6 flex justify-between items-center">
+        <a href="/" class="text-2xl font-bold text-white">
+            <i class="fas fa-sync-alt mr-2"></i>Ruletka
+        </a>
+        <a href="/" class="text-white hover:text-red-300">
+            <i class="fas fa-home mr-2"></i>Asosiy sahifa
+        </a>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-6xl mx-auto">
+            <div class="game-container rounded-2xl p-6 mb-8">
+                <h1 class="text-3xl font-bold mb-4">Ruletka</h1>
+                <p class="text-gray-300 mb-6">Qizil, qora yoki yashil rangga tiklang! Yashil (0) chiqsa 14 barobar yutasiz!</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Game Area -->
+                    <div>
+                        <div class="relative mb-8">
+                            <div class="roulette-wheel" id="rouletteWheel">
+                                <div class="roulette-ball" id="rouletteBall"></div>
+                                <div class="roulette-pointer"></div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mb-8">
+                            <h3 class="text-xl font-bold mb-2" id="resultText">Ruletkani aylantiring</h3>
+                            <p class="text-gray-300" id="resultDescription">Rang yoki raqam tanlang</p>
+                            <div class="text-3xl font-bold mt-4" id="winningNumber">-</div>
+                        </div>
+
+                        <!-- Color Bets -->
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div class="bet-choice text-center" onclick="selectBet('red')">
+                                <div class="text-2xl mb-2">🔴</div>
+                                <div class="font-bold">Qizil</div>
+                                <div class="text-sm opacity-70">2x</div>
+                            </div>
+                            <div class="bet-choice text-center" onclick="selectBet('black')">
+                                <div class="text-2xl mb-2">⚫</div>
+                                <div class="font-bold">Qora</div>
+                                <div class="text-sm opacity-70">2x</div>
+                            </div>
+                            <div class="bet-choice text-center" onclick="selectBet('green')">
+                                <div class="text-2xl mb-2">🟢</div>
+                                <div class="font-bold">Yashil</div>
+                                <div class="text-sm opacity-70">14x</div>
+                            </div>
+                        </div>
+
+                        <!-- Number Grid -->
+                        <div class="game-container rounded-xl p-4 mb-6">
+                            <h3 class="text-lg font-bold mb-3">Raqamlarga tikish</h3>
+                            <div class="number-grid">
+                                <div class="number-cell green" onclick="selectNumber(0)">0</div>
+                                <div class="number-cell red" onclick="selectNumber(1)">1</div>
+                                <div class="number-cell black" onclick="selectNumber(2)">2</div>
+                                <div class="number-cell red" onclick="selectNumber(3)">3</div>
+                                <div class="number-cell black" onclick="selectNumber(4)">4</div>
+                                <div class="number-cell red" onclick="selectNumber(5)">5</div>
+                                <div class="number-cell black" onclick="selectNumber(6)">6</div>
+                                <div class="number-cell red" onclick="selectNumber(7)">7</div>
+                                <div class="number-cell black" onclick="selectNumber(8)">8</div>
+                                <div class="number-cell red" onclick="selectNumber(9)">9</div>
+                                <div class="number-cell black" onclick="selectNumber(10)">10</div>
+                                <div class="number-cell black" onclick="selectNumber(11)">11</div>
+                                <div class="number-cell red" onclick="selectNumber(12)">12</div>
+                                <div class="number-cell black" onclick="selectNumber(13)">13</div>
+                                <div class="number-cell red" onclick="selectNumber(14)">14</div>
+                                <div class="number-cell black" onclick="selectNumber(15)">15</div>
+                                <div class="number-cell red" onclick="selectNumber(16)">16</div>
+                                <div class="number-cell black" onclick="selectNumber(17)">17</div>
+                                <div class="number-cell red" onclick="selectNumber(18)">18</div>
+                                <div class="number-cell red" onclick="selectNumber(19)">19</div>
+                                <div class="number-cell black" onclick="selectNumber(20)">20</div>
+                                <div class="number-cell red" onclick="selectNumber(21)">21</div>
+                                <div class="number-cell black" onclick="selectNumber(22)">22</div>
+                                <div class="number-cell red" onclick="selectNumber(23)">23</div>
+                                <div class="number-cell black" onclick="selectNumber(24)">24</div>
+                                <div class="number-cell red" onclick="selectNumber(25)">25</div>
+                                <div class="number-cell black" onclick="selectNumber(26)">26</div>
+                                <div class="number-cell red" onclick="selectNumber(27)">27</div>
+                                <div class="number-cell black" onclick="selectNumber(28)">28</div>
+                                <div class="number-cell black" onclick="selectNumber(29)">29</div>
+                                <div class="number-cell red" onclick="selectNumber(30)">30</div>
+                                <div class="number-cell black" onclick="selectNumber(31)">31</div>
+                                <div class="number-cell red" onclick="selectNumber(32)">32</div>
+                                <div class="number-cell black" onclick="selectNumber(33)">33</div>
+                                <div class="number-cell red" onclick="selectNumber(34)">34</div>
+                                <div class="number-cell black" onclick="selectNumber(35)">35</div>
+                                <div class="number-cell red" onclick="selectNumber(36)">36</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bet Controls -->
+                    <div>
+                        <!-- Balance -->
+                        <div class="bg-gradient-to-r from-red-600 to-green-600 rounded-xl p-6 mb-6">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="text-sm opacity-80">Balans</div>
+                                    <div class="text-2xl font-bold" id="userBalance">0 UZS</div>
+                                </div>
+                                <div>
+                                    <div class="text-sm opacity-80">Demo balans</div>
+                                    <div class="text-xl font-bold" id="demoBalance">5000 UZS</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bet Amount -->
+                        <div class="game-container rounded-xl p-6 mb-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-bold">Stavka miqdori</h3>
+                                <div class="flex items-center space-x-2">
+                                    <button class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center hover:bg-gray-600" onclick="adjustBet(-100)">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <span class="text-2xl font-bold w-32 text-center" id="betAmount">100 UZS</span>
+                                    <button class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center hover:bg-gray-600" onclick="adjustBet(100)">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-4 gap-2 mb-4">
+                                <button class="py-2 bg-gray-800 rounded hover:bg-gray-700" onclick="setBet(50)">50</button>
+                                <button class="py-2 bg-gray-800 rounded hover:bg-gray-700" onclick="setBet(100)">100</button>
+                                <button class="py-2 bg-gray-800 rounded hover:bg-gray-700" onclick="setBet(500)">500</button>
+                                <button class="py-2 bg-gray-800 rounded hover:bg-gray-700" onclick="setBet(1000)">1000</button>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <span>Demo rejim</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer" id="demoMode" checked>
+                                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Selected Bets -->
+                        <div class="game-container rounded-xl p-6 mb-6">
+                            <h3 class="text-lg font-bold mb-3">Tanlangan stavkalar</h3>
+                            <div id="selectedBets" class="space-y-2">
+                                <div class="text-gray-400 text-center py-4">Hech qanday stavka tanlanmagan</div>
+                            </div>
+                        </div>
+
+                        <!-- Potential Win -->
+                        <div class="game-container rounded-xl p-6 mb-6">
+                            <h3 class="text-lg font-bold mb-4">Potensial yutish</h3>
+                            <div class="text-3xl font-bold text-green-400 text-center" id="potentialWin">0 UZS</div>
+                            <div class="text-center text-gray-300" id="multiplierText">Koefitsiyent: -</div>
+                        </div>
+
+                        <!-- Play Button -->
+                        <button class="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl text-xl font-bold hover:from-purple-600 hover:to-pink-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed" id="playBtn" onclick="playGame()">
+                            <i class="fas fa-play mr-2"></i> AYLANTIRISH
+                        </button>
+
+                        <!-- Clear Bets -->
+                        <button class="w-full py-3 bg-gray-800 rounded-xl mt-4 hover:bg-gray-700" onclick="clearBets()">
+                            <i class="fas fa-trash mr-2"></i> Stavkalarni tozalash
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game History -->
+            <div class="game-container rounded-2xl p-6">
+                <h2 class="text-2xl font-bold mb-4">O'yin tarixi</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="py-3 text-left">Vaqt</th>
+                                <th class="py-3 text-left">Stavka</th>
+                                <th class="py-3 text-left">Tanlov</th>
+                                <th class="py-3 text-left">Natija</th>
+                                <th class="py-3 text-left">Yutuq</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTable">
+                            <tr>
+                                <td colspan="5" class="py-8 text-center text-gray-400">
+                                    Hozircha o'yinlar mavjud emas
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game variables
+        let selectedBets = [];
+        let betAmount = 100;
+        let isDemo = true;
+        let balance = 0;
+        let demoBalance = 5000;
+        let isSpinning = false;
+        let gameHistory = [];
+
+        // Roulette numbers (0-36)
+        const rouletteNumbers = Array.from({length: 37}, (_, i) => i);
+        const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+        const blackNumbers = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35];
+
+        // DOM elements
+        const rouletteWheel = document.getElementById('rouletteWheel');
+        const rouletteBall = document.getElementById('rouletteBall');
+        const resultText = document.getElementById('resultText');
+        const resultDescription = document.getElementById('resultDescription');
+        const winningNumber = document.getElementById('winningNumber');
+        const betAmountDisplay = document.getElementById('betAmount');
+        const potentialWin = document.getElementById('potentialWin');
+        const multiplierText = document.getElementById('multiplierText');
+        const selectedBetsDiv = document.getElementById('selectedBets');
+        const playBtn = document.getElementById('playBtn');
+        const userBalance = document.getElementById('userBalance');
+        const demoBalanceDisplay = document.getElementById('demoBalance');
+        const demoModeToggle = document.getElementById('demoMode');
+        const historyTable = document.getElementById('historyTable');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            updateUI();
+        });
+
+        // Load user data
+        function loadUserData() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                fetch('https://gambling-h78m.onrender.com/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        balance = data.user.balance;
+                        demoBalance = data.user.demoBalance;
+                        updateBalanceDisplay();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading user data:', error);
+                });
+            }
+        }
+
+        // Update balance display
+        function updateBalanceDisplay() {
+            userBalance.textContent = `${balance.toLocaleString()} UZS`;
+            demoBalanceDisplay.textContent = `${demoBalance.toLocaleString()} UZS`;
+        }
+
+        // Select bet on color
+        function selectBet(color) {
+            if (isSpinning) return;
+            
+            const bet = {
+                type: 'color',
+                value: color,
+                multiplier: color === 'green' ? 14 : 2
+            };
+            
+            addBet(bet);
+        }
+
+        // Select bet on number
+        function selectNumber(number) {
+            if (isSpinning) return;
+            
+            const color = number === 0 ? 'green' : 
+                         redNumbers.includes(number) ? 'red' : 'black';
+            
+            const bet = {
+                type: 'number',
+                value: number,
+                color: color,
+                multiplier: 36
+            };
+            
+            addBet(bet);
+        }
+
+        // Add bet to selected bets
+        function addBet(bet) {
+            // Check if bet already exists
+            const exists = selectedBets.some(b => 
+                b.type === bet.type && b.value === bet.value
+            );
+            
+            if (!exists) {
+                selectedBets.push(bet);
+                updateSelectedBets();
+                updatePotentialWin();
+            }
+        }
+
+        // Update selected bets display
+        function updateSelectedBets() {
+            if (selectedBets.length === 0) {
+                selectedBetsDiv.innerHTML = `
+                    <div class="text-gray-400 text-center py-4">
+                        Hech qanday stavka tanlanmagan
+                    </div>
+                `;
+                return;
+            }
+            
+            selectedBetsDiv.innerHTML = selectedBets.map((bet, index) => `
+                <div class="flex justify-between items-center bg-gray-800 p-3 rounded-lg">
+                    <div>
+                        <span class="font-bold">${getBetName(bet)}</span>
+                        <span class="text-sm text-gray-400 ml-2">${bet.multiplier}x</span>
+                    </div>
+                    <div>
+                        <span class="mr-4">${betAmount} UZS</span>
+                        <button onclick="removeBet(${index})" class="text-red-400 hover:text-red-300">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Get bet name for display
+        function getBetName(bet) {
+            if (bet.type === 'color') {
+                return bet.value === 'red' ? '🔴 Qizil' : 
+                       bet.value === 'black' ? '⚫ Qora' : '🟢 Yashil';
+            } else if (bet.type === 'number') {
+                return `Raqam ${bet.value}`;
+            }
+            return 'Noma\'lum';
+        }
+
+        // Remove bet
+        function removeBet(index) {
+            if (isSpinning) return;
+            selectedBets.splice(index, 1);
+            updateSelectedBets();
+            updatePotentialWin();
+        }
+
+        // Clear all bets
+        function clearBets() {
+            if (isSpinning) return;
+            selectedBets = [];
+            updateSelectedBets();
+            updatePotentialWin();
+        }
+
+        // Adjust bet amount
+        function adjustBet(amount) {
+            const newBet = betAmount + amount;
+            if (newBet >= 10 && newBet <= 10000) {
+                betAmount = newBet;
+                updateBetDisplay();
+                updateSelectedBets();
+                updatePotentialWin();
+            }
+        }
+
+        // Set bet amount
+        function setBet(amount) {
+            if (amount >= 10 && amount <= 10000) {
+                betAmount = amount;
+                updateBetDisplay();
+                updateSelectedBets();
+                updatePotentialWin();
+            }
+        }
+
+        // Update bet display
+        function updateBetDisplay() {
+            betAmountDisplay.textContent = `${betAmount} UZS`;
+        }
+
+        // Update potential win
+        function updatePotentialWin() {
+            if (selectedBets.length === 0) {
+                potentialWin.textContent = "0 UZS";
+                multiplierText.textContent = "Koefitsiyent: -";
+                return;
+            }
+            
+            let totalPotential = 0;
+            let maxMultiplier = 0;
+            
+            selectedBets.forEach(bet => {
+                const winAmount = betAmount * bet.multiplier;
+                totalPotential += winAmount;
+                if (bet.multiplier > maxMultiplier) {
+                    maxMultiplier = bet.multiplier;
+                }
+            });
+            
+            potentialWin.textContent = `${totalPotential.toLocaleString()} UZS`;
+            multiplierText.textContent = `Koefitsiyent: ${maxMultiplier}x`;
+        }
+
+        // Play game
+        function playGame() {
+            if (isSpinning || selectedBets.length === 0) return;
+            
+            isSpinning = true;
+            playBtn.disabled = true;
+            isDemo = demoModeToggle.checked;
+            
+            // Check balance
+            const totalBet = betAmount * selectedBets.length;
+            const currentBalance = isDemo ? demoBalance : balance;
+            if (totalBet > currentBalance) {
+                alert('Balans yetarli emas!');
+                playBtn.disabled = false;
+                isSpinning = false;
+                return;
+            }
+
+            // Start animation
+            resultText.textContent = "Ruletka aylanmoqda...";
+            resultDescription.textContent = "Kuting...";
+            winningNumber.textContent = "-";
+            
+            // Spin the wheel
+            const spins = 5 + Math.random() * 3; // 5-8 rotations
+            const degrees = spins * 360 + Math.random() * 360;
+            
+            rouletteWheel.style.transform = `rotate(${degrees}deg)`;
+            
+            // Calculate winning number based on rotation
+            setTimeout(() => {
+                const rawRotation = degrees % 360;
+                const winningNum = Math.floor((rawRotation / 360) * 37);
+                const winningColor = winningNum === 0 ? 'green' : 
+                                   redNumbers.includes(winningNum) ? 'red' : 'black';
+                
+                // Update display
+                winningNumber.textContent = winningNum;
+                winningNumber.style.color = winningColor === 'red' ? '#e53e3e' : 
+                                           winningColor === 'black' ? '#000' : '#10b981';
+                
+                // Check bets
+                let totalWin = 0;
+                let winningBets = [];
+                
+                selectedBets.forEach(bet => {
+                    let isWin = false;
+                    
+                    if (bet.type === 'color') {
+                        isWin = bet.value === winningColor;
+                    } else if (bet.type === 'number') {
+                        isWin = bet.value === winningNum;
+                    }
+                    
+                    if (isWin) {
+                        const winAmount = betAmount * bet.multiplier;
+                        totalWin += winAmount;
+                        winningBets.push(getBetName(bet));
+                    }
+                });
+                
+                // Update result
+                if (winningBets.length > 0) {
+                    resultText.textContent = "Tabriklaymiz! Yutdingiz!";
+                    resultText.style.color = "#10b981";
+                    resultDescription.textContent = `G'olib raqam: ${winningNum} (${winningColor === 'red' ? '🔴' : winningColor === 'black' ? '⚫' : '🟢'})`;
+                } else {
+                    resultText.textContent = "Afsus! Yutqazdingiz";
+                    resultText.style.color = "#ef4444";
+                    resultDescription.textContent = `Raqam: ${winningNum}`;
+                }
+                
+                // Update balance
+                const netAmount = totalWin - totalBet;
+                if (isDemo) {
+                    demoBalance += netAmount;
+                } else {
+                    balance += netAmount;
+                    // Save to server
+                    saveGameResult(totalBet, totalWin, winningBets.length > 0);
+                }
+                
+                // Add to history
+                addToHistory({
+                    time: new Date().toLocaleTimeString(),
+                    bet: totalBet,
+                    selection: `${selectedBets.length} ta stavka`,
+                    result: winningNum,
+                    win: totalWin,
+                    isWin: winningBets.length > 0
+                });
+                
+                // Update UI
+                updateBalanceDisplay();
+                playBtn.disabled = false;
+                isSpinning = false;
+                clearBets();
+                
+            }, 3000);
+        }
+
+        // Save game result to server
+        function saveGameResult(betAmount, winAmount, isWin) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            
+            fetch('https://gambling-h78m.onrender.com/api/play/roulette', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    betAmount: betAmount,
+                    winAmount: winAmount,
+                    isDemo: isDemo,
+                    result: isWin ? 'win' : 'loss'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Game result saved');
+                }
+            })
+            .catch(error => {
+                console.error('Error saving game result:', error);
+            });
+        }
+
+        // Add to history table
+        function addToHistory(game) {
+            gameHistory.unshift(game);
+            if (gameHistory.length > 10) gameHistory.pop();
+            
+            historyTable.innerHTML = gameHistory.map(game => `
+                <tr class="border-b border-gray-800">
+                    <td class="py-3">${game.time}</td>
+                    <td class="py-3">${game.bet} UZS</td>
+                    <td class="py-3">${game.selection}</td>
+                    <td class="py-3">${game.result}</td>
+                    <td class="py-3 ${game.isWin ? 'text-green-400' : 'text-red-400'}">
+                        ${game.isWin ? `+${game.win} UZS` : `-${game.bet} UZS`}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Update UI
+        function updateUI() {
+            updateBetDisplay();
+            updateBalanceDisplay();
+        }
+    </script>
+</body>
+</html>

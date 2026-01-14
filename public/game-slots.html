@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slot Machine - LuckyBet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0c0f1d 0%, #1a1f3d 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+        .game-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .slot-machine {
+            background: linear-gradient(135deg, #2d3748, #4a5568);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        .slot-reel {
+            width: 80px;
+            height: 120px;
+            background: linear-gradient(180deg, #4a5568 0%, #2d3748 100%);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.7), 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .slot-symbol {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+        .slot-symbol:hover {
+            transform: scale(1.1);
+        }
+        .slot-spinning {
+            animation: slotSpin 0.3s linear infinite;
+        }
+        @keyframes slotSpin {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-120px); }
+        }
+        .bet-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        .bet-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        .win-animation {
+            animation: winPulse 0.5s ease-in-out;
+        }
+        @keyframes winPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); box-shadow: 0 0 30px gold; }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-gradient-to-r from-green-900 to-teal-800 py-4 px-6 flex justify-between items-center">
+        <a href="/" class="text-2xl font-bold text-white">
+            <i class="fas fa-slot-machine mr-2"></i>Slot Machine
+        </a>
+        <a href="/" class="text-white hover:text-green-300">
+            <i class="fas fa-home mr-2"></i>Asosiy sahifa
+        </a>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Game Info -->
+            <div class="game-container rounded-2xl p-6 mb-8">
+                <h1 class="text-3xl font-bold mb-4">Slot Machine</h1>
+                <p class="text-gray-300 mb-6">G'ildiraklarni aylantiring va 3 ta bir xil belgi chiqsa katta yutuq yuting! Eng yuqori yutuq: 3x multiplier!</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Left Column: Game Area -->
+                    <div>
+                        <div class="mb-8">
+                            <div class="slot-machine flex justify-center gap-4 mb-6">
+                                <div class="slot-reel" id="reel1">
+                                    <div class="slot-symbol">🍒</div>
+                                </div>
+                                <div class="slot-reel" id="reel2">
+                                    <div class="slot-symbol">🍋</div>
+                                </div>
+                                <div class="slot-reel" id="reel3">
+                                    <div class="slot-symbol">🍊</div>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <h3 class="text-xl font-bold mb-2" id="resultText">Spin tugmasini bosing</h3>
+                                <p class="text-gray-300" id="resultDescription">3 ta bir xil belgi chiqsa yutasiz!</p>
+                            </div>
+                        </div>
+
+                        <!-- Win Lines -->
+                        <div class="game-container rounded-xl p-4 mb-6">
+                            <h3 class="text-lg font-bold mb-3">Yutuq kombinatsiyalari</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="flex items-center">
+                                    <div class="text-2xl mr-2">🍒🍒🍒</div>
+                                    <div class="text-sm">3.0x</div>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="text-2xl mr-2">🍋🍋🍋</div>
+                                    <div class="text-sm">2.5x</div>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="text-2xl mr-2">🍊🍊🍊</div>
+                                    <div class="text-sm">2.0x</div>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="text-2xl mr-2">💎💎💎</div>
+                                    <div class="text-sm">5.0x</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Bet Controls -->
+                    <div>
+                        <!-- Balance -->
+                        <div class="bg-gradient-to-r from-green-600 to-teal-600 rounded-xl p-6 mb-6">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="text-sm opacity-80">Balans</div>
+                                    <div class="text-2xl font-bold" id="userBalance">0 UZS</div>
+                                </div>
+                                <div>
+                                    <div class="text-sm opacity-80">Demo balans</div>
+                                    <div class="text-xl font-bold" id="demoBalance">5000 UZS</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bet Amount -->
+                        <div class="game-container rounded-xl p-6 mb-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-bold">Stavka miqdori</h3>
+                                <div class="flex items-center space-x-2">
+                                    <button class="bet-btn" onclick="adjustBet(-100)">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <span class="text-2xl font-bold w-32 text-center" id="betAmount">100 UZS</span>
+                                    <button class="bet-btn" onclick="adjustBet(100)">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Bets -->
+                            <div class="grid grid-cols-4 gap-2 mb-4">
+                                <button class="py-2 bg-gray-800 rounded hover:bg-gray-700" onclick="setBet(50)">50</button>
+                                <button class="py-2 bg-gray-800 rounded hover:bg-gray-700" onclick="setBet(100)">100</button>
+                                <button class="py-2 bg-gray-800 rounded hover:bg-gray-700" onclick="setBet(500)">500</button>
+                                <button class="py-2 bg-gray-800 rounded hover:bg-gray-700" onclick="setBet(1000)">1000</button>
+                            </div>
+
+                            <!-- Demo Mode Toggle -->
+                            <div class="flex items-center justify-between">
+                                <span>Demo rejim</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer" id="demoMode" checked>
+                                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Potential Win -->
+                        <div class="game-container rounded-xl p-6 mb-6">
+                            <h3 class="text-lg font-bold mb-4">Potensial yutish</h3>
+                            <div class="text-3xl font-bold text-green-400 text-center" id="potentialWin">300 UZS</div>
+                            <div class="text-center text-gray-300">(3.0x maksimal koefitsiyent)</div>
+                        </div>
+
+                        <!-- Play Button -->
+                        <button class="w-full py-4 bg-gradient-to-r from-red-500 to-pink-600 rounded-xl text-xl font-bold hover:from-red-600 hover:to-pink-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed" id="playBtn" onclick="playGame()">
+                            <i class="fas fa-redo mr-2"></i> SPIN
+                        </button>
+
+                        <!-- Auto Play -->
+                        <button class="w-full py-3 bg-gray-800 rounded-xl mt-4 hover:bg-gray-700" onclick="toggleAutoPlay()" id="autoPlayBtn">
+                            <i class="fas fa-play-circle mr-2"></i> Auto Spin (0)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game History -->
+            <div class="game-container rounded-2xl p-6">
+                <h2 class="text-2xl font-bold mb-4">O'yin tarixi</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="py-3 text-left">Vaqt</th>
+                                <th class="py-3 text-left">Stavka</th>
+                                <th class="py-3 text-left">Kombinatsiya</th>
+                                <th class="py-3 text-left">Koefitsiyent</th>
+                                <th class="py-3 text-left">Yutuq</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTable">
+                            <tr>
+                                <td colspan="5" class="py-8 text-center text-gray-400">
+                                    Hozircha o'yinlar mavjud emas
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Game Rules -->
+            <div class="game-container rounded-2xl p-6 mt-8">
+                <h2 class="text-2xl font-bold mb-4">O'yin qoidalari</h2>
+                <div class="space-y-3">
+                    <div class="flex items-start">
+                        <div class="bg-green-500 rounded-full p-2 mr-3 mt-1">
+                            <i class="fas fa-slot-machine text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold">Qanday o'ynaladi?</h3>
+                            <p class="text-gray-300">Spin tugmasini bosing va 3 ta g'ildirak aylanadi. 3 ta bir xil belgi chiqsa yutasiz.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="bg-yellow-500 rounded-full p-2 mr-3 mt-1">
+                            <i class="fas fa-gem text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold">Belgilar va yutuqlar</h3>
+                            <p class="text-gray-300">Har bir belgining o'ziga xos koefitsiyenti bor. 3 ta olmos eng yuqori yutuq beradi.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="bg-purple-500 rounded-full p-2 mr-3 mt-1">
+                            <i class="fas fa-chart-bar text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold">Statistika</h3>
+                            <p class="text-gray-300">Har bir kombinatsiya chiqish ehtimoli har xil. RTP: 96.2%.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game variables
+        let betAmount = 100;
+        let isDemo = true;
+        let balance = 0;
+        let demoBalance = 5000;
+        let isSpinning = false;
+        let isAutoPlay = false;
+        let autoPlayCount = 0;
+        let gameHistory = [];
+
+        // Slot symbols
+        const symbols = ['🍒', '🍋', '🍊', '🍇', '🔔', '💎'];
+        const multipliers = {
+            '🍒🍒🍒': 3.0,
+            '🍋🍋🍋': 2.5,
+            '🍊🍊🍊': 2.0,
+            '🍇🍇🍇': 1.8,
+            '🔔🔔🔔': 1.5,
+            '💎💎💎': 5.0
+        };
+
+        // DOM elements
+        const reel1 = document.getElementById('reel1');
+        const reel2 = document.getElementById('reel2');
+        const reel3 = document.getElementById('reel3');
+        const resultText = document.getElementById('resultText');
+        const resultDescription = document.getElementById('resultDescription');
+        const betAmountDisplay = document.getElementById('betAmount');
+        const potentialWin = document.getElementById('potentialWin');
+        const playBtn = document.getElementById('playBtn');
+        const autoPlayBtn = document.getElementById('autoPlayBtn');
+        const userBalance = document.getElementById('userBalance');
+        const demoBalanceDisplay = document.getElementById('demoBalance');
+        const demoModeToggle = document.getElementById('demoMode');
+        const historyTable = document.getElementById('historyTable');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            updateUI();
+            updatePotentialWin();
+        });
+
+        // Load user data
+        function loadUserData() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                fetch('https://gambling-h78m.onrender.com/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        balance = data.user.balance;
+                        demoBalance = data.user.demoBalance;
+                        updateBalanceDisplay();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading user data:', error);
+                });
+            }
+        }
+
+        // Update balance display
+        function updateBalanceDisplay() {
+            userBalance.textContent = `${balance.toLocaleString()} UZS`;
+            demoBalanceDisplay.textContent = `${demoBalance.toLocaleString()} UZS`;
+        }
+
+        // Adjust bet amount
+        function adjustBet(amount) {
+            const newBet = betAmount + amount;
+            if (newBet >= 10 && newBet <= 10000) {
+                betAmount = newBet;
+                updateBetDisplay();
+                updatePotentialWin();
+            }
+        }
+
+        // Set bet amount
+        function setBet(amount) {
+            if (amount >= 10 && amount <= 10000) {
+                betAmount = amount;
+                updateBetDisplay();
+                updatePotentialWin();
+            }
+        }
+
+        // Update bet display
+        function updateBetDisplay() {
+            betAmountDisplay.textContent = `${betAmount} UZS`;
+        }
+
+        // Update potential win
+        function updatePotentialWin() {
+            const maxMultiplier = 3.0;
+            const winAmount = betAmount * maxMultiplier;
+            potentialWin.textContent = `${winAmount.toLocaleString()} UZS`;
+        }
+
+        // Play game
+        function playGame() {
+            if (isSpinning) return;
+            
+            isSpinning = true;
+            playBtn.disabled = true;
+            isDemo = demoModeToggle.checked;
+            
+            // Check balance
+            const currentBalance = isDemo ? demoBalance : balance;
+            if (betAmount > currentBalance) {
+                alert('Balans yetarli emas!');
+                playBtn.disabled = false;
+                isSpinning = false;
+                return;
+            }
+
+            // Start spinning animation
+            reel1.classList.add('slot-spinning');
+            reel2.classList.add('slot-spinning');
+            reel3.classList.add('slot-spinning');
+            
+            resultText.textContent = "G'ildiraklar aylanmoqda...";
+            resultDescription.textContent = "Kuting...";
+
+            // Generate random results
+            const results = [
+                symbols[Math.floor(Math.random() * symbols.length)],
+                symbols[Math.floor(Math.random() * symbols.length)],
+                symbols[Math.floor(Math.random() * symbols.length)]
+            ];
+
+            // Stop reels one by one
+            setTimeout(() => stopReel(reel1, results[0]), 1000);
+            setTimeout(() => stopReel(reel2, results[1]), 1500);
+            setTimeout(() => stopReel(reel3, results[2]), 2000);
+
+            // Final result
+            setTimeout(() => {
+                const combination = results.join('');
+                const multiplier = multipliers[combination] || 0;
+                const isWin = multiplier > 0;
+                const winAmount = isWin ? betAmount * multiplier : 0;
+                
+                // Update result display
+                if (isWin) {
+                    resultText.textContent = "Tabriklaymiz! Yutdingiz!";
+                    resultDescription.textContent = `Kombinatsiya: ${combination} (${multiplier}x)`;
+                    resultText.style.color = "#10b981";
+                    
+                    // Win animation
+                    reel1.classList.add('win-animation');
+                    reel2.classList.add('win-animation');
+                    reel3.classList.add('win-animation');
+                    
+                    setTimeout(() => {
+                        reel1.classList.remove('win-animation');
+                        reel2.classList.remove('win-animation');
+                        reel3.classList.remove('win-animation');
+                    }, 1000);
+                    
+                } else {
+                    resultText.textContent = "Afsus! Yutqazdingiz";
+                    resultDescription.textContent = "Bir xil belgilar chiqmadi";
+                    resultText.style.color = "#ef4444";
+                }
+                
+                // Update balance
+                if (isDemo) {
+                    demoBalance += winAmount - betAmount;
+                } else {
+                    balance += winAmount - betAmount;
+                    // Save to server
+                    saveGameResult(betAmount, winAmount, isWin);
+                }
+                
+                // Add to history
+                addToHistory({
+                    time: new Date().toLocaleTimeString(),
+                    bet: betAmount,
+                    combination: combination,
+                    multiplier: multiplier,
+                    win: winAmount,
+                    isWin: isWin
+                });
+                
+                // Update UI
+                updateBalanceDisplay();
+                playBtn.disabled = false;
+                isSpinning = false;
+                
+                // Continue auto play if active
+                if (isAutoPlay && autoPlayCount > 0) {
+                    autoPlayCount--;
+                    autoPlayBtn.innerHTML = `<i class="fas fa-play-circle mr-2"></i> Auto Spin (${autoPlayCount})`;
+                    if (autoPlayCount > 0) {
+                        setTimeout(playGame, 1000);
+                    } else {
+                        isAutoPlay = false;
+                        autoPlayBtn.textContent = 'Auto Spin';
+                    }
+                }
+                
+            }, 2500);
+        }
+
+        // Stop reel animation
+        function stopReel(reel, symbol) {
+            reel.classList.remove('slot-spinning');
+            reel.innerHTML = `<div class="slot-symbol">${symbol}</div>`;
+        }
+
+        // Toggle auto play
+        function toggleAutoPlay() {
+            if (isAutoPlay) {
+                isAutoPlay = false;
+                autoPlayBtn.textContent = 'Auto Spin';
+            } else {
+                const count = prompt("Nechta spin o'ynashni xohlaysiz? (1-100)", "10");
+                if (count && count > 0 && count <= 100) {
+                    autoPlayCount = parseInt(count);
+                    isAutoPlay = true;
+                    autoPlayBtn.innerHTML = `<i class="fas fa-play-circle mr-2"></i> Auto Spin (${autoPlayCount})`;
+                    if (!isSpinning) {
+                        playGame();
+                    }
+                }
+            }
+        }
+
+        // Save game result to server
+        function saveGameResult(betAmount, winAmount, isWin) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            
+            fetch('https://gambling-h78m.onrender.com/api/play/slots', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    betAmount: betAmount,
+                    winAmount: winAmount,
+                    isDemo: isDemo,
+                    result: isWin ? 'win' : 'loss'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Game result saved');
+                }
+            })
+            .catch(error => {
+                console.error('Error saving game result:', error);
+            });
+        }
+
+        // Add to history table
+        function addToHistory(game) {
+            gameHistory.unshift(game);
+            if (gameHistory.length > 10) gameHistory.pop();
+            
+            // Update history table
+            historyTable.innerHTML = gameHistory.map(game => `
+                <tr class="border-b border-gray-800">
+                    <td class="py-3">${game.time}</td>
+                    <td class="py-3">${game.bet} UZS</td>
+                    <td class="py-3">${game.combination}</td>
+                    <td class="py-3">${game.multiplier}x</td>
+                    <td class="py-3 ${game.isWin ? 'text-green-400' : 'text-red-400'}">
+                        ${game.isWin ? `+${game.win} UZS` : `-${game.bet} UZS`}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Update UI
+        function updateUI() {
+            updateBetDisplay();
+            updateBalanceDisplay();
+        }
+    </script>
+</body>
+</html>

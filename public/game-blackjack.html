@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack - LuckyBet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0c0f1d 0%, #1a1f3d 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+        .game-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .blackjack-table {
+            background: linear-gradient(135deg, #0f0f23, #1a1a2e);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            border: 2px solid #f5576c;
+        }
+        .card {
+            width: 70px;
+            height: 100px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 5px;
+        }
+        .card.red { color: #e53e3e; }
+        .card.black { color: #000; }
+        .card-back {
+            background: linear-gradient(135deg, #f5576c, #f093fb);
+            color: white;
+        }
+        .card-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .card-suit {
+            font-size: 1.2rem;
+        }
+        .hand-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            min-height: 120px;
+        }
+        .action-btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        .action-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .action-btn.hit { border-color: #10b981; }
+        .action-btn.stand { border-color: #3b82f6; }
+        .action-btn.double { border-color: #f59e0b; }
+        .action-btn.split { border-color: #8b5cf6; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <nav class="bg-gradient-to-r from-purple-900 to-blue-800 py-4 px-6 flex justify-between items-center">
+        <a href="/" class="text-2xl font-bold text-white">
+            <i class="fas fa-user-friends mr-2"></i>Blackjack
+        </a>
+        <a href="/" class="text-white hover:text-purple-300">
+            <i class="fas fa-home mr-2"></i>Asosiy sahifa
+        </a>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-6xl mx-auto">
+            <div class="game-container rounded-2xl p-6 mb-8">
+                <h1 class="text-3xl font-bold mb-4">Blackjack</h1>
+                <p class="text-gray-300 mb-6">21 ga yaqinlashing, lekin oshirmang! Dilerdan yuqori ball to'plang yoki diler bust bo'lganda g'alaba qozoning.</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Game Area -->
+                    <div>
+                        <div class="blackjack-table mb-8">
+                            <!-- Dealer Hand -->
+                            <div class="mb-12">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="text-xl font-bold">Diler</h2>
+                                    <div class="text-lg" id="dealerScore">Ball: -</div>
+                                </div>
+                                <div class="hand-container" id="dealerHand">
+                                    <div class="card card-back"></div>
+                                    <div class="card card-back"></div>
+                                </div>
+                            </div>
+
+                            <!-- Player Hand -->
+                            <div>
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="text-xl font-bold">Siz</h2>
+                                    <div class="text-lg" id="playerScore">Ball: -</div>
+                                </div>
+                                <div class="hand-container" id="playerHand">
+                                    <div class="card card-back"></div>
+                                    <div class="card card-back"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Game Status -->
+                        <div class="text-center mb-8">
+                            <h3 class="text-xl font-bold mb-2" id="gameStatus">Stavka qo'ying va o'yinni boshlang</h3>
+                            <p class="text-gray-300" id="gameMessage">Dastlabki 2 karta beriladi</p>
+                        </div>
+
+                        <!-- Player Actions -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6" id="actionButtons">
+                            <button class="action-btn hit" onclick="playerHit()" disabled>
+                                <i class="fas fa-plus mr-2"></i>Hit
+                            </button>
+                            <button class="action-btn stand" onclick="playerStand()" disabled>
+                                <i class="fas fa-hand-paper mr-2"></i>Stand
+                            </button>
+                            <button class="action-btn double" onclick="playerDouble()" disabled>
+                                <i class="fas fa-times mr-2"></i>Double
+                            </button>
+                            <button class="action-btn split" onclick="playerSplit()" disabled>
+                                <i class="fas fa-columns mr-2"></i>Split
+                            </button>
+                        </div>
+
+                        <!-- Split Hands (if applicable) -->
+                        <div id="splitContainer" class="hidden">
+                            <h3 class="text-lg font-bold mb-3">Split qo'llar</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-sm mb-2">Qo'l 1</div>
+                                    <div class="hand-container" id="splitHand1"></div>
+                                </div>
+                                <div>
+                                    <div class="text-sm mb-2">Qo'l 2</div>
+                                    <div class="hand-container" id="splitHand2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bet Controls -->
+                    <div>
+                        <!-- Balance -->
+                        <div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-6 mb-6">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="text-sm opacity-80">Balans</div>
+                                    <div class="text-2xl font-bold" id="userBalance">0 UZS</div>
+                                </div>
+                                <div>
+                                    <div class="text-sm opacity-80">Demo balans</div>
+                                    <div class="text-xl font-bold" id="demoBalance">5000 UZS</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bet Amount -->
+                        <div class="game-container rounded-xl p-6 mb-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-bold">Stavka miqdori</h3>
+                                <div class="flex items-center space-x-2">
+                                    <button class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center hover:bg-gray-600" onclick="adjustBet(-100)">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <span class="text-2xl font-bold w-32 text-center" id="betAmount">100 UZS</span>
+                                    <button class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center hover:bg-gray-600" onclick="adjustBet(100)">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-4 gap-2 mb-4">
+                                <button class="py-2 bg-gray-800 rounded hover:bg-gray-700" onclick="setBet(50)">50</button>
+                                <button class="py-2 bg-gray-800 rounded hover:bg-gray-700" onclick="setBet(100)">100</button>
+                                <button class="py-2 bg-gray-800 rounded hover:bg-gray-700" onclick="setBet(500)">500</button>
+                                <button class="py-2 bg-gray-800 rounded hover:bg-gray-700" onclick="setBet(1000)">1000</button>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <span>Demo rejim</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer" id="demoMode" checked>
+                                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Insurance -->
+                        <div class="game-container rounded-xl p-6 mb-6 hidden" id="insuranceSection">
+                            <h3 class="text-lg font-bold mb-3">Insurance</h3>
+                            <p class="text-gray-300 mb-4">Dilerning ochiq kartasi Ace. Insurance olasizmi? Agar diler blackjack bo'lsa, insurance 2:1 to'laydi.</p>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button class="py-3 bg-green-600 rounded hover:bg-green-700" onclick="takeInsurance()">
+                                    Ha (Stavkaning yarmi)
+                                </button>
+                                <button class="py-3 bg-red-600 rounded hover:bg-red-700" onclick="declineInsurance()">
+                                    Yo'q
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Game Info -->
+                        <div class="game-container rounded-xl p-6 mb-6">
+                            <h3 class="text-lg font-bold mb-3">O'yin ma'lumotlari</h3>
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span>Joriy stavka:</span>
+                                    <span class="font-bold" id="currentBetAmount">100 UZS</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Potensial yutish:</span>
+                                    <span class="font-bold text-green-400" id="potentialWin">150 UZS</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Blackjack multiplier:</span>
+                                    <span class="font-bold">1.5x</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Game Controls -->
+                        <div class="space-y-3">
+                            <button class="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl text-xl font-bold hover:from-green-600 hover:to-emerald-700" id="startBtn" onclick="startGame()">
+                                <i class="fas fa-play mr-2"></i> O'YINNI BOSHLASH
+                            </button>
+                            
+                            <button class="w-full py-3 bg-gray-800 rounded-xl hover:bg-gray-700 hidden" id="dealBtn" onclick="dealCards()">
+                                <i class="fas fa-redo mr-2"></i> YANGI O'YIN
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Rules -->
+            <div class="game-container rounded-2xl p-6 mb-8">
+                <h2 class="text-2xl font-bold mb-4">Blackjack qoidalari</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <div class="flex items-start">
+                            <div class="bg-blue-500 rounded-full p-2 mr-3 mt-1">
+                                <i class="fas fa-cards text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold">Maqsad</h3>
+                                <p class="text-gray-300">Dilerdan yuqori ball to'plang, lekin 21 dan oshirmang. 21 ga eng yaqin bo'lgan g'olib.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-green-500 rounded-full p-2 mr-3 mt-1">
+                                <i class="fas fa-award text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold">Blackjack</h3>
+                                <p class="text-gray-300">Dastlabki 2 kartada 21 ball (Ace + 10/J/Q/K) - 1.5 barobar yutuq.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-start">
+                            <div class="bg-purple-500 rounded-full p-2 mr-3 mt-1">
+                                <i class="fas fa-user-tie text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold">Diler qoidalari</h3>
+                                <p class="text-gray-300">Diler 17 yoki undan yuqori bo'lguncha kartalarni olishi kerak. 16 yoki pastda to'xtay olmaydi.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-yellow-500 rounded-full p-2 mr-3 mt-1">
+                                <i class="fas fa-hand-peace text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold">Push</h3>
+                                <p class="text-gray-300">Agar siz va diler bir xil ballga ega bo'lsangiz, stavka qaytariladi (push).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game History -->
+            <div class="game-container rounded-2xl p-6">
+                <h2 class="text-2xl font-bold mb-4">O'yin tarixi</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="py-3 text-left">Vaqt</th>
+                                <th class="py-3 text-left">Stavka</th>
+                                <th class="py-3 text-left">Siz</th>
+                                <th class="py-3 text-left">Diler</th>
+                                <th class="py-3 text-left">Natija</th>
+                                <th class="py-3 text-left">Yutuq</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTable">
+                            <tr>
+                                <td colspan="6" class="py-8 text-center text-gray-400">
+                                    Hozircha o'yinlar mavjud emas
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game variables
+        let gameState = 'betting'; // betting, playing, dealerTurn, ended
+        let betAmount = 100;
+        let currentBet = 0;
+        let isDemo = true;
+        let balance = 0;
+        let demoBalance = 5000;
+        let insuranceTaken = false;
+        let gameHistory = [];
+
+        // Card deck
+        let deck = [];
+        let playerHand = [];
+        let dealerHand = [];
+        let splitHands = [];
+        let currentSplitHand = 0;
+
+        // Card values and suits
+        const suits = ['♥', '♦', '♣', '♠'];
+        const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+        // DOM elements
+        const dealerHandDiv = document.getElementById('dealerHand');
+        const playerHandDiv = document.getElementById('playerHand');
+        const dealerScore = document.getElementById('dealerScore');
+        const playerScore = document.getElementById('playerScore');
+        const gameStatus = document.getElementById('gameStatus');
+        const gameMessage = document.getElementById('gameMessage');
+        const actionButtons = document.getElementById('actionButtons');
+        const splitContainer = document.getElementById('splitContainer');
+        const insuranceSection = document.getElementById('insuranceSection');
+        const betAmountDisplay = document.getElementById('betAmount');
+        const currentBetAmount = document.getElementById('currentBetAmount');
+        const potentialWin = document.getElementById('potentialWin');
+        const startBtn = document.getElementById('startBtn');
+        const dealBtn = document.getElementById('dealBtn');
+        const userBalance = document.getElementById('userBalance');
+        const demoBalanceDisplay = document.getElementById('demoBalance');
+        const demoModeToggle = document.getElementById('demoMode');
+        const historyTable = document.getElementById('historyTable');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            updateUI();
+            createDeck();
+        });
+
+        // Load user data
+        function loadUserData() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                fetch('https://gambling-h78m.onrender.com/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        balance = data.user.balance;
+                        demoBalance = data.user.demoBalance;
+                        updateBalanceDisplay();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading user data:', error);
+                });
+            }
+        }
+
+        // Update balance display
+        function updateBalanceDisplay() {
+            userBalance.textContent = `${balance.toLocaleString()} UZS`;
+            demoBalanceDisplay.textContent = `${demoBalance.toLocaleString()} UZS`;
+        }
+
+        // Create deck
+        function createDeck() {
+            deck = [];
+            for (let suit of suits) {
+                for (let value of values) {
+                    deck.push({ suit, value });
+                }
+            }
+            shuffleDeck();
+        }
+
+        // Shuffle deck
+        function shuffleDeck() {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+        }
+
+        // Draw card
+        function drawCard() {
+            if (deck.length === 0) createDeck();
+            return deck.pop();
+        }
+
+        // Get card value
+        function getCardValue(card) {
+            if (['J', 'Q', 'K'].includes(card.value)) return 10;
+            if (card.value === 'A') return 11; // Will handle Ace as 1 later
+            return parseInt(card.value);
+        }
+
+        // Calculate hand score
+        function calculateScore(hand) {
+            let score = 0;
+            let aces = 0;
+
+            for (let card of hand) {
+                const value = getCardValue(card);
+                if (card.value === 'A') aces++;
+                score += value;
+            }
+
+            // Adjust for Aces
+            while (score > 21 && aces > 0) {
+                score -= 10;
+                aces--;
+            }
+
+            return score;
+        }
+
+        // Check for blackjack
+        function hasBlackjack(hand) {
+            if (hand.length !== 2) return false;
+            const score = calculateScore(hand);
+            return score === 21;
+        }
+
+        // Check for bust
+        function isBust(hand) {
+            return calculateScore(hand) > 21;
+        }
+
+        // Create card element
+        function createCardElement(card, isHidden = false) {
+            const div = document.createElement('div');
+            div.className = `card ${card.suit === '♥' || card.suit === '♦' ? 'red' : 'black'}`;
+            
+            if (isHidden) {
+                div.className = 'card card-back';
+                div.innerHTML = '<i class="fas fa-question absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>';
+                return div;
+            }
+            
+            div.innerHTML = `
+                <div class="card-value">${card.value}</div>
+                <div class="card-suit text-center">${card.suit}</div>
+                <div class="card-value rotate-180">${card.value}</div>
+            `;
+            return div;
+        }
+
+        // Update hand display
+        function updateHandDisplay(hand, container, showAll = false) {
+            container.innerHTML = '';
+            hand.forEach((card, index) => {
+                const isHidden = !showAll && container === dealerHandDiv && index === 1 && gameState !== 'ended';
+                container.appendChild(createCardElement(card, isHidden));
+            });
+        }
+
+        // Update scores
+        function updateScores() {
+            const playerTotal = calculateScore(playerHand);
+            playerScore.textContent = `Ball: ${playerTotal}`;
+            
+            let dealerTotal = calculateScore(dealerHand);
+            if (gameState !== 'ended' && dealerHand.length > 1) {
+                // Hide dealer's second card value
+                dealerTotal = getCardValue(dealerHand[0]);
+                dealerScore.textContent = `Ball: ${dealerTotal}+`;
+            } else {
+                dealerScore.textContent = `Ball: ${dealerTotal}`;
+            }
+        }
+
+        // Adjust bet amount
+        function adjustBet(amount) {
+            if (gameState !== 'betting') return;
+            
+            const newBet = betAmount + amount;
+            if (newBet >= 10 && newBet <= 10000) {
+                betAmount = newBet;
+                updateBetDisplay();
+                updatePotentialWin();
+            }
+        }
+
+        // Set bet amount
+        function setBet(amount) {
+            if (gameState !== 'betting') return;
+            
+            if (amount >= 10 && amount <= 10000) {
+                betAmount = amount;
+                updateBetDisplay();
+                updatePotentialWin();
+            }
+        }
+
+        // Update bet display
+        function updateBetDisplay() {
+            betAmountDisplay.textContent = `${betAmount} UZS`;
+            currentBetAmount.textContent = `${betAmount} UZS`;
+        }
+
+        // Update potential win
+        function updatePotentialWin() {
+            const winAmount = betAmount * 1.5;
+            potentialWin.textContent = `${winAmount.toLocaleString()} UZS`;
+        }
+
+        // Start game
+        function startGame() {
+            if (gameState !== 'betting') return;
+            
+            isDemo = demoModeToggle.checked;
+            currentBet = betAmount;
+            
+            // Check balance
+            const currentBalance = isDemo ? demoBalance : balance;
+            if (currentBet > currentBalance) {
+                alert('Balans yetarli emas!');
+                return;
+            }
+            
+            // Deduct bet
+            if (isDemo) {
+                demoBalance -= currentBet;
+            } else {
+                balance -= currentBet;
+            }
+            
+            updateBalanceDisplay();
+            
+            // Reset game
+            playerHand = [];
+            dealerHand = [];
+            splitHands = [];
+            currentSplitHand = 0;
+            insuranceTaken = false;
+            
+            // Deal initial cards
+            playerHand.push(drawCard());
+            dealerHand.push(drawCard());
+            playerHand.push(drawCard());
+            dealerHand.push(drawCard());
+            
+            // Update display
+            updateHandDisplay(playerHand, playerHandDiv);
+            updateHandDisplay(dealerHand, dealerHandDiv);
+            updateScores();
+            
+            // Check for insurance
+            if (dealerHand[0].value === 'A') {
+                insuranceSection.classList.remove('hidden');
+                gameState = 'insurance';
+                gameStatus.textContent = "Insurance olasizmi?";
+                gameMessage.textContent = "Dilerning ochiq kartasi Ace";
+                return;
+            }
+            
+            // Check for blackjacks
+            const playerBJ = hasBlackjack(playerHand);
+            const dealerBJ = hasBlackjack(dealerHand);
+            
+            if (playerBJ || dealerBJ) {
+                endGame();
+                return;
+            }
+            
+            // Normal play
+            gameState = 'playing';
+            gameStatus.textContent = "Sizning navbatingiz";
+            gameMessage.textContent = "Hit, Stand, Double yoki Split tanlang";
+            
+            // Enable action buttons
+            enableActions();
+            
+            // Update buttons
+            startBtn.classList.add('hidden');
+            dealBtn.classList.remove('hidden');
+        }
+
+        // Enable action buttons
+        function enableActions() {
+            const buttons = actionButtons.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = false);
+            
+            // Disable split if cards don't match
+            if (playerHand.length !== 2 || playerHand[0].value !== playerHand[1].value) {
+                actionButtons.querySelector('.split').disabled = true;
+            }
+            
+            // Disable double if insufficient balance
+            const currentBalance = isDemo ? demoBalance : balance;
+            if (currentBalance < currentBet) {
+                actionButtons.querySelector('.double').disabled = true;
+            }
+        }
+
+        // Disable action buttons
+        function disableActions() {
+            const buttons = actionButtons.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
+        }
+
+        // Player hits
+        function playerHit() {
+            if (gameState !== 'playing') return;
+            
+            playerHand.push(drawCard());
+            updateHandDisplay(playerHand, playerHandDiv);
+            updateScores();
+            
+            if (isBust(playerHand)) {
+                endGame();
+            }
+        }
+
+        // Player stands
+        function playerStand() {
+            if (gameState !== 'playing') return;
+            
+            gameState = 'dealerTurn';
+            disableActions();
+            dealerPlay();
+        }
+
+        // Player doubles
+        function playerDouble() {
+            if (gameState !== 'playing') return;
+            
+            const currentBalance = isDemo ? demoBalance : balance;
+            if (currentBalance < currentBet) {
+                alert('Balans yetarli emas!');
+                return;
+            }
+            
+            // Double the bet
+            if (isDemo) {
+                demoBalance -= currentBet;
+            } else {
+                balance -= currentBet;
+            }
+            currentBet *= 2;
+            
+            updateBalanceDisplay();
+            currentBetAmount.textContent = `${currentBet} UZS`;
+            
+            // Take one more card
+            playerHand.push(drawCard());
+            updateHandDisplay(playerHand, playerHandDiv);
+            updateScores();
+            
+            if (isBust(playerHand)) {
+                endGame();
+            } else {
+                gameState = 'dealerTurn';
+                dealerPlay();
+            }
+        }
+
+        // Player splits
+        function playerSplit() {
+            if (gameState !== 'playing' || playerHand.length !== 2 || playerHand[0].value !== playerHand[1].value) return;
+            
+            const currentBalance = isDemo ? demoBalance : balance;
+            if (currentBalance < currentBet) {
+                alert('Balans yetarli emas!');
+                return;
+            }
+            
+            // Deduct additional bet
+            if (isDemo) {
+                demoBalance -= currentBet;
+            } else {
+                balance -= currentBet;
+            }
+            
+            updateBalanceDisplay();
+            
+            // Split the hand
+            splitHands = [
+                [playerHand[0]],
+                [playerHand[1]]
+            ];
+            
+            // Add cards to split hands
+            splitHands[0].push(drawCard());
+            splitHands[1].push(drawCard());
+            
+            // Update display
+            splitContainer.classList.remove('hidden');
+            updateHandDisplay(splitHands[0], document.getElementById('splitHand1'));
+            updateHandDisplay(splitHands[1], document.getElementById('splitHand2'));
+            
+            // Hide main hand
+            playerHandDiv.innerHTML = '';
+            
+            // Play first split hand
+            currentSplitHand = 0;
+            playerHand = splitHands[0];
+            updateScores();
+        }
+
+        // Take insurance
+        function takeInsurance() {
+            insuranceTaken = true;
+            insuranceSection.classList.add('hidden');
+            
+            // Check for dealer blackjack
+            if (hasBlackjack(dealerHand)) {
+                endGame();
+            } else {
+                // Continue normal play
+                gameState = 'playing';
+                gameStatus.textContent = "Sizning navbatingiz";
+                gameMessage.textContent = "Insurance yutqazildi, normal o'yinni davom eting";
+                enableActions();
+                startBtn.classList.add('hidden');
+                dealBtn.classList.remove('hidden');
+            }
+        }
+
+        // Decline insurance
+        function declineInsurance() {
+            insuranceTaken = false;
+            insuranceSection.classList.add('hidden');
+            
+            // Check for blackjacks
+            const playerBJ = hasBlackjack(playerHand);
+            const dealerBJ = hasBlackjack(dealerHand);
+            
+            if (playerBJ || dealerBJ) {
+                endGame();
+            } else {
+                // Normal play
+                gameState = 'playing';
+                gameStatus.textContent = "Sizning navbatingiz";
+                gameMessage.textContent = "Hit, Stand, Double yoki Split tanlang";
+                enableActions();
+                startBtn.classList.add('hidden');
+                dealBtn.classList.remove('hidden');
+            }
+        }
+
+        // Dealer plays
+        function dealerPlay() {
+            gameStatus.textContent = "Dilerning navbati";
+            gameMessage.textContent = "Diler kartalarni olmoqda...";
+            
+            // Reveal dealer's hidden card
+            updateHandDisplay(dealerHand, dealerHandDiv, true);
+            
+            // Dealer hits until 17 or higher
+            setTimeout(() => {
+                let dealerTotal = calculateScore(dealerHand);
+                
+                const dealerPlayInterval = setInterval(() => {
+                    if (dealerTotal < 17) {
+                        dealerHand.push(drawCard());
+                        updateHandDisplay(dealerHand, dealerHandDiv, true);
+                        dealerTotal = calculateScore(dealerHand);
+                        updateScores();
+                    } else {
+                        clearInterval(dealerPlayInterval);
+                        endGame();
+                    }
+                }, 1000);
+            }, 1000);
+        }
+
+        // End game
+        function endGame() {
+            gameState = 'ended';
+            disableActions();
+            
+            // Reveal all cards
+            updateHandDisplay(dealerHand, dealerHandDiv, true);
+            updateScores();
+            
+            // Calculate scores
+            const playerTotal = calculateScore(playerHand);
+            const dealerTotal = calculateScore(dealerHand);
+            const playerBJ = hasBlackjack(playerHand);
+            const dealerBJ = hasBlackjack(dealerHand);
+            
+            let result = '';
+            let winAmount = 0;
+            
+            // Handle insurance first
+            if (insuranceTaken && dealerBJ) {
+                winAmount = currentBet; // Insurance pays 2:1, but we took half bet as insurance
+                result = 'Insurance yutuq';
+            }
+            // Player blackjack
+            else if (playerBJ && !dealerBJ) {
+                winAmount = currentBet * 1.5;
+                result = 'Blackjack!';
+            }
+            // Dealer blackjack
+            else if (dealerBJ && !playerBJ) {
+                winAmount = 0;
+                result = 'Diler blackjack';
+            }
+            // Player bust
+            else if (playerTotal > 21) {
+                winAmount = 0;
+                result = 'Bust';
+            }
+            // Dealer bust
+            else if (dealerTotal > 21) {
+                winAmount = currentBet * 2;
+                result = 'Diler bust';
+            }
+            // Player wins
+            else if (playerTotal > dealerTotal) {
+                winAmount = currentBet * 2;
+                result = 'Gʻalaba';
+            }
+            // Dealer wins
+            else if (dealerTotal > playerTotal) {
+                winAmount = 0;
+                result = 'Magʻlubiyat';
+            }
+            // Push
+            else {
+                winAmount = currentBet;
+                result = 'Push';
+            }
+            
+            // Update balance
+            if (isDemo) {
+                demoBalance += winAmount;
+            } else {
+                balance += winAmount;
+                // Save to server
+                saveGameResult(currentBet, winAmount, result !== 'Magʻlubiyat' && result !== 'Bust');
+            }
+            
+            updateBalanceDisplay();
+            
+            // Update game status
+            gameStatus.textContent = result;
+            if (winAmount > currentBet) {
+                gameMessage.textContent = `Yutdingiz: +${winAmount - currentBet} UZS`;
+                gameStatus.style.color = '#10b981';
+            } else if (winAmount === currentBet) {
+                gameMessage.textContent = 'Stavka qaytarildi';
+                gameStatus.style.color = '#f59e0b';
+            } else {
+                gameMessage.textContent = `Yoʻqotdingiz: -${currentBet} UZS`;
+                gameStatus.style.color = '#ef4444';
+            }
+            
+            // Add to history
+            addToHistory({
+                time: new Date().toLocaleTimeString(),
+                bet: currentBet,
+                player: playerTotal,
+                dealer: dealerTotal,
+                result: result,
+                win: winAmount - currentBet
+            });
+        }
+
+        // Deal new hand
+        function dealCards() {
+            gameState = 'betting';
+            gameStatus.textContent = "Stavka qo'ying va o'yinni boshlang";
+            gameMessage.textContent = "Dastlabki 2 karta beriladi";
+            gameStatus.style.color = '#fff';
+            
+            // Reset hands
+            updateHandDisplay([], dealerHandDiv);
+            updateHandDisplay([], playerHandDiv);
+            
+            // Reset scores
+            dealerScore.textContent = 'Ball: -';
+            playerScore.textContent = 'Ball: -';
+            
+            // Reset containers
+            splitContainer.classList.add('hidden');
+            
+            // Update buttons
+            startBtn.classList.remove('hidden');
+            dealBtn.classList.add('hidden');
+            
+            // Update potential win
+            updatePotentialWin();
+        }
+
+        // Save game result
+        function saveGameResult(betAmount, winAmount, isWin) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            
+            fetch('https://gambling-h78m.onrender.com/api/play/blackjack', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    betAmount: betAmount,
+                    winAmount: winAmount,
+                    isDemo: isDemo,
+                    result: isWin ? 'win' : 'loss'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Game result saved');
+                }
+            })
+            .catch(error => {
+                console.error('Error saving game result:', error);
+            });
+        }
+
+        // Add to history
+        function addToHistory(game) {
+            gameHistory.unshift(game);
+            if (gameHistory.length > 10) gameHistory.pop();
+            
+            historyTable.innerHTML = gameHistory.map(game => `
+                <tr class="border-b border-gray-800">
+                    <td class="py-3">${game.time}</td>
+                    <td class="py-3">${game.bet} UZS</td>
+                    <td class="py-3">${game.player}</td>
+                    <td class="py-3">${game.dealer}</td>
+                    <td class="py-3">${game.result}</td>
+                    <td class="py-3 ${game.win > 0 ? 'text-green-400' : game.win < 0 ? 'text-red-400' : ''}">
+                        ${game.win > 0 ? `+${game.win} UZS` : game.win < 0 ? `${game.win} UZS` : '0 UZS'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Update UI
+        function updateUI() {
+            updateBetDisplay();
+            updateBalanceDisplay();
+        }
+    </script>
+</body>
+</html>

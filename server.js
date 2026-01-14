@@ -2310,6 +2310,242 @@ app.get('/api/admin/stats', authenticateToken, adminMiddleware, async (req, res)
     }
 });
 
+// ✅ User verification uchun yangi endpoint
+app.put('/api/admin/users/:userId/verify', authenticateToken, adminMiddleware, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { isVerified = true } = req.body;
+        
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { isVerified },
+            { new: true }
+        ).select('-password');
+        
+        if (!user) {
+            return res.status(404).json({ error: 'Foydalanuvchi topilmadi' });
+        }
+        
+        res.json({
+            success: true,
+            user
+        });
+    } catch (error) {
+        console.error('User verification error:', error);
+        res.status(500).json({ error: 'Server xatosi' });
+    }
+});
+
+// ✅ Transaction status update
+app.put('/api/admin/transactions/:transactionId/status', authenticateToken, adminMiddleware, async (req, res) => {
+    try {
+        const { transactionId } = req.params;
+        const { status } = req.body;
+        
+        if (!['pending', 'completed', 'rejected'].includes(status)) {
+            return res.status(400).json({ error: 'Noto\'g\'ri status' });
+        }
+        
+        const transaction = await Transaction.findById(transactionId);
+        if (!transaction) {
+            return res.status(404).json({ error: 'Tranzaksiya topilmadi' });
+        }
+        
+        // Agar deposit completed bo'lsa, balansni yangilash
+        if (status === 'completed' && transaction.type === 'deposit' && transaction.amount > 0) {
+            await User.findByIdAndUpdate(
+                transaction.userId,
+                { $inc: { balance: transaction.amount } }
+            );
+        }
+        
+        // Agar withdrawal completed bo'lsa, balansni kamaytirish
+        if (status === 'completed' && transaction.type === 'withdrawal' && transaction.amount < 0) {
+            const user = await User.findById(transaction.userId);
+            if (user.balance < Math.abs(transaction.amount)) {
+                return res.status(400).json({ error: 'Foydalanuvchi balansi yetarli emas' });
+            }
+            
+            await User.findByIdAndUpdate(
+                transaction.userId,
+                { $inc: { balance: transaction.amount } }
+            );
+        }
+        
+        // Tranzaksiya statusini yangilash
+        transaction.status = status;
+        await transaction.save();
+        
+        const updatedTransaction = await Transaction.findById(transactionId)
+            .populate('userId', 'firstName lastName email');
+        
+        res.json({
+            success: true,
+            transaction: updatedTransaction
+        });
+    } catch (error) {
+        console.error('Transaction status update error:', error);
+        res.status(500).json({ error: 'Server xatosi' });
+    }
+});
+
+// ✅ Filter transactions by type
+app.get('/api/admin/transactions', authenticateToken, adminMiddleware, async (req, res) => {
+    try {
+        const { type } = req.query;
+        let filter = {};
+        
+        if (type) {
+            filter.type = type;
+        }
+        
+        const transactions = await Transaction.find(filter)
+            .populate('userId', 'firstName lastName email')
+            .sort({ createdAt: -1 })
+            .limit(100);
+            
+        res.json({
+            success: true,
+            transactions
+        });
+    } catch (error) {
+        console.error('Admin transactions error:', error);
+        res.status(500).json({ error: 'Server xatosi' });
+    }
+});
+
+// ✅ Get user by ID for admin
+app.get('/api/admin/users/:userId', authenticateToken, adminMiddleware, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        
+        const user = await User.findById(userId).select('-password');
+        if (!user) {
+            return res.status(404).json({ error: 'Foydalanuvchi topilmadi' });
+        }
+        
+        // Foydalanuvchi tranzaksiyalari
+        const transactions = await Transaction.find({ userId })
+            .sort({ createdAt: -1 })
+            .limit(20);
+            
+        // O'yin tarixi
+        const gameHistory = await GameHistory.find({ userId })
+            .populate('gameId', 'name')
+            .sort({ createdAt: -1 })
+            .limit(20);
+            
+        res.json({
+            success: true,
+            user,
+            transactions,
+            gameHistory
+        });
+    } catch (error) {
+        console.error('Get user error:', error);
+        res.status(500).json({ error: 'Server xatosi' });
+    }
+});
+
+// ✅ User balansini yangilash
+app.put('/api/admin/users/:userId/balance', authenticateToken, adminMiddleware, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { balance, demoBalance } = req.body;
+        
+        const updateData = {};
+        if (balance !== undefined) updateData.balance = parseFloat(balance);
+        if (demoBalance !== undefined) updateData.demoBalance = parseFloat(demoBalance);
+        
+        const user = await User.findByIdAndUpdate(
+            userId,
+            updateData,
+            { new: true }
+        ).select('-password');
+        
+        // Tranzaksiya yaratish (agar balans o'zgarsa)
+        if (balance !== undefined) {
+            const oldUser = await User.findById(userId);
+            const diff = updateData.balance - oldUser.balance;
+            
+            if (diff !== 0) {
+                await new Transaction({
+                    userId,
+                    type: diff > 0 ? 'admin_add' : 'admin_deduct',
+                    amount: diff,
+                    status: 'completed',
+                    description: `Admin tomonidan balans tahriri: ${diff > 0 ? '+' : ''}${diff}`
+                }).save();
+            }
+        }
+        
+        res.json({
+            success: true,
+            user
+        });
+    } catch (error) {
+        console.error('Balance update error:', error);
+        res.status(500).json({ error: 'Server xatosi' });
+    }
+});
+
+// ✅ Barcha o'yinlar ro'yxati (admin uchun)
+app.get('/api/admin/games/all', authenticateToken, adminMiddleware, async (req, res) => {
+    try {
+        const games = await Game.find().sort({ createdAt: -1 });
+        res.json({
+            success: true,
+            games
+        });
+    } catch (error) {
+        console.error('Admin games error:', error);
+        res.status(500).json({ error: 'Server xatosi' });
+    }
+});
+
+// ✅ O'yin statusini o'zgartirish
+app.put('/api/admin/games/:gameId/toggle', authenticateToken, adminMiddleware, async (req, res) => {
+    try {
+        const { gameId } = req.params;
+        
+        const game = await Game.findById(gameId);
+        if (!game) {
+            return res.status(404).json({ error: 'O\'yin topilmadi' });
+        }
+        
+        game.isActive = !game.isActive;
+        await game.save();
+        
+        res.json({
+            success: true,
+            game
+        });
+    } catch (error) {
+        console.error('Toggle game error:', error);
+        res.status(500).json({ error: 'Server xatosi' });
+    }
+});
+
+// ✅ O'yin o'chirish
+app.delete('/api/admin/games/:gameId', authenticateToken, adminMiddleware, async (req, res) => {
+    try {
+        const { gameId } = req.params;
+        
+        const game = await Game.findByIdAndDelete(gameId);
+        if (!game) {
+            return res.status(404).json({ error: 'O\'yin topilmadi' });
+        }
+        
+        res.json({
+            success: true,
+            message: 'O\'yin muvaffaqiyatli o\'chirildi'
+        });
+    } catch (error) {
+        console.error('Delete game error:', error);
+        res.status(500).json({ error: 'Server xatosi' });
+    }
+});
+
 // Static fayllar
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -2329,6 +2565,19 @@ app.get('/history', (req, res) => {
 
 app.get('/profile', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'profile.html'));
+});
+
+// Yangi sahifalar uchun routing
+app.get('/deposit', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'deposit.html'));
+});
+
+app.get('/withdraw', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'withdraw.html'));
+});
+
+app.get('/stats', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'stats.html'));
 });
 
 // Static fayllar uchun route

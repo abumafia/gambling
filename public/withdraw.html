@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Withdraw - LuckyBet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0c0f1d 0%, #1a1f3d 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .input-field {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #f5576c;
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .select-field {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 20px;
+        }
+        
+        .select-field:focus {
+            outline: none;
+            border-color: #f5576c;
+        }
+        
+        .amount-button {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 14px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .amount-button.active {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-color: #f5576c;
+        }
+        
+        .amount-button:active {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .withdraw-method {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .withdraw-method.active {
+            border-color: #f5576c;
+            background: rgba(245, 87, 108, 0.1);
+        }
+        
+        .method-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a1f3d 0%, #0c0f1d 100%);
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: modalSlideUp 0.3s ease;
+        }
+        
+        @keyframes modalSlideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(12, 15, 29, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 0;
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active {
+            background: rgba(245, 87, 108, 0.2);
+        }
+        
+        .nav-item:active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-icon {
+            font-size: 18px;
+        }
+        
+        .nav-text {
+            font-size: 10px;
+            font-weight: 500;
+        }
+        
+        .mobile-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(12, 15, 29, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .back-button {
+            padding: 8px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        
+        .transaction-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+        
+        .status-completed {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+        
+        .status-rejected {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div class="px-4 py-3 flex items-center">
+            <button onclick="window.history.back()" class="back-button mr-3">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </button>
+            <h1 class="text-lg font-bold">Pul yechish</h1>
+            <div class="ml-auto flex items-center gap-2">
+                <span class="text-sm font-semibold" id="currentBalance">0.00 so'm</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="px-4 py-4">
+        <!-- Balance Card -->
+        <div class="glass-effect rounded-2xl p-4 mb-4">
+            <div class="flex justify-between items-center mb-2">
+                <div class="text-sm text-gray-300">Yechish mumkin</div>
+                <i class="fas fa-wallet text-pink-400"></i>
+            </div>
+            <div class="text-2xl font-bold text-pink-400" id="balanceAmount">0.00 so'm</div>
+            <div class="text-xs text-gray-400 mt-1">KYC: <span id="kycStatus" class="text-green-400">Tasdiqlangan</span></div>
+        </div>
+
+        <!-- Withdraw Form -->
+        <div class="glass-effect rounded-2xl p-4 mb-4">
+            <h2 class="text-lg font-bold mb-4">Miqdor tanlash</h2>
+            
+            <!-- Quick Amounts -->
+            <div class="grid grid-cols-2 gap-2 mb-4">
+                <button class="amount-button" onclick="setAmount(20000)">
+                    20,000 so'm
+                </button>
+                <button class="amount-button" onclick="setAmount(50000)">
+                    50,000 so'm
+                </button>
+                <button class="amount-button" onclick="setAmount(100000)">
+                    100,000 so'm
+                </button>
+                <button class="amount-button" onclick="setAmount(200000)">
+                    200,000 so'm
+                </button>
+            </div>
+            
+            <!-- Custom Amount -->
+            <div class="mb-4">
+                <label class="block text-sm mb-2">Yoki o'zingiz kiriting</label>
+                <div class="relative">
+                    <input type="number" id="withdrawAmount" class="input-field" placeholder="Miqdorni kiriting" min="20000" step="1000">
+                    <div class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                        so'm
+                    </div>
+                </div>
+                <div class="text-xs text-gray-400 mt-1">Minimum: 20,000 so'm</div>
+            </div>
+
+            <!-- Withdraw Methods -->
+            <h2 class="text-lg font-bold mb-3">Yechish usuli</h2>
+            <div class="space-y-3 mb-4">
+                <div class="withdraw-method" onclick="selectMethod('crypto')">
+                    <div class="flex items-center gap-3">
+                        <div class="method-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-semibold">Cryptocurrency</div>
+                            <div class="text-xs text-gray-400">Bitcoin, USDT</div>
+                        </div>
+                        <i class="fas fa-check text-pink-400 hidden" id="check_crypto"></i>
+                    </div>
+                </div>
+                
+                <div class="withdraw-method" onclick="selectMethod('bank')">
+                    <div class="flex items-center gap-3">
+                        <div class="method-icon" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-semibold">Bank hisobi</div>
+                            <div class="text-xs text-gray-400">Bank o'tkazmasi</div>
+                        </div>
+                        <i class="fas fa-check text-pink-400 hidden" id="check_bank"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wallet Address -->
+            <div id="walletSection" class="mb-4 hidden">
+                <label class="block text-sm mb-2">Hamyon manzili</label>
+                <input type="text" id="walletAddress" class="input-field" placeholder="Kripto hamyon manzilingizni kiriting">
+                <div class="text-xs text-gray-400 mt-1">Iltimos, to'g'ri manzil kiriting</div>
+            </div>
+
+            <!-- Bank Details -->
+            <div id="bankSection" class="mb-4 hidden">
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-sm mb-2">Bank nomi</label>
+                        <input type="text" id="bankName" class="input-field" placeholder="Bank nomi">
+                    </div>
+                    <div>
+                        <label class="block text-sm mb-2">Hisob raqami</label>
+                        <input type="text" id="accountNumber" class="input-field" placeholder="Hisob raqami">
+                    </div>
+                    <div>
+                        <label class="block text-sm mb-2">Hisob egasi</label>
+                        <input type="text" id="accountHolder" class="input-field" placeholder="Hisob egasi ismi">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Withdraw Button -->
+            <button id="withdrawButton" class="btn-primary" onclick="processWithdraw()">
+                <i class="fas fa-arrow-up"></i>
+                Yechish so'rovini yuborish
+            </button>
+        </div>
+
+        <!-- Warning Information -->
+        <div class="warning-box">
+            <h3 class="font-bold mb-2 flex items-center gap-2">
+                <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                Diqqat!
+            </h3>
+            <ul class="text-sm space-y-2">
+                <li class="flex items-start gap-2">
+                    <i class="fas fa-clock text-yellow-400 mt-1"></i>
+                    <span>Yechish vaqti: 1-3 ish kuni</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <i class="fas fa-check-circle text-yellow-400 mt-1"></i>
+                    <span>KYC tasdiqlash talab etiladi</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <i class="fas fa-percentage text-yellow-400 mt-1"></i>
+                    <span>To'lov usuliga qarab qo'shimcha to'lovlar bo'lishi mumkin</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <i class="fas fa-shield-alt text-yellow-400 mt-1"></i>
+                    <span>Barcha ma'lumotlarni tekshirib kiriting</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Recent Withdrawals -->
+        <div class="mt-6">
+            <h3 class="text-lg font-bold mb-3">Oxirgi yechishlar</h3>
+            <div id="withdrawHistory" class="space-y-2">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="flex justify-around">
+            <a href="/" class="nav-item">
+                <i class="fas fa-home nav-icon"></i>
+                <span class="nav-text">Asosiy</span>
+            </a>
+            <a href="/deposit" class="nav-item">
+                <i class="fas fa-arrow-down nav-icon"></i>
+                <span class="nav-text">Deposit</span>
+            </a>
+            <a href="/withdraw" class="nav-item active">
+                <i class="fas fa-arrow-up nav-icon"></i>
+                <span class="nav-text">Withdraw</span>
+            </a>
+            <a href="/stats" class="nav-item">
+                <i class="fas fa-chart-bar nav-icon"></i>
+                <span class="nav-text">Stats</span>
+            </a>
+            <a href="/profile" class="nav-item">
+                <i class="fas fa-user nav-icon"></i>
+                <span class="nav-text">Profil</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <div class="text-center">
+                <div class="w-16 h-16 rounded-full bg-pink-500 flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">So'rov yuborildi!</h3>
+                <div class="text-left mb-6">
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Miqdor:</span>
+                            <span class="font-semibold" id="confirmAmount">0 so'm</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Usul:</span>
+                            <span class="font-semibold" id="confirmMethod">Crypto</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Tranzaksiya ID:</span>
+                            <span class="font-mono text-sm" id="confirmId">TXN123</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-gray-800 rounded-lg">
+                        <p class="text-sm text-center">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Admin sizning so'rovingizni tekshiradi
+                        </p>
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="closeConfirmation()">
+                    <i class="fas fa-check mr-2"></i>Tushunarli
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let selectedMethod = '';
+        let transactionId = '';
+
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadWithdrawHistory();
+        });
+
+        async function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/register-login';
+                return;
+            }
+
+            try {
+                const response = await fetch('https://gambling-h78m.onrender.com/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        currentUser = result.user;
+                        updateBalanceUI();
+                        checkKYCStatus();
+                    } else {
+                        throw new Error(result.error);
+                    }
+                } else {
+                    localStorage.removeItem('token');
+                    window.location.href = '/register-login';
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                localStorage.removeItem('token');
+                window.location.href = '/register-login';
+            }
+        }
+
+        function updateBalanceUI() {
+            if (!currentUser) return;
+            
+            document.getElementById('currentBalance').textContent = `${currentUser.balance.toFixed(2)} so'm`;
+            document.getElementById('balanceAmount').textContent = `${currentUser.balance.toFixed(2)} so'm`;
+        }
+
+        function checkKYCStatus() {
+            if (currentUser.isVerified) {
+                document.getElementById('kycStatus').textContent = 'Tasdiqlangan';
+                document.getElementById('kycStatus').className = 'text-green-400';
+            } else {
+                document.getElementById('kycStatus').textContent = 'Kutilmoqda';
+                document.getElementById('kycStatus').className = 'text-yellow-400';
+                alert('DIQQAT: Sizning hisobingiz hali tasdiqlanmagan. Yechish uchun KYC tasdiqlash kerak.');
+            }
+        }
+
+        function setAmount(amount) {
+            document.getElementById('withdrawAmount').value = amount;
+            
+            // Update button states
+            document.querySelectorAll('.amount-button').forEach(btn => {
+                btn.classList.remove('active');
+                btn.textContent = btn.textContent.replace(' ✓', '');
+            });
+            
+            // Find and activate the clicked button
+            event.target.classList.add('active');
+            event.target.textContent += ' ✓';
+        }
+
+        function selectMethod(method) {
+            selectedMethod = method;
+            
+            // Reset all checks and hide sections
+            document.querySelectorAll('.withdraw-method').forEach(method => {
+                method.classList.remove('active');
+            });
+            document.querySelectorAll('.fa-check').forEach(check => {
+                check.classList.add('hidden');
+            });
+            document.getElementById('walletSection').classList.add('hidden');
+            document.getElementById('bankSection').classList.add('hidden');
+            
+            // Activate selected
+            event.target.classList.add('active');
+            document.getElementById(`check_${method}`).classList.remove('hidden');
+            
+            // Show relevant section
+            if (method === 'crypto') {
+                document.getElementById('walletSection').classList.remove('hidden');
+            } else if (method === 'bank') {
+                document.getElementById('bankSection').classList.remove('hidden');
+            }
+        }
+
+        async function processWithdraw() {
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            
+            if (!amount || amount < 20000) {
+                alert('Iltimos, minimum 20,000 so\'m kiriting');
+                return;
+            }
+            
+            if (amount > currentUser.balance) {
+                alert('Yetarli balans mavjud emas');
+                return;
+            }
+            
+            if (!selectedMethod) {
+                alert('Iltimos, yechish usulini tanlang');
+                return;
+            }
+            
+            // Check KYC
+            if (!currentUser.isVerified) {
+                alert('Iltimos, avval KYC tasdiqlashingizni yakunlang');
+                return;
+            }
+            
+            // Validate details based on method
+            let detailsValid = true;
+            let walletAddress = '';
+            
+            if (selectedMethod === 'crypto') {
+                walletAddress = document.getElementById('walletAddress').value;
+                if (!walletAddress) {
+                    alert('Iltimos, hamyon manzilini kiriting');
+                    detailsValid = false;
+                }
+            } else if (selectedMethod === 'bank') {
+                const bankName = document.getElementById('bankName').value;
+                const accountNumber = document.getElementById('accountNumber').value;
+                const accountHolder = document.getElementById('accountHolder').value;
+                
+                if (!bankName || !accountNumber || !accountHolder) {
+                    alert('Iltimos, barcha bank ma\'lumotlarini to\'ldiring');
+                    detailsValid = false;
+                }
+            }
+            
+            if (!detailsValid) return;
+            
+            // Generate transaction ID
+            transactionId = 'WTH' + Date.now() + Math.random().toString(36).substr(2, 9).toUpperCase();
+            
+            // Send withdrawal request
+            try {
+                const response = await fetch('https://gambling-h78m.onrender.com/api/user/withdrawal-request', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        amount: amount,
+                        walletAddress: walletAddress || document.getElementById('accountNumber').value
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Update balance display
+                    currentUser.balance = result.newBalance;
+                    updateBalanceUI();
+                    
+                    // Show confirmation
+                    document.getElementById('confirmAmount').textContent = `${amount.toFixed(2)} so'm`;
+                    document.getElementById('confirmMethod').textContent = selectedMethod === 'crypto' ? 'Cryptocurrency' : 'Bank Transfer';
+                    document.getElementById('confirmId').textContent = transactionId;
+                    document.getElementById('confirmationModal').style.display = 'flex';
+                    
+                    // Reset form
+                    resetForm();
+                    
+                    // Reload history
+                    loadWithdrawHistory();
+                } else {
+                    alert('Xato: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Withdrawal failed:', error);
+                alert('Yechish so\'rovi yuborishda xato');
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('withdrawAmount').value = '';
+            selectedMethod = '';
+            document.querySelectorAll('.amount-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.withdraw-method').forEach(method => {
+                method.classList.remove('active');
+            });
+            document.querySelectorAll('.fa-check').forEach(check => {
+                check.classList.add('hidden');
+            });
+            document.getElementById('walletSection').classList.add('hidden');
+            document.getElementById('bankSection').classList.add('hidden');
+            document.getElementById('walletAddress').value = '';
+            document.getElementById('bankName').value = '';
+            document.getElementById('accountNumber').value = '';
+            document.getElementById('accountHolder').value = '';
+        }
+
+        function closeConfirmation() {
+            document.getElementById('confirmationModal').style.display = 'none';
+        }
+
+        async function loadWithdrawHistory() {
+            try {
+                const response = await fetch('https://gambling-h78m.onrender.com/api/user/transactions', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.transactions) {
+                    const withdrawals = result.transactions.filter(t => t.type === 'withdrawal').slice(0, 5);
+                    const historyContainer = document.getElementById('withdrawHistory');
+                    
+                    if (withdrawals.length === 0) {
+                        historyContainer.innerHTML = `
+                            <div class="text-center py-6 text-gray-400">
+                                <i class="fas fa-history text-2xl mb-2"></i>
+                                <p>Hozircha yechishlar mavjud emas</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    let historyHTML = '';
+                    withdrawals.forEach(transaction => {
+                        const statusClass = transaction.status === 'completed' ? 'status-completed' : 
+                                           transaction.status === 'pending' ? 'status-pending' : 'status-rejected';
+                        const statusText = transaction.status === 'completed' ? 'Bajarildi' :
+                                          transaction.status === 'pending' ? 'Kutilmoqda' : 'Rad etildi';
+                        
+                        historyHTML += `
+                            <div class="transaction-item">
+                                <div class="flex justify-between items-center mb-2">
+                                    <div class="font-medium">${Math.abs(transaction.amount).toFixed(2)} so'm</div>
+                                    <span class="${statusClass} status-badge">${statusText}</span>
+                                </div>
+                                <div class="text-xs text-gray-400">
+                                    ${new Date(transaction.createdAt).toLocaleDateString()}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    historyContainer.innerHTML = historyHTML;
+                }
+            } catch (error) {
+                console.error('Failed to load withdrawal history:', error);
+            }
+        }
+
+        // Close modal on outside click
+        window.addEventListener('click', function(event) {
+            if (event.target === document.getElementById('confirmationModal')) {
+                closeConfirmation();
+            }
+        });
+    </script>
+</body>
+</html>

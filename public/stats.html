@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Statistics - LuckyBet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0c0f1d 0%, #1a1f3d 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .stats-card-alt {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .stats-card-success {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .stats-card-warning {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(12, 15, 29, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 0;
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active {
+            background: rgba(102, 126, 234, 0.2);
+        }
+        
+        .nav-item:active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-icon {
+            font-size: 18px;
+        }
+        
+        .nav-text {
+            font-size: 10px;
+            font-weight: 500;
+        }
+        
+        .mobile-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(12, 15, 29, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .back-button {
+            padding: 8px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .chart-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .tab-button {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .tab-button.active {
+            background: rgba(102, 126, 234, 0.3);
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .insight-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .insight-card.success {
+            border-left-color: #22c55e;
+        }
+        
+        .insight-card.warning {
+            border-left-color: #f59e0b;
+        }
+        
+        .insight-card.danger {
+            border-left-color: #ef4444;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .game-stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .achievement-badge {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .leaderboard-rank {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+        
+        .rank-1 {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        }
+        
+        .rank-2 {
+            background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+        }
+        
+        .rank-3 {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+        }
+        
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div class="px-4 py-3 flex items-center">
+            <button onclick="window.history.back()" class="back-button mr-3">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </button>
+            <h1 class="text-lg font-bold">Statistika</h1>
+            <div class="ml-auto">
+                <button class="btn-primary" onclick="refreshStats()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="px-4 py-4 pb-20">
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <div class="stats-card">
+                <div class="text-xs opacity-80">Jami o'yinlar</div>
+                <div class="text-lg font-bold" id="totalGames">0</div>
+                <div class="text-xs opacity-60 mt-1">Real: <span id="realGames">0</span></div>
+            </div>
+            <div class="stats-card-alt">
+                <div class="text-xs opacity-80">Jami tikishlar</div>
+                <div class="text-lg font-bold" id="totalBets">0 so'm</div>
+                <div class="text-xs opacity-60 mt-1">O'rtacha: <span id="avgBet">0</span></div>
+            </div>
+            <div class="stats-card-success">
+                <div class="text-xs opacity-80">Jami yutishlar</div>
+                <div class="text-lg font-bold" id="totalWins">0 so'm</div>
+                <div class="text-xs opacity-60 mt-1">Yuqori: <span id="biggestWin">0</span></div>
+            </div>
+            <div class="stats-card-warning">
+                <div class="text-xs opacity-80">Yutuq darajasi</div>
+                <div class="text-lg font-bold" id="winRate">0%</div>
+                <div class="text-xs opacity-60 mt-1">Balans: <span id="currentBalance">0</span></div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="glass-effect rounded-xl p-1 mb-4">
+            <div class="flex">
+                <button class="tab-button active" onclick="switchTab('overview')">
+                    Umumiy
+                </button>
+                <button class="tab-button" onclick="switchTab('games')">
+                    O'yinlar
+                </button>
+                <button class="tab-button" onclick="switchTab('insights')">
+                    Maslahatlar
+                </button>
+            </div>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overviewTab" class="tab-content">
+            <!-- Balance Chart -->
+            <div class="chart-container mb-4">
+                <h3 class="font-bold mb-3">Balans tarixi</h3>
+                <canvas id="balanceChart" height="200"></canvas>
+            </div>
+
+            <!-- Game Distribution -->
+            <div class="chart-container mb-4">
+                <h3 class="font-bold mb-3">O'yinlar taqsimoti</h3>
+                <canvas id="gameChart" height="200"></canvas>
+            </div>
+
+            <!-- Weekly Performance -->
+            <div class="glass-effect rounded-xl p-4 mb-4">
+                <h3 class="font-bold mb-3">Haftalik faoliyat</h3>
+                <div class="space-y-3">
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>O'tgan hafta</span>
+                            <span id="lastWeekGames">0 o'yin</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="lastWeekBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>Joriy hafta</span>
+                            <span id="thisWeekGames">0 o'yin</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="thisWeekBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Favorite Game -->
+            <div class="glass-effect rounded-xl p-4 mb-4">
+                <h3 class="font-bold mb-3">Yoqimli o'yin</h3>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-lg font-semibold" id="favoriteGameName">N/A</div>
+                        <div class="text-sm text-gray-400" id="favoriteGameCount">0 marta</div>
+                    </div>
+                    <div class="text-3xl" id="favoriteGameIcon">🎮</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Games Tab -->
+        <div id="gamesTab" class="tab-content hidden">
+            <div class="glass-effect rounded-xl p-4 mb-4">
+                <h3 class="font-bold mb-3">O'yin bo'yicha statistika</h3>
+                <div id="gamesStatsList">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+
+            <!-- Win/Loss by Game -->
+            <div class="chart-container mb-4">
+                <h3 class="font-bold mb-3">O'yin bo'yicha yutuq/yo'qotish</h3>
+                <canvas id="winLossChart" height="200"></canvas>
+            </div>
+
+            <!-- Best Performing Games -->
+            <div class="glass-effect rounded-xl p-4 mb-4">
+                <h3 class="font-bold mb-3">Eng yaxshi natijalar</h3>
+                <div id="bestGamesList">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Insights Tab -->
+        <div id="insightsTab" class="tab-content hidden">
+            <!-- Personal Insights -->
+            <div class="mb-4">
+                <h3 class="text-lg font-bold mb-3">Shaxsiy maslahatlar</h3>
+                <div id="personalInsights">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+
+            <!-- Tips for Improvement -->
+            <div class="glass-effect rounded-xl p-4 mb-4">
+                <h3 class="font-bold mb-3">Yaxshilash uchun maslahatlar</h3>
+                <div class="space-y-3">
+                    <div class="insight-card success">
+                        <div class="font-medium mb-1">
+                            <i class="fas fa-lightbulb mr-2 text-green-400"></i>
+                            Bankroll menejmenti
+                        </div>
+                        <p class="text-sm">Har bir o'yinga umumiy balansingizning 5% dan ko'p bo'lmagan miqdorda tiklang.</p>
+                    </div>
+                    
+                    <div class="insight-card warning">
+                        <div class="font-medium mb-1">
+                            <i class="fas fa-clock mr-2 text-yellow-400"></i>
+                            Vaqtni boshqarish
+                        </div>
+                        <p class="text-sm">O'yin vaqtini cheklang. Har bir sessiya 1 soatdan oshmasin.</p>
+                    </div>
+                    
+                    <div class="insight-card">
+                        <div class="font-medium mb-1">
+                            <i class="fas fa-chart-line mr-2 text-blue-400"></i>
+                            Trendlarni kuzatish
+                        </div>
+                        <p class="text-sm">Yo'qotishlar ketma-ketligida stavkalarni kamaytiring.</p>
+                    </div>
+                    
+                    <div class="insight-card danger">
+                        <div class="font-medium mb-1">
+                            <i class="fas fa-exclamation-triangle mr-2 text-red-400"></i>
+                            Riskni boshqarish
+                        </div>
+                        <p class="text-sm">Katta yutganingizda, darhol foydangizning yarmini chiqaring.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements -->
+            <div class="glass-effect rounded-xl p-4">
+                <h3 class="font-bold mb-3">Yutuqlar</h3>
+                <div id="achievementsList">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="text-center py-8 hidden">
+            <div class="loading-spinner"></div>
+            <p class="text-gray-400 mt-3">Statistika yuklanmoqda...</p>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="flex justify-around">
+            <a href="/" class="nav-item">
+                <i class="fas fa-home nav-icon"></i>
+                <span class="nav-text">Asosiy</span>
+            </a>
+            <a href="/deposit" class="nav-item">
+                <i class="fas fa-arrow-down nav-icon"></i>
+                <span class="nav-text">Deposit</span>
+            </a>
+            <a href="/withdraw" class="nav-item">
+                <i class="fas fa-arrow-up nav-icon"></i>
+                <span class="nav-text">Withdraw</span>
+            </a>
+            <a href="/stats" class="nav-item active">
+                <i class="fas fa-chart-bar nav-icon"></i>
+                <span class="nav-text">Stats</span>
+            </a>
+            <a href="/profile" class="nav-item">
+                <i class="fas fa-user nav-icon"></i>
+                <span class="nav-text">Profil</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let userStats = null;
+        let gameStats = null;
+        let balanceChart = null;
+        let gameChart = null;
+        let winLossChart = null;
+
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+        });
+
+        async function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/register-login';
+                return;
+            }
+
+            try {
+                const response = await fetch('https://gambling-h78m.onrender.com/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        currentUser = result.user;
+                        loadAllStats();
+                    } else {
+                        throw new Error(result.error);
+                    }
+                } else {
+                    localStorage.removeItem('token');
+                    window.location.href = '/register-login';
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                localStorage.removeItem('token');
+                window.location.href = '/register-login';
+            }
+        }
+
+        async function loadAllStats() {
+            showLoading(true);
+            
+            try {
+                // Load user stats
+                const statsResponse = await fetch('https://gambling-h78m.onrender.com/api/user/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (statsResponse.ok) {
+                    const statsResult = await statsResponse.json();
+                    if (statsResult.success) {
+                        userStats = statsResult.stats;
+                        updateStatsUI();
+                        updateCharts();
+                        generateInsights();
+                    }
+                }
+                
+                // Load game history for detailed stats
+                await loadGameHistory();
+                
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function loadGameHistory() {
+            try {
+                const response = await fetch('https://gambling-h78m.onrender.com/api/game-history', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        gameStats = result.gameHistory;
+                        analyzeGameStats();
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load game history:', error);
+            }
+        }
+
+        function updateStatsUI() {
+            if (!userStats) return;
+            
+            // Basic stats
+            document.getElementById('totalGames').textContent = userStats.totalGames;
+            document.getElementById('realGames').textContent = userStats.realGames;
+            document.getElementById('totalBets').textContent = `${userStats.totalBets.toFixed(2)} so'm`;
+            document.getElementById('totalWins').textContent = `${userStats.totalWins.toFixed(2)} so'm`;
+            document.getElementById('currentBalance').textContent = `${currentUser.balance.toFixed(2)} so'm`;
+            
+            // Calculate additional stats
+            const avgBet = userStats.totalGames > 0 ? (userStats.totalBets / userStats.totalGames).toFixed(2) : 0;
+            const winRate = userStats.totalBets > 0 ? ((userStats.totalWins / userStats.totalBets) * 100).toFixed(1) : 0;
+            
+            document.getElementById('avgBet').textContent = `${avgBet} so'm`;
+            document.getElementById('winRate').textContent = `${winRate}%`;
+            
+            // Favorite game
+            document.getElementById('favoriteGameName').textContent = userStats.favoriteGame;
+            document.getElementById('favoriteGameCount').textContent = `${Math.floor(userStats.totalGames * 0.2)} marta`;
+            
+            // Weekly stats (simulated)
+            const lastWeekGames = Math.floor(userStats.totalGames * 0.3);
+            const thisWeekGames = Math.floor(userStats.totalGames * 0.1);
+            
+            document.getElementById('lastWeekGames').textContent = `${lastWeekGames} o'yin`;
+            document.getElementById('thisWeekGames').textContent = `${thisWeekGames} o'yin`;
+            
+            // Update progress bars
+            const maxGames = Math.max(lastWeekGames, thisWeekGames) || 1;
+            document.getElementById('lastWeekBar').style.width = `${(lastWeekGames / maxGames) * 100}%`;
+            document.getElementById('thisWeekBar').style.width = `${(thisWeekGames / maxGames) * 100}%`;
+        }
+
+        function analyzeGameStats() {
+            if (!gameStats || gameStats.length === 0) return;
+            
+            // Group by game
+            const games = {};
+            gameStats.forEach(game => {
+                const gameName = game.gameId?.name || 'Unknown';
+                if (!games[gameName]) {
+                    games[gameName] = {
+                        count: 0,
+                        totalBet: 0,
+                        totalWin: 0,
+                        wins: 0,
+                        losses: 0
+                    };
+                }
+                
+                games[gameName].count++;
+                games[gameName].totalBet += game.betAmount;
+                games[gameName].totalWin += game.winAmount;
+                
+                if (game.winAmount > 0) {
+                    games[gameName].wins++;
+                } else {
+                    games[gameName].losses++;
+                }
+            });
+            
+            // Update games list
+            updateGamesList(games);
+            updateWinLossChart(games);
+        }
+
+        function updateGamesList(games) {
+            const gamesList = document.getElementById('gamesStatsList');
+            const bestGamesList = document.getElementById('bestGamesList');
+            
+            if (Object.keys(games).length === 0) {
+                gamesList.innerHTML = '<div class="text-center py-4 text-gray-400">O\'yin statistikasi mavjud emas</div>';
+                bestGamesList.innerHTML = '<div class="text-center py-4 text-gray-400">Eng yaxshi natijalar mavjud emas</div>';
+                return;
+            }
+            
+            let gamesHTML = '';
+            let bestGamesHTML = '';
+            const gameArray = Object.entries(games);
+            
+            // Sort by total win
+            gameArray.sort((a, b) => b[1].totalWin - a[1].totalWin);
+            
+            // Update games list
+            gameArray.forEach(([gameName, stats]) => {
+                const winRate = stats.count > 0 ? ((stats.wins / stats.count) * 100).toFixed(1) : 0;
+                const avgWin = stats.wins > 0 ? (stats.totalWin / stats.wins).toFixed(2) : 0;
+                
+                gamesHTML += `
+                    <div class="game-stat-item">
+                        <div>
+                            <div class="font-medium">${gameName}</div>
+                            <div class="text-xs text-gray-400">${stats.count} o'yin • ${winRate}% yutuq</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-semibold">${stats.totalWin.toFixed(2)} so'm</div>
+                            <div class="text-xs ${avgWin > 0 ? 'text-green-400' : 'text-red-400'}">
+                                O'rtacha: ${avgWin}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // Update best games (top 3)
+            const topGames = gameArray.slice(0, 3);
+            topGames.forEach(([gameName, stats], index) => {
+                const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : 'rank-3';
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉';
+                
+                bestGamesHTML += `
+                    <div class="leaderboard-item">
+                        <div class="leaderboard-rank ${rankClass}">${medal}</div>
+                        <div class="flex-1">
+                            <div class="font-medium">${gameName}</div>
+                            <div class="text-xs text-gray-400">${stats.wins} yutuq • ${stats.totalWin.toFixed(2)} so'm</div>
+                        </div>
+                        <div class="text-lg font-bold text-green-400">
+                            +${stats.totalWin.toFixed(2)}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            gamesList.innerHTML = gamesHTML;
+            bestGamesList.innerHTML = bestGamesHTML;
+        }
+
+        function updateCharts() {
+            // Destroy existing charts
+            if (balanceChart) balanceChart.destroy();
+            if (gameChart) gameChart.destroy();
+            
+            // Balance Chart
+            const balanceCtx = document.getElementById('balanceChart').getContext('2d');
+            balanceChart = new Chart(balanceCtx, {
+                type: 'line',
+                data: {
+                    labels: ['1-hafta', '2-hafta', '3-hafta', '4-hafta'],
+                    datasets: [{
+                        label: 'Balans',
+                        data: [5000, 7500, 4500, currentUser.balance],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#fff' }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#fff' }
+                        }
+                    }
+                }
+            });
+            
+            // Game Distribution Chart
+            const gameCtx = document.getElementById('gameChart').getContext('2d');
+            gameChart = new Chart(gameCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Slot', 'Ruletka', 'Karta', 'Boshqa'],
+                    datasets: [{
+                        data: [35, 25, 20, 20],
+                        backgroundColor: [
+                            '#f5576c',
+                            '#667eea',
+                            '#4ade80',
+                            '#fbbf24'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#fff' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateWinLossChart(games) {
+            if (!games) return;
+            
+            const gameNames = Object.keys(games).slice(0, 5);
+            const wins = gameNames.map(name => games[name].wins);
+            const losses = gameNames.map(name => games[name].losses);
+            
+            if (winLossChart) winLossChart.destroy();
+            
+            const winLossCtx = document.getElementById('winLossChart').getContext('2d');
+            winLossChart = new Chart(winLossCtx, {
+                type: 'bar',
+                data: {
+                    labels: gameNames,
+                    datasets: [
+                        {
+                            label: 'Yutuqlar',
+                            data: wins,
+                            backgroundColor: '#4ade80'
+                        },
+                        {
+                            label: 'Yo\'qotishlar',
+                            data: losses,
+                            backgroundColor: '#f5576c'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#fff' }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#fff' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: '#fff' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateInsights() {
+            const insightsContainer = document.getElementById('personalInsights');
+            const achievementsContainer = document.getElementById('achievementsList');
+            
+            let insightsHTML = '';
+            let achievementsHTML = '';
+            
+            // Generate insights based on stats
+            if (userStats.totalGames === 0) {
+                insightsHTML = `
+                    <div class="insight-card">
+                        <div class="font-medium mb-1">
+                            <i class="fas fa-gamepad mr-2"></i>
+                            Yangi boshlanuvchi
+                        </div>
+                        <p class="text-sm">Siz hali o'ynashni boshlagansiz! Birinchi o'yinningizni boshlang.</p>
+                    </div>
+                `;
+            } else {
+                const winRate = userStats.totalBets > 0 ? (userStats.totalWins / userStats.totalBets) * 100 : 0;
+                
+                if (winRate > 50) {
+                    insightsHTML += `
+                        <div class="insight-card success">
+                            <div class="font-medium mb-1">
+                                <i class="fas fa-trophy mr-2 text-green-400"></i>
+                                Ajoyib natija!
+                            </div>
+                            <p class="text-sm">Sizning yutuq darajangiz ${winRate.toFixed(1)}% - bu ajoyib!</p>
+                        </div>
+                    `;
+                } else if (winRate > 30) {
+                    insightsHTML += `
+                        <div class="insight-card">
+                            <div class="font-medium mb-1">
+                                <i class="fas fa-chart-line mr-2 text-blue-400"></i>
+                                Yaxshi natija
+                            </div>
+                            <p class="text-sm">${winRate.toFixed(1)}% yutuq darajasi bilan yaxshi o'ynayapsiz.</p>
+                        </div>
+                    `;
+                } else {
+                    insightsHTML += `
+                        <div class="insight-card warning">
+                            <div class="font-medium mb-1">
+                                <i class="fas fa-exclamation-triangle mr-2 text-yellow-400"></i>
+                                Ehtiyot bo'ling
+                            </div>
+                            <p class="text-sm">Yutuq darajangiz ${winRate.toFixed(1)}%. Strategiyangizni qayta ko'rib chiqing.</p>
+                        </div>
+                    `;
+                }
+                
+                if (userStats.totalGames > 100) {
+                    insightsHTML += `
+                        <div class="insight-card">
+                            <div class="font-medium mb-1">
+                                <i class="fas fa-crown mr-2 text-purple-400"></i>
+                                Tajribali o'yinchi
+                            </div>
+                            <p class="text-sm">${userStats.totalGames} o'yin bilan tajribangiz yuqori.</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Generate achievements
+            const achievements = [];
+            
+            if (userStats.totalGames >= 10) {
+                achievements.push({
+                    name: 'Boshlovchi',
+                    description: '10 ta o\'yin o\'ynash',
+                    icon: '🎯'
+                });
+            }
+            
+            if (userStats.totalGames >= 50) {
+                achievements.push({
+                    name: 'Faol o\'yinchi',
+                    description: '50 ta o\'yin o\'ynash',
+                    icon: '🏆'
+                });
+            }
+            
+            if (currentUser.balance >= 100000) {
+                achievements.push({
+                    name: '100K',
+                    description: '100,000 so\'m balans',
+                    icon: '💰'
+                });
+            }
+            
+            if (userStats.realGames >= 20) {
+                achievements.push({
+                    name: 'Real o\'yinchi',
+                    description: '20 real o\'yin',
+                    icon: '🎮'
+                });
+            }
+            
+            achievements.forEach(achievement => {
+                achievementsHTML += `
+                    <div class="achievement-badge mb-2">
+                        <span>${achievement.icon}</span>
+                        <span>${achievement.name}</span>
+                    </div>
+                `;
+            });
+            
+            if (achievements.length === 0) {
+                achievementsHTML = '<div class="text-center py-4 text-gray-400">Hozircha yutuqlar mavjud emas</div>';
+            }
+            
+            insightsContainer.innerHTML = insightsHTML;
+            achievementsContainer.innerHTML = achievementsHTML;
+        }
+
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab and set active
+            document.getElementById(tabName + 'Tab').classList.remove('hidden');
+            event.target.classList.add('active');
+        }
+
+        function refreshStats() {
+            loadAllStats();
+        }
+
+        function showLoading(show) {
+            document.getElementById('loadingState').classList.toggle('hidden', !show);
+            const mainContent = document.querySelector('main');
+            mainContent.style.display = show ? 'none' : 'block';
+        }
+
+        // Auto-refresh stats every 30 seconds
+        setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                loadAllStats();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

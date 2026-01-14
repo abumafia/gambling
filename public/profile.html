@@ -2,18 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Profile - LuckyBet</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #0c0f1d 0%, #1a1f3d 100%);
             color: #fff;
             min-height: 100vh;
+            overflow-x: hidden;
         }
         
         .glass-effect {
@@ -26,28 +31,38 @@
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             border: none;
             color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 12px 16px;
+            border-radius: 10px;
             font-weight: 600;
             transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
         }
         
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        .btn-primary:active {
+            transform: scale(0.98);
         }
         
         .btn-secondary {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 12px 16px;
+            border-radius: 10px;
             font-weight: 600;
             transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         
-        .btn-secondary:hover {
+        .btn-secondary:active {
             background: rgba(255, 255, 255, 0.2);
         }
         
@@ -55,16 +70,22 @@
             background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
             border: none;
             color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 12px 16px;
+            border-radius: 10px;
             font-weight: 600;
             transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
         }
         
         .stats-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 12px;
-            padding: 20px;
+            padding: 16px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
         
@@ -75,29 +96,42 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            padding: 16px;
         }
         
         .modal-content {
             background: linear-gradient(135deg, #1a1f3d 0%, #0c0f1d 100%);
-            border-radius: 12px;
-            padding: 25px;
-            width: 90%;
-            max-width: 500px;
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: modalSlideUp 0.3s ease;
+        }
+        
+        @keyframes modalSlideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
         
         .tab-active {
             background: rgba(255, 255, 255, 0.1);
-            border-bottom: 2px solid #f5576c;
+            border-bottom: 3px solid #f5576c;
         }
         
         .user-avatar {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             object-fit: cover;
             border: 4px solid #f5576c;
@@ -106,324 +140,449 @@
         .verification-badge {
             background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
             color: white;
-            padding: 4px 12px;
+            padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
         
         .pending-badge {
             background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
             color: white;
-            padding: 4px 12px;
+            padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .input-field {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 14px 16px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #f5576c;
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .select-field {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 14px 16px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 16px;
+        }
+        
+        .select-field:focus {
+            outline: none;
+            border-color: #f5576c;
+            background-color: rgba(255, 255, 255, 0.12);
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(12, 15, 29, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 0;
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active {
+            background: rgba(245, 87, 108, 0.2);
+        }
+        
+        .nav-item:active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-icon {
+            font-size: 18px;
+        }
+        
+        .nav-text {
+            font-size: 10px;
+            font-weight: 500;
+        }
+        
+        .balance-badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 85%;
+            max-width: 320px;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1f3d 0%, #0c0f1d 100%);
+            z-index: 1001;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+        }
+        
+        .menu-open .side-menu {
+            right: 0;
+        }
+        
+        .tab-content {
+            padding-bottom: 80px;
+        }
+        
+        .mobile-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(12, 15, 29, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .scrollable-tabs {
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .scrollable-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .document-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid rgba(245, 87, 108, 0.5);
+        }
+        
+        @media (min-width: 768px) {
+            .user-avatar {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .btn-primary, .btn-secondary, .btn-success {
+                width: auto;
+                padding: 12px 24px;
+            }
+        }
+        
+        /* Loading spinner */
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #f5576c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
-<body class="min-h-screen">
-    <!-- Navigation -->
-    <nav class="glass-effect py-4 px-6 flex justify-between items-center">
-        <div class="flex items-center">
-            <h1 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">LuckyBet</h1>
-        </div>
-        <div class="hidden md:flex space-x-6">
-            <a href="/" class="py-2 hover:text-purple-300">Asosiy sahifa</a>
-            <a href="/history" class="py-2 hover:text-purple-300">Tarix</a>
-            <a href="/profile" class="py-2 nav-active">Profil</a>
-            <a href="/admin" class="py-2 hover:text-purple-300" id="adminLink" style="display: none;">Admin</a>
-        </div>
-        <div class="flex items-center space-x-4">
-            <div class="balance-card">
-                <div class="text-sm">Balans</div>
-                <div class="text-xl font-bold" id="navBalance">0.00so'm</div>
-                <div class="text-xs opacity-70">Demo: <span id="navDemoBalance">0.00so'm</span></div>
-            </div>
-            <div class="relative">
-                <button id="userMenuButton" class="flex items-center space-x-2 bg-purple-900 bg-opacity-50 rounded-full py-2 px-4">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                        <span class="text-white font-bold" id="navInitials">A</span>
-                    </div>
-                    <span id="navUserName">User</span>
-                    <i class="fas fa-chevron-down text-xs"></i>
+<body>
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+        <p class="text-white">Yuklanmoqda...</p>
+    </div>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div class="px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <button id="menuButton" class="p-2">
+                    <i class="fas fa-bars text-xl"></i>
                 </button>
-                <div id="userMenu" class="absolute right-0 mt-2 w-48 glass-effect rounded-lg shadow-lg hidden">
-                    <a href="/profile" class="block px-4 py-3 hover:bg-purple-800 rounded-t-lg">Profil</a>
-                    <a href="/history" class="block px-4 py-3 hover:bg-purple-800">Tarix</a>
-                    <button id="logoutBtn" class="block w-full text-left px-4 py-3 hover:bg-purple-800 rounded-b-lg">Chiqish</button>
+                <h1 class="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">Profile</h1>
+            </div>
+            <div class="balance-badge">
+                <i class="fas fa-wallet"></i>
+                <span id="mobileBalance">0.00 so'm</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Side Menu -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+    <div class="side-menu">
+        <div class="p-4">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                        <span class="text-white font-bold" id="menuInitials">A</span>
+                    </div>
+                    <div>
+                        <div class="font-semibold" id="menuUserName">User Name</div>
+                        <div class="text-xs text-gray-400" id="menuUserEmail">user@email.com</div>
+                    </div>
+                </div>
+                <button id="closeMenuButton" class="p-2">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-2">
+                <a href="/" class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-home w-5 text-center"></i>
+                    <span>Asosiy sahifa</span>
+                </a>
+                <a href="/deposit" class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-arrow-down w-5 text-center"></i>
+                    <span>Pul kiritish</span>
+                </a>
+                <a href="/withdraw" class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-arrow-up w-5 text-center"></i>
+                    <span>Pul yechish</span>
+                </a>
+                <a href="/stats" class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-chart-bar w-5 text-center"></i>
+                    <span>Statistika</span>
+                </a>
+                <a href="/history" class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition">
+                    <i class="fas fa-history w-5 text-center"></i>
+                    <span>Tarix</span>
+                </a>
+                <a href="/profile" class="flex items-center gap-3 p-3 rounded-lg bg-purple-900 bg-opacity-30">
+                    <i class="fas fa-user w-5 text-center"></i>
+                    <span>Profil</span>
+                </a>
+                <div id="adminMenuLink" style="display: none;">
+                    <a href="/admin" class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition">
+                        <i class="fas fa-shield-alt w-5 text-center"></i>
+                        <span>Admin</span>
+                    </a>
+                </div>
+                <button id="logoutMenuButton" class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition w-full text-left">
+                    <i class="fas fa-sign-out-alt w-5 text-center"></i>
+                    <span>Chiqish</span>
+                </button>
+            </div>
+            
+            <div class="mt-8 p-3 bg-gray-800 rounded-lg">
+                <div class="text-sm font-semibold mb-2">Balanslar</div>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <span>Real:</span>
+                        <span class="font-semibold" id="menuRealBalance">0.00 so'm</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span>Demo:</span>
+                        <span class="font-semibold" id="menuDemoBalance">0.00 so'm</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </nav>
+    </div>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
+    <main class="px-4 py-4">
         <!-- Profile Header -->
-        <div class="glass-effect rounded-2xl p-8 mb-8">
-            <div class="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
-                <div class="text-center">
-                    <div class="relative">
-                        <img id="userAvatar" src="" alt="Profile" class="user-avatar mx-auto md:mx-0" onerror="this.src=''">
-                        <div class="absolute -bottom-2 -right-2">
-                            <span id="verificationStatus" class="verification-badge">
-                                <i class="fas fa-check mr-1"></i>Tasdiqlangan
-                            </span>
-                        </div>
-                    </div>
-                    <button class="btn-secondary mt-4 text-sm" onclick="showAvatarUpload()">
-                        <i class="fas fa-camera mr-2"></i>Rasmni o'zgartirish
-                    </button>
+        <div class="glass-effect rounded-2xl p-4 mb-4">
+            <div class="flex items-center gap-4">
+                <div class="relative">
+                    <img id="userAvatar" src="" alt="Profile" class="user-avatar" onerror="this.src='https://via.placeholder.com/100'">
+                    <span id="verificationStatus" class="absolute -bottom-2 -right-2">
+                        <span class="verification-badge">
+                            <i class="fas fa-check"></i>
+                            <span class="hidden sm:inline">Tasdiq</span>
+                        </span>
+                    </span>
                 </div>
-                
-                <div class="flex-1 text-center md:text-left">
-                    <h1 class="text-3xl font-bold" id="userFullName">Foydalanuvchi ismi</h1>
-                    <p class="text-gray-300 mt-2" id="userEmail">user@example.com</p>
-                    <p class="text-gray-400 mt-1" id="userPhone">+1234567890</p>
-                    <p class="text-gray-400 mt-1">Member since <span id="memberSince">2023</span></p>
-                    
-                    <div class="flex flex-wrap gap-4 mt-6">
-                        <div class="stats-card">
-                            <div class="text-sm">Real Balance</div>
-                            <div class="text-2xl font-bold" id="profileBalance">0.00so'm</div>
-                        </div>
-                        <div class="stats-card">
-                            <div class="text-sm">Demo Balance</div>
-                            <div class="text-2xl font-bold" id="profileDemoBalance">0.00so'm</div>
-                        </div>
-                        <div class="stats-card">
-                            <div class="text-sm">Jami o'yinlar</div>
-                            <div class="text-2xl font-bold" id="totalGames">0</div>
-                        </div>
-                    </div>
+                <div class="flex-1">
+                    <h1 class="text-xl font-bold" id="userFullName">Foydalanuvchi</h1>
+                    <p class="text-sm text-gray-300" id="userEmail">user@example.com</p>
+                    <p class="text-xs text-gray-400 mt-1">Member since <span id="memberSince">2023</span></p>
                 </div>
             </div>
+            
+            <div class="grid grid-cols-2 gap-3 mt-4">
+                <div class="stats-card">
+                    <div class="text-xs opacity-80">Real Balance</div>
+                    <div class="text-lg font-bold" id="profileBalance">0.00 so'm</div>
+                </div>
+                <div class="stats-card">
+                    <div class="text-xs opacity-80">Demo Balance</div>
+                    <div class="text-lg font-bold" id="profileDemoBalance">0.00 so'm</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <a href="/deposit" class="btn-success">
+                <i class="fas fa-arrow-down"></i>
+                <span>Deposit</span>
+            </a>
+            <a href="/withdraw" class="btn-primary">
+                <i class="fas fa-arrow-up"></i>
+                <span>Withdraw</span>
+            </a>
         </div>
 
         <!-- Tabs -->
-        <div class="glass-effect rounded-xl mb-6">
-            <div class="flex border-b border-gray-700 overflow-x-auto">
-                <button class="tab-active py-4 px-6 font-semibold whitespace-nowrap" onclick="switchTab('edit')">
-                    <i class="fas fa-user-edit mr-2"></i>Profilni tahrirlash
-                </button>
-                <button class="py-4 px-6 font-semibold whitespace-nowrap hover:bg-gray-800" onclick="switchTab('security')">
-                    <i class="fas fa-shield-alt mr-2"></i>Xavfsizlik
-                </button>
-                <button class="py-4 px-6 font-semibold whitespace-nowrap hover:bg-gray-800" onclick="switchTab('wallet')">
-                    <i class="fas fa-wallet mr-2"></i>Hamyon
-                </button>
-                <button class="py-4 px-6 font-semibold whitespace-nowrap hover:bg-gray-800" onclick="switchTab('stats')">
-                    <i class="fas fa-chart-bar mr-2"></i>Statistika
-                </button>
-                <button class="py-4 px-6 font-semibold whitespace-nowrap hover:bg-gray-800" onclick="switchTab('documents')">
-                    <i class="fas fa-id-card mr-2"></i>Hujjatlar
-                </button>
+        <div class="glass-effect rounded-xl mb-4">
+            <div class="scrollable-tabs">
+                <div class="flex">
+                    <button class="tab-active py-3 px-4 font-semibold whitespace-nowrap" onclick="switchTab('edit')">
+                        <i class="fas fa-user-edit mr-2"></i>Profil
+                    </button>
+                    <button class="py-3 px-4 font-semibold whitespace-nowrap" onclick="switchTab('security')">
+                        <i class="fas fa-shield-alt mr-2"></i>Xavfsizlik
+                    </button>
+                    <button class="py-3 px-4 font-semibold whitespace-nowrap" onclick="switchTab('stats')">
+                        <i class="fas fa-chart-bar mr-2"></i>Statistika
+                    </button>
+                    <button class="py-3 px-4 font-semibold whitespace-nowrap" onclick="switchTab('documents')">
+                        <i class="fas fa-id-card mr-2"></i>Hujjatlar
+                    </button>
+                </div>
             </div>
         </div>
 
         <!-- Edit Profile Tab -->
         <div id="editTab" class="tab-content">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="glass-effect rounded-xl p-6">
-                    <h3 class="text-xl font-bold mb-6">Shaxsiy ma'lumotlar</h3>
-                    <form id="profileForm">
-                        <div class="grid grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label class="block text-sm mb-2">Ismi</label>
-                                <input type="text" id="editFirstName" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm mb-2">Familiyasi</label>
-                                <input type="text" id="editLastName" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
-                            </div>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-sm mb-2">Telefon raqami</label>
-                            <input type="tel" id="editPhone" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
-                        </div>
-                        <div class="mb-6">
-                            <label class="block text-sm mb-2">Email Manzili</label>
-                            <input type="email" id="editEmail" class="w-full bg-gray-800 rounded-lg py-3 px-4" readonly>
-                            <p class="text-xs text-gray-400 mt-1">Emailni o'zgartirib bo'lmaydi!</p>
-                        </div>
-                        <button type="submit" class="btn-primary w-full">O'zgarishlarni saqlash</button>
-                    </form>
-                </div>
-
-                <div class="glass-effect rounded-xl p-6">
-                    <h3 class="text-xl font-bold mb-6">Hisob holati</h3>
+            <div class="glass-effect rounded-xl p-4 mb-4">
+                <h3 class="text-lg font-bold mb-4">Shaxsiy ma'lumotlar</h3>
+                <form id="profileForm">
                     <div class="space-y-4">
-                        <div class="flex justify-between items-center p-4 bg-gray-800 rounded-lg">
-                            <div>
-                                <div class="font-semibold">Email tasdiqlash</div>
-                                <div class="text-sm text-gray-400">Emailingiz tasdiqlangan</div>
-                            </div>
-                            <span class="verification-badge">
-                                <i class="fas fa-check mr-1"></i>Tasdiqlangan
-                            </span>
+                        <div>
+                            <label class="block text-sm mb-2">Ismi</label>
+                            <input type="text" id="editFirstName" class="input-field" required>
                         </div>
-                        
-                        <div class="flex justify-between items-center p-4 bg-gray-800 rounded-lg">
-                            <div>
-                                <div class="font-semibold">KYC Tasdiqlash</div>
-                                <div class="text-sm text-gray-400">Identifikatsiya tasdiqlash holati</div>
-                            </div>
-                            <span id="kycStatus" class="verification-badge">
-                                <i class="fas fa-check mr-1"></i>Tasdiqlangan
-                            </span>
+                        <div>
+                            <label class="block text-sm mb-2">Familiyasi</label>
+                            <input type="text" id="editLastName" class="input-field" required>
                         </div>
-                        
-                        <div class="flex justify-between items-center p-4 bg-gray-800 rounded-lg">
-                            <div>
-                                <div class="font-semibold">Hisob darajasi</div>
-                                <div class="text-sm text-gray-400">Boshlang'ich hisob</div>
-                            </div>
-                            <span class="px-3 py-1 bg-purple-600 rounded-full text-sm font-semibold">Standard</span>
+                        <div>
+                            <label class="block text-sm mb-2">Telefon raqami</label>
+                            <input type="tel" id="editPhone" class="input-field" required>
                         </div>
+                        <div>
+                            <label class="block text-sm mb-2">Email Manzili</label>
+                            <input type="email" id="editEmail" class="input-field" readonly>
+                        </div>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            O'zgarishlarni saqlash
+                        </button>
                     </div>
-                    
-                    <div class="mt-6 p-4 bg-yellow-900 bg-opacity-30 rounded-lg">
-                        <h4 class="font-semibold mb-2"><i class="fas fa-info-circle mr-2"></i>Account Tips</h4>
-                        <ul class="text-sm space-y-1">
-                            <li>• Profile ma'lumotlarini toza saqlang</li>
-                            <li>• Xavfsizlik uchun kuchli paroldan foydalaning</li>
-                            <li>• Muammo bo'lganda bog'lanish</li>
-                        </ul>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
 
         <!-- Security Tab -->
         <div id="securityTab" class="tab-content hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="glass-effect rounded-xl p-6">
-                    <h3 class="text-xl font-bold mb-6">Parolni o'zgartirish</h3>
-                    <form id="passwordForm">
-                        <div class="mb-4">
-                            <label class="block text-sm mb-2">Joriy parol</label>
-                            <input type="password" id="currentPassword" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-sm mb-2">Yangi parol</label>
-                            <input type="password" id="newPassword" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
-                        </div>
-                        <div class="mb-6">
-                            <label class="block text-sm mb-2">Yangi parolni tasdiqlash/Qayta kiriting</label>
-                            <input type="password" id="confirmPassword" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
-                        </div>
-                        <button type="submit" class="btn-primary w-full">Parolni yangilash</button>
-                    </form>
-                </div>
-
-                <div class="glass-effect rounded-xl p-6">
-                    <h3 class="text-xl font-bold mb-6">Xavfsizlik sozlamalari</h3>
+            <div class="glass-effect rounded-xl p-4 mb-4">
+                <h3 class="text-lg font-bold mb-4">Parolni o'zgartirish</h3>
+                <form id="passwordForm">
                     <div class="space-y-4">
-                        <div class="flex justify-between items-center p-4 bg-gray-800 rounded-lg">
-                            <div>
-                                <div class="font-semibold">2-bosqichli tekshiruv</div>
-                                <div class="text-sm text-gray-400">Qo'shimcha xavfsizlik qo'shish</div>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" class="sr-only peer">
-                                <div class="w-11 h-6 bg-gray-700 peer-focus:ring-4 peer-focus:ring-purple-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                            </label>
+                        <div>
+                            <label class="block text-sm mb-2">Joriy parol</label>
+                            <input type="password" id="currentPassword" class="input-field" required>
                         </div>
-                        
-                        <div class="flex justify-between items-center p-4 bg-gray-800 rounded-lg">
-                            <div>
-                                <div class="font-semibold">Kirish xabarlari</div>
-                                <div class="text-sm text-gray-400">Yangi kirishda xabar berish</div>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" class="sr-only peer" checked>
-                                <div class="w-11 h-6 bg-gray-700 peer-focus:ring-4 peer-focus:ring-purple-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                            </label>
+                        <div>
+                            <label class="block text-sm mb-2">Yangi parol</label>
+                            <input type="password" id="newPassword" class="input-field" required>
                         </div>
+                        <div>
+                            <label class="block text-sm mb-2">Yangi parolni tasdiqlash</label>
+                            <input type="password" id="confirmPassword" class="input-field" required>
+                        </div>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-key"></i>
+                            Parolni yangilash
+                        </button>
                     </div>
-
-                    <div class="mt-6">
-                        <h4 class="font-semibold mb-4">Joriy kirish holati</h4>
-                        <div class="space-y-3">
-                            <div class="flex justify-between items-center p-3 bg-gray-800 rounded-lg">
-                                <div>
-                                    <div class="text-sm font-semibold">Hozirgi amaliyot</div>
-                                    <div class="text-xs text-gray-400">Hozir • <span id="currentIP">Yuklanmoqda...</span></div>
-                                </div>
-                                <span class="px-2 py-1 bg-green-500 rounded text-xs">Active</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                </form>
             </div>
-        </div>
-
-        <!-- Wallet Tab -->
-        <div id="walletTab" class="tab-content hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="glass-effect rounded-xl p-6">
-                    <h3 class="text-xl font-bold mb-6">Pul kiritish</h3>
-                    <form id="depositForm">
-                        <div class="mb-4">
-                            <label class="block text-sm mb-2">Miqdori (UZS)</label>
-                            <input type="number" id="depositAmount" class="w-full bg-gray-800 rounded-lg py-3 px-4" min="10000" step="0.01" required>
+            
+            <div class="glass-effect rounded-xl p-4">
+                <h3 class="text-lg font-bold mb-4">Xavfsizlik sozlamalari</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
+                        <div>
+                            <div class="font-medium">2-bosqichli tekshiruv</div>
+                            <div class="text-xs text-gray-400 mt-1">Qo'shimcha xavfsizlik</div>
                         </div>
-                        <div class="mb-4">
-                            <label class="block text-sm mb-2">To'lov usuli</label>
-                            <select id="paymentMethod" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
-                                <option value="">To'lov usulini tanlang</option>
-                                <option value="credit_card">Credit Card</option>
-                                <option value="paypal">PayPal</option>
-                                <option value="crypto">Cryptocurrency</option>
-                                <option value="bank_transfer">Bank Transfer</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn-primary w-full">Depositni amalga oshirish</button>
-                    </form>
-
-                    <div class="mt-6 p-4 bg-blue-900 bg-opacity-30 rounded-lg">
-                        <h4 class="font-semibold mb-2"><i class="fas fa-info-circle mr-2"></i>Deposit Ma'lumotlari</h4>
-                        <ul class="text-sm space-y-1">
-                            <li>• Minimum deposit: 10.000so'm</li>
-                            <li>• Tezroq to'lov uchun eng yaxshilarni tanlang</li>
-                            <li>• QQS mavjud emas</li>
-                            <li>• Katta miqdordagi to'lovlar uchun admin bilan bog'laning</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="glass-effect rounded-xl p-6">
-                    <h3 class="text-xl font-bold mb-6">Pul chiqarish</h3>
-                    <form id="withdrawalForm">
-                        <div class="mb-4">
-                            <label class="block text-sm mb-2">Miqdori (UZS)</label>
-                            <input type="number" id="withdrawalAmount" class="w-full bg-gray-800 rounded-lg py-3 px-4" min="20000" step="0.01" required>
-                            <div class="text-xs text-gray-400 mt-1">Mavjud: <span id="availableBalance">0.00</span>so'm</div>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-sm mb-2">Hamyon manzili</label>
-                            <input type="text" id="walletAddress" class="w-full bg-gray-800 rounded-lg py-3 px-4" placeholder="Enter your wallet address" required>
-                        </div>
-                        <div class="mb-6">
-                            <label class="block text-sm mb-2">Pul yechish usuli</label>
-                            <select id="withdrawalMethod" class="w-full bg-gray-800 rounded-lg py-3 px-4" required>
-                                <option value="crypto">Cryptocurrency</option>
-                                <option value="bank">Bank Transfer</option>
-                                <option value="paypal">PayPal</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn-success w-full">Yechish so'rovini yuborish</button>
-                    </form>
-
-                    <div class="mt-6 p-4 bg-yellow-900 bg-opacity-30 rounded-lg">
-                        <h4 class="font-semibold mb-2"><i class="fas fa-exclamation-triangle mr-2"></i>Pul yechish siyosati</h4>
-                        <ul class="text-sm space-y-1">
-                            <li>• Minimum withdrawal: 20.000so'm</li>
-                            <li>• Tasdiqlash vaqti: 1-3 ish kuni</li>
-                            <li>• KYC tasdiqlash talab etiladi</li>
-                            <li>• QQS mavjud bo'lishi mumkin, to'lov usuliga bog'liq</li>
-                            <li>• To'g'ri ma'lumotlarni kiriting, xatoliklarga biz javobgar emasmiz!</li>
-                        </ul>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-700 peer-focus:ring-4 peer-focus:ring-purple-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                        </label>
                     </div>
                 </div>
             </div>
@@ -431,109 +590,115 @@
 
         <!-- Statistics Tab -->
         <div id="statsTab" class="tab-content hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div class="grid grid-cols-2 gap-3 mb-4">
                 <div class="stats-card">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <div class="text-sm opacity-80">Jami o'ynalgan o'yinlar</div>
-                            <div class="text-2xl font-bold" id="statsTotalGames">0</div>
-                        </div>
-                        <i class="fas fa-gamepad text-2xl opacity-70"></i>
-                    </div>
+                    <div class="text-xs opacity-80">Jami o'yinlar</div>
+                    <div class="text-lg font-bold" id="statsTotalGames">0</div>
                 </div>
                 <div class="stats-card">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <div class="text-sm opacity-80">Jami tikishlar</div>
-                            <div class="text-2xl font-bold" id="statsTotalBets">0so'm</div>
-                        </div>
-                        <i class="fas fa-coins text-2xl opacity-70"></i>
-                    </div>
+                    <div class="text-xs opacity-80">Jami tikishlar</div>
+                    <div class="text-lg font-bold" id="statsTotalBets">0 so'm</div>
                 </div>
                 <div class="stats-card">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <div class="text-sm opacity-80">Jami yutishlar</div>
-                            <div class="text-2xl font-bold" id="statsTotalWins">0so'm</div>
-                        </div>
-                        <i class="fas fa-trophy text-2xl opacity-70"></i>
+                    <div class="text-xs opacity-80">Jami yutishlar</div>
+                    <div class="text-lg font-bold" id="statsTotalWins">0 so'm</div>
+                </div>
+                <div class="stats-card">
+                    <div class="text-xs opacity-80">Yoqimli o'yin</div>
+                    <div class="text-lg font-bold truncate" id="favoriteGame">N/A</div>
+                </div>
+            </div>
+            
+            <div class="glass-effect rounded-xl p-4 mb-4">
+                <h3 class="text-lg font-bold mb-4">O'yin taqsimoti</h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span>Real o'yinlar</span>
+                        <span class="font-semibold" id="realGamesCount">0</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span>Demo o'yinlar</span>
+                        <span class="font-semibold" id="demoGamesCount">0</span>
                     </div>
                 </div>
             </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="glass-effect rounded-xl p-6">
-                    <h3 class="text-xl font-bold mb-6">O'yin nosozliklari</h3>
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center">
-                            <span>Real Pul o'yinlari</span>
-                            <span class="font-semibold" id="realGamesCount">0</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span>Demo o'yinlar</span>
-                            <span class="font-semibold" id="demoGamesCount">0</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span>Yoqimli o'yinlar</span>
-                            <span class="font-semibold" id="favoriteGame">N/A</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="glass-effect rounded-xl p-6">
-                    <h3 class="text-xl font-bold mb-6">So'nggi katta yutish</h3>
-                    <div id="lastWinInfo" class="text-center py-8">
-                        <i class="fas fa-trophy text-4xl text-yellow-400 mb-4"></i>
-                        <p class="text-gray-400">Hozircha katta yutuq mavjud emas</p>
-                    </div>
+            
+            <div class="glass-effect rounded-xl p-4">
+                <h3 class="text-lg font-bold mb-4">So'nggi yutish</h3>
+                <div id="lastWinInfo" class="text-center py-6">
+                    <i class="fas fa-trophy text-3xl text-yellow-400 mb-3"></i>
+                    <p class="text-gray-400">Hozircha katta yutuq mavjud emas</p>
                 </div>
             </div>
         </div>
 
         <!-- Documents Tab -->
         <div id="documentsTab" class="tab-content hidden">
-            <div class="glass-effect rounded-xl p-6">
-                <h3 class="text-xl font-bold mb-6">Tasdiqlovchi hujjatlar</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="text-center">
-                        <h4 class="font-semibold mb-4">Selfie Rasm (Yuz qiyofasi)</h4>
-                        <img id="docSelfie" src="" alt="Selfie" class="w-full h-48 object-cover rounded-lg border-2 border-purple-500 mb-2" onerror="this.style.display='none'">
-                        <button class="btn-secondary w-full text-sm" onclick="updateDocument('selfie')">
-                            <i class="fas fa-sync mr-2"></i>Yangilash
+            <div class="glass-effect rounded-xl p-4 mb-4">
+                <h3 class="text-lg font-bold mb-4">Tasdiqlovchi hujjatlar</h3>
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-medium mb-2">Selfie Rasm</h4>
+                        <img id="docSelfie" src="" alt="Selfie" class="document-image mb-2" onerror="this.style.display='none'">
+                        <button class="btn-secondary w-full" onclick="updateDocument('selfie')">
+                            <i class="fas fa-sync"></i>
+                            Yangilash
                         </button>
                     </div>
                     
-                    <div class="text-center">
-                        <h4 class="font-semibold mb-4">ID karta oldi</h4>
-                        <img id="docIdFront" src="" alt="ID Front" class="w-full h-48 object-cover rounded-lg border-2 border-purple-500 mb-2" onerror="this.style.display='none'">
-                        <button class="btn-secondary w-full text-sm" onclick="updateDocument('idFront')">
-                            <i class="fas fa-sync mr-2"></i>Yangilash
+                    <div>
+                        <h4 class="font-medium mb-2">ID karta oldi</h4>
+                        <img id="docIdFront" src="" alt="ID Front" class="document-image mb-2" onerror="this.style.display='none'">
+                        <button class="btn-secondary w-full" onclick="updateDocument('idFront')">
+                            <i class="fas fa-sync"></i>
+                            Yangilash
                         </button>
                     </div>
                     
-                    <div class="text-center">
-                        <h4 class="font-semibold mb-4">ID karta orqa</h4>
-                        <img id="docIdBack" src="" alt="ID Back" class="w-full h-48 object-cover rounded-lg border-2 border-purple-500 mb-2" onerror="this.style.display='none'">
-                        <button class="btn-secondary w-full text-sm" onclick="updateDocument('idBack')">
-                            <i class="fas fa-sync mr-2"></i>Yangilash
+                    <div>
+                        <h4 class="font-medium mb-2">ID karta orqa</h4>
+                        <img id="docIdBack" src="" alt="ID Back" class="document-image mb-2" onerror="this.style.display='none'">
+                        <button class="btn-secondary w-full" onclick="updateDocument('idBack')">
+                            <i class="fas fa-sync"></i>
+                            Yangilash
                         </button>
                     </div>
-                </div>
-
-                <div class="mt-8 p-4 bg-blue-900 bg-opacity-30 rounded-lg">
-                    <h4 class="font-semibold mb-2"><i class="fas fa-shield-alt mr-2"></i>Hujjatlarni tasdiqlash</h4>
-                    <p class="text-sm">Sizning hujjatlaringiz xavfsiz saqlanadi va faqat tasdiqlashda foydalaniladi. 
-                    Biz har tomonlama sizning xavfsizligingizni ta'minlaymiz.</p>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Modals -->
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="flex justify-around">
+            <a href="/" class="nav-item">
+                <i class="fas fa-home nav-icon"></i>
+                <span class="nav-text">Asosiy</span>
+            </a>
+            <a href="/deposit" class="nav-item">
+                <i class="fas fa-arrow-down nav-icon"></i>
+                <span class="nav-text">Deposit</span>
+            </a>
+            <a href="/withdraw" class="nav-item">
+                <i class="fas fa-arrow-up nav-icon"></i>
+                <span class="nav-text">Withdraw</span>
+            </a>
+            <a href="/stats" class="nav-item">
+                <i class="fas fa-chart-bar nav-icon"></i>
+                <span class="nav-text">Stats</span>
+            </a>
+            <a href="/profile" class="nav-item active">
+                <i class="fas fa-user nav-icon"></i>
+                <span class="nav-text">Profil</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
     <div id="successModal" class="modal">
         <div class="modal-content">
             <div class="text-center">
-                <i class="fas fa-check-circle text-4xl text-green-400 mb-4"></i>
+                <i class="fas fa-check-circle text-5xl text-green-400 mb-4"></i>
                 <h3 class="text-xl font-bold mb-2" id="successTitle">Muvaffaqqiyatli!</h3>
                 <p id="successMessage" class="text-gray-300 mb-6">Operatsiya muvaffaqqiyatli bajarildi</p>
                 <button class="btn-primary" onclick="closeSuccessModal()">OK</button>
@@ -541,17 +706,14 @@
         </div>
     </div>
 
-    <div id="transferModal" class="modal">
+    <!-- Error Modal -->
+    <div id="errorModal" class="modal">
         <div class="modal-content">
             <div class="text-center">
-                <i class="fas fa-info-circle text-4xl text-blue-400 mb-4"></i>
-                <h3 class="text-xl font-bold mb-2" id="transferTitle">Ko'rsatmalar</h3>
-                <p id="transferMessage" class="text-gray-300 mb-6">Quyidagi ko'rsatmalarga amal qiling.</p>
-                <div id="transferDetails" class="text-left mb-6 p-4 bg-gray-800 rounded-lg">
-                    <!-- Dynamic content -->
-                </div>
-                <button class="btn-primary mr-2" onclick="confirmTransfer()">To'lovni amalga oshirdim</button>
-                <button class="btn-secondary" onclick="closeTransferModal()">Bekor qilish</button>
+                <i class="fas fa-exclamation-triangle text-5xl text-red-400 mb-4"></i>
+                <h3 class="text-xl font-bold mb-2" id="errorTitle">Xato!</h3>
+                <p id="errorMessage" class="text-gray-300 mb-6">Xatolik yuz berdi</p>
+                <button class="btn-primary" onclick="closeErrorModal()">OK</button>
             </div>
         </div>
     </div>
@@ -560,12 +722,29 @@
         let currentUser = null;
         let currentForm = '';
 
-        // Check authentication on page load
+        // Authentication check
         document.addEventListener('DOMContentLoaded', function() {
             checkAuth();
         });
 
-        // Authentication functions
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+
+        function showError(title, message) {
+            document.getElementById('errorTitle').textContent = title;
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorModal').style.display = 'flex';
+        }
+
+        function closeErrorModal() {
+            document.getElementById('errorModal').style.display = 'none';
+        }
+
         async function checkAuth() {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -573,130 +752,165 @@
                 return;
             }
 
+            showLoading();
+
             try {
+                // Try to get user profile with timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
                 const response = await fetch('https://gambling-h78m.onrender.com/api/user/profile', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    signal: controller.signal
                 });
 
-                if (response.ok) {
-                    const result = await response.json();
-                    if (result.success) {
-                        currentUser = result.user;
-                        updateProfileUI();
-                        loadUserStats();
-                    } else {
-                        throw new Error(result.error);
-                    }
+                clearTimeout(timeoutId);
+
+                if (response.status === 401) {
+                    // Unauthorized - token invalid or expired
+                    localStorage.removeItem('token');
+                    window.location.href = '/register-login';
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentUser = result.user;
+                    updateProfileUI();
+                    // Load stats in background
+                    loadUserStats().catch(err => console.error('Stats load error:', err));
+                } else {
+                    throw new Error(result.error || 'Unknown error');
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                
+                if (error.name === 'AbortError') {
+                    showError('Ulanish xatosi', 'Serverga ulanib bo\'lmadi. Iltimos, internet aloqasini tekshiring.');
                 } else {
                     localStorage.removeItem('token');
                     window.location.href = '/register-login';
                 }
-            } catch (error) {
-                console.error('Auth check failed:', error);
-                localStorage.removeItem('token');
-                window.location.href = '/register-login';
+            } finally {
+                hideLoading();
             }
         }
 
         function updateProfileUI() {
-            // Navigation
-            document.getElementById('navBalance').textContent = `${currentUser.balance.toFixed(2)}so'm`;
-            document.getElementById('navDemoBalance').textContent = `${currentUser.demoBalance.toFixed(2)}so'm`;
-            document.getElementById('navUserName').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
-            document.getElementById('navInitials').textContent = `${currentUser.firstName[0]}${currentUser.lastName[0]}`.toUpperCase();
+            if (!currentUser) return;
             
-            if (currentUser.isAdmin) {
-                document.getElementById('adminLink').style.display = 'block';
-            }
-
-            // Profile Header
-            document.getElementById('userFullName').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
-            document.getElementById('userEmail').textContent = currentUser.email;
-            document.getElementById('userPhone').textContent = currentUser.phone;
-            document.getElementById('memberSince').textContent = new Date(currentUser.createdAt).getFullYear();
-            document.getElementById('profileBalance').textContent = `${currentUser.balance.toFixed(2)}so'm`;
-            document.getElementById('profileDemoBalance').textContent = `${currentUser.demoBalance.toFixed(2)}so'm`;
+            // Mobile balance
+            document.getElementById('mobileBalance').textContent = `${formatBalance(currentUser.balance)} so'm`;
+            
+            // Menu info
+            document.getElementById('menuUserName').textContent = `${currentUser.firstName || ''} ${currentUser.lastName || ''}`;
+            document.getElementById('menuUserEmail').textContent = currentUser.email || 'No email';
+            const initials = `${(currentUser.firstName || '')[0] || ''}${(currentUser.lastName || '')[0] || ''}`.toUpperCase() || 'U';
+            document.getElementById('menuInitials').textContent = initials;
+            document.getElementById('menuRealBalance').textContent = `${formatBalance(currentUser.balance)} so'm`;
+            document.getElementById('menuDemoBalance').textContent = `${formatBalance(currentUser.demoBalance || 0)} so'm`;
+            
+            // Profile info
+            document.getElementById('userFullName').textContent = `${currentUser.firstName || ''} ${currentUser.lastName || ''}`;
+            document.getElementById('userEmail').textContent = currentUser.email || 'No email';
+            document.getElementById('memberSince').textContent = currentUser.createdAt ? new Date(currentUser.createdAt).getFullYear() : '2023';
+            document.getElementById('profileBalance').textContent = `${formatBalance(currentUser.balance)} so'm`;
+            document.getElementById('profileDemoBalance').textContent = `${formatBalance(currentUser.demoBalance || 0)} so'm`;
             
             // Avatar
             if (currentUser.selfie) {
-                document.getElementById('userAvatar').src = `/uploads/${currentUser.selfie}`;
+                document.getElementById('userAvatar').src = `https://gambling-h78m.onrender.com/uploads/${currentUser.selfie}`;
+            } else {
+                document.getElementById('userAvatar').src = 'https://via.placeholder.com/100';
             }
             
             // Verification status
             const verificationBadge = document.getElementById('verificationStatus');
-            const kycStatus = document.getElementById('kycStatus');
             if (currentUser.isVerified) {
-                verificationBadge.className = 'verification-badge';
-                verificationBadge.innerHTML = '<i class="fas fa-check mr-1"></i>Tasdiqlangan';
-                kycStatus.className = 'verification-badge';
-                kycStatus.innerHTML = '<i class="fas fa-check mr-1"></i>Tasdiqlangan';
+                verificationBadge.innerHTML = '<span class="verification-badge"><i class="fas fa-check"></i><span class="hidden sm:inline">Tasdiq</span></span>';
             } else {
-                verificationBadge.className = 'pending-badge';
-                verificationBadge.innerHTML = '<i class="fas fa-clock mr-1"></i>Kutilmoqda';
-                kycStatus.className = 'pending-badge';
-                kycStatus.innerHTML = '<i class="fas fa-clock mr-1"></i>Kutilmoqda';
+                verificationBadge.innerHTML = '<span class="pending-badge"><i class="fas fa-clock"></i><span class="hidden sm:inline">Kutilmoqda</span></span>';
             }
-
-            // Edit form
-            document.getElementById('editFirstName').value = currentUser.firstName;
-            document.getElementById('editLastName').value = currentUser.lastName;
-            document.getElementById('editPhone').value = currentUser.phone;
-            document.getElementById('editEmail').value = currentUser.email;
-
-            // Wallet
-            document.getElementById('availableBalance').textContent = `${currentUser.balance.toFixed(2)}so'm`;
-
+            
+            // Admin menu
+            if (currentUser.isAdmin) {
+                document.getElementById('adminMenuLink').style.display = 'block';
+            }
+            
+            // Form fields
+            document.getElementById('editFirstName').value = currentUser.firstName || '';
+            document.getElementById('editLastName').value = currentUser.lastName || '';
+            document.getElementById('editPhone').value = currentUser.phone || '';
+            document.getElementById('editEmail').value = currentUser.email || '';
+            
             // Documents
             if (currentUser.selfie) {
-                document.getElementById('docSelfie').src = `/uploads/${currentUser.selfie}`;
+                document.getElementById('docSelfie').src = `https://gambling-h78m.onrender.com/uploads/${currentUser.selfie}`;
                 document.getElementById('docSelfie').style.display = 'block';
             }
             if (currentUser.idFront) {
-                document.getElementById('docIdFront').src = `/uploads/${currentUser.idFront}`;
+                document.getElementById('docIdFront').src = `https://gambling-h78m.onrender.com/uploads/${currentUser.idFront}`;
                 document.getElementById('docIdFront').style.display = 'block';
             }
             if (currentUser.idBack) {
-                document.getElementById('docIdBack').src = `/uploads/${currentUser.idBack}`;
+                document.getElementById('docIdBack').src = `https://gambling-h78m.onrender.com/uploads/${currentUser.idBack}`;
                 document.getElementById('docIdBack').style.display = 'block';
             }
         }
 
-        // Tab management
+        function formatBalance(balance) {
+            return parseFloat(balance || 0).toFixed(2);
+        }
+
+        // Tab switching
         function switchTab(tabName) {
-            // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.add('hidden');
             });
             
-            // Remove active class from all tabs
-            document.querySelectorAll('.flex.border-b button').forEach(btn => {
+            document.querySelectorAll('.scrollable-tabs button').forEach(btn => {
                 btn.classList.remove('tab-active');
             });
             
-            // Show selected tab and set active
             document.getElementById(tabName + 'Tab').classList.remove('hidden');
             event.target.classList.add('tab-active');
         }
 
-        // Profile form submission
+        // Profile form
         document.getElementById('profileForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const formData = new FormData();
-            formData.append('firstName', document.getElementById('editFirstName').value);
-            formData.append('lastName', document.getElementById('editLastName').value);
-            formData.append('phone', document.getElementById('editPhone').value);
+            const firstName = document.getElementById('editFirstName').value;
+            const lastName = document.getElementById('editLastName').value;
+            const phone = document.getElementById('editPhone').value;
+
+            if (!firstName.trim() || !lastName.trim()) {
+                showError('Xato', 'Ism va familiya kiritilishi shart');
+                return;
+            }
+
+            showLoading();
 
             try {
                 const response = await fetch('https://gambling-h78m.onrender.com/api/user/profile', {
                     method: 'PUT',
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
                     },
-                    body: formData
+                    body: JSON.stringify({
+                        firstName,
+                        lastName,
+                        phone
+                    })
                 });
 
                 const result = await response.json();
@@ -706,15 +920,17 @@
                     updateProfileUI();
                     showSuccess('Profil yangilandi', 'Sizning profilingiz muvaffaqiyatli yangilandi');
                 } else {
-                    alert('Xato: ' + result.error);
+                    throw new Error(result.error || 'Profilni yangilashda xato');
                 }
             } catch (error) {
                 console.error('Profile update failed:', error);
-                alert('Profilni yangilashda xato');
+                showError('Xato', error.message || 'Profilni yangilashda xato');
+            } finally {
+                hideLoading();
             }
         });
 
-        // Password form submission
+        // Password form
         document.getElementById('passwordForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -722,15 +938,22 @@
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
 
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showError('Xato', 'Barcha maydonlarni to\'ldiring');
+                return;
+            }
+
             if (newPassword !== confirmPassword) {
-                alert('Yangi parollar mos kelmaydi');
+                showError('Xato', 'Yangi parollar mos kelmaydi');
                 return;
             }
 
             if (newPassword.length < 6) {
-                alert('Parol kamida 6 ta belgidan iborat bo\'lishi kerak');
+                showError('Xato', 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak');
                 return;
             }
+
+            showLoading();
 
             try {
                 const response = await fetch('https://gambling-h78m.onrender.com/api/user/change-password', {
@@ -751,93 +974,15 @@
                     document.getElementById('passwordForm').reset();
                     showSuccess('Parol o\'zgartirildi', 'Sizning parolingiz muvaffaqiyatli yangilandi');
                 } else {
-                    alert('Xato: ' + result.error);
+                    throw new Error(result.error || 'Parolni o\'zgartirishda xato');
                 }
             } catch (error) {
                 console.error('Password change failed:', error);
-                alert('Parolni o\'zgartirishda xato');
+                showError('Xato', error.message || 'Parolni o\'zgartirishda xato');
+            } finally {
+                hideLoading();
             }
         });
-
-        // Deposit form submission - Manual to admin
-        document.getElementById('depositForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const amount = parseFloat(document.getElementById('depositAmount').value);
-            const paymentMethod = document.getElementById('paymentMethod').value;
-
-            if (amount < 10000) {
-                alert('Minimum pul kiritish miqdori 10,000 so\'m');
-                return;
-            }
-
-            currentForm = 'deposit';
-
-            let details = `
-                <h4>Admin bank ma\'lumotlari:</h4>
-                <p>Karta raqami: 9860 1234 5678 9012</p>
-                <p>Hisob nomi: LuckyBet Admin</p>
-                <p>Miqdor: ${amount} so\'m</p>
-                <p>Usul: ${paymentMethod}</p>
-                <p>Yuqoridagi ma\'lumotlarga o\'tkazing va tranzaksiya ID sini saqlang.</p>
-                <p>O\'tkazgandan so\'ng, "To'lovni amalga oshirdim" ni bosing va tranzaksiya isboti bilan qo\'llab-quvvatlashga murojaat qiling.</p>
-            `;
-
-            document.getElementById('transferTitle').textContent = 'Pul kiritish ko\'rsatmalari';
-            document.getElementById('transferMessage').textContent = 'Miqdorni admin hisobiga qo\'lda o\'tkazing.';
-            document.getElementById('transferDetails').innerHTML = details;
-            document.getElementById('transferModal').style.display = 'flex';
-        });
-
-        // Withdrawal form submission - Manual to admin
-        document.getElementById('withdrawalForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const amount = parseFloat(document.getElementById('withdrawalAmount').value);
-            const walletAddress = document.getElementById('walletAddress').value;
-            const withdrawalMethod = document.getElementById('withdrawalMethod').value;
-
-            if (amount < 20000) {
-                alert('Minimum pul yechish miqdori 20,000 so\'m');
-                return;
-            }
-
-            if (amount > currentUser.balance) {
-                alert('Yetarli balans yo\'q');
-                return;
-            }
-
-            currentForm = 'withdrawal';
-
-            let details = `
-                <h4>Sizning yechish ma\'lumotlaringiz:</h4>
-                <p>Miqdor: ${amount} so\'m</p>
-                <p>Usul: ${withdrawalMethod}</p>
-                <p>Karta/Hamyon: ${walletAddress}</p>
-                <p>Ushbu ma\'lumotlarni admin qo\'llab-quvvatlash xizmatiga yuboring. Ular sizning so\'rovingizni qayta ishlaydi.</p>
-            `;
-
-            document.getElementById('transferTitle').textContent = 'Pul yechish ko\'rsatmalari';
-            document.getElementById('transferMessage').textContent = 'Pul yechish so\'rovingizni admin ga yuboring.';
-            document.getElementById('transferDetails').innerHTML = details;
-            document.getElementById('transferModal').style.display = 'flex';
-        });
-
-        // Transfer modal functions
-        function closeTransferModal() {
-            document.getElementById('transferModal').style.display = 'none';
-            currentForm = '';
-        }
-
-        function confirmTransfer() {
-            closeTransferModal();
-            if (currentForm === 'deposit') {
-                document.getElementById('depositForm').reset();
-            } else if (currentForm === 'withdrawal') {
-                document.getElementById('withdrawalForm').reset();
-            }
-            showSuccess('So\'rov yuborildi', 'Sizning so\'rovingiz qayd etildi. Admin tez orada qayta ishlaydi.');
-        }
 
         // Load user statistics
         async function loadUserStats() {
@@ -849,25 +994,26 @@
                     }
                 });
 
+                if (!response.ok) return;
+
                 const result = await response.json();
                 
                 if (result.success) {
-                    const stats = result.stats;
-                    document.getElementById('totalGames').textContent = stats.totalGames;
-                    document.getElementById('statsTotalGames').textContent = stats.totalGames;
-                    document.getElementById('statsTotalBets').textContent = `${stats.totalBets.toFixed(2)}so'm`;
-                    document.getElementById('statsTotalWins').textContent = `${stats.totalWins.toFixed(2)}so'm`;
-                    document.getElementById('realGamesCount').textContent = stats.realGames;
-                    document.getElementById('demoGamesCount').textContent = stats.demoGames;
-                    document.getElementById('favoriteGame').textContent = stats.favoriteGame;
+                    const stats = result.stats || {};
+                    document.getElementById('statsTotalGames').textContent = stats.totalGames || 0;
+                    document.getElementById('statsTotalBets').textContent = `${formatBalance(stats.totalBets)} so'm`;
+                    document.getElementById('statsTotalWins').textContent = `${formatBalance(stats.totalWins)} so'm`;
+                    document.getElementById('realGamesCount').textContent = stats.realGames || 0;
+                    document.getElementById('demoGamesCount').textContent = stats.demoGames || 0;
+                    document.getElementById('favoriteGame').textContent = stats.favoriteGame || 'N/A';
 
                     if (stats.lastWin) {
                         document.getElementById('lastWinInfo').innerHTML = `
                             <div class="text-center">
                                 <i class="fas fa-trophy text-4xl text-yellow-400 mb-2"></i>
-                                <div class="text-2xl font-bold text-green-400">${stats.lastWin.amount.toFixed(2)}so'm</div>
-                                <div class="text-gray-300">${stats.lastWin.game}</div>
-                                <div class="text-sm text-gray-400 mt-2">${new Date(stats.lastWin.date).toLocaleDateString()}</div>
+                                <div class="text-xl font-bold text-green-400">${formatBalance(stats.lastWin.amount)} so'm</div>
+                                <div class="text-gray-300 text-sm">${stats.lastWin.game || 'Unknown'}</div>
+                                <div class="text-xs text-gray-400 mt-2">${stats.lastWin.date ? new Date(stats.lastWin.date).toLocaleDateString() : ''}</div>
                             </div>
                         `;
                     }
@@ -877,7 +1023,27 @@
             }
         }
 
-        // Success modal functions
+        // Menu functions
+        document.getElementById('menuButton').addEventListener('click', function() {
+            document.body.classList.add('menu-open');
+            document.getElementById('menuOverlay').style.display = 'block';
+        });
+
+        document.getElementById('closeMenuButton').addEventListener('click', closeMenu);
+        document.getElementById('menuOverlay').addEventListener('click', closeMenu);
+
+        function closeMenu() {
+            document.body.classList.remove('menu-open');
+            document.getElementById('menuOverlay').style.display = 'none';
+        }
+
+        // Logout
+        document.getElementById('logoutMenuButton').addEventListener('click', function() {
+            localStorage.removeItem('token');
+            window.location.href = '/register-login';
+        });
+
+        // Modal functions
         function showSuccess(title, message) {
             document.getElementById('successTitle').textContent = title;
             document.getElementById('successMessage').textContent = message;
@@ -888,47 +1054,20 @@
             document.getElementById('successModal').style.display = 'none';
         }
 
-        // Document update function
+        // Document update
         function updateDocument(docType) {
-            alert(`Hujjatlaringizni yangilash uchun ${docType}, qo'llab quvvatlash xizmatiga murojaat qiling yoki yangi hujjatlar bilan qayta ro'yxatdan o'ting.`);
+            alert(`Hujjatlaringizni yangilash uchun ${docType}, qo'llab quvvatlash xizmatiga murojaat qiling.`);
         }
 
-        // Logout
-        document.getElementById('logoutBtn').addEventListener('click', function() {
-            localStorage.removeItem('token');
-            window.location.href = '/register-login';
-        });
-
-        // User menu toggle
-        document.getElementById('userMenuButton').addEventListener('click', function() {
-            const menu = document.getElementById('userMenu');
-            menu.classList.toggle('hidden');
-        });
-
-        // Close modals when clicking outside
+        // Close modals on outside click
         window.addEventListener('click', function(event) {
             if (event.target === document.getElementById('successModal')) {
                 closeSuccessModal();
             }
-            if (event.target === document.getElementById('transferModal')) {
-                closeTransferModal();
+            if (event.target === document.getElementById('errorModal')) {
+                closeErrorModal();
             }
         });
-
-        // Get current IP for security tab
-        fetch('https://api.ipify.org?format=json')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('currentIP').textContent = data.ip;
-            })
-            .catch(error => {
-                console.error('Failed to get IP:', error);
-                document.getElementById('currentIP').textContent = 'Noma\'lum';
-            });
-
-        function showAvatarUpload() {
-            alert('Avatar yuklash funksiyasi hozircha mavjud emas. Qo\'llab-quvvatlashga murojaat qiling.');
-        }
     </script>
 </body>
 </html>

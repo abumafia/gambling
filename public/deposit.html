@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Deposit - LuckyBet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0c0f1d 0%, #1a1f3d 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            border: none;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .input-field {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #22c55e;
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .select-field {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 20px;
+        }
+        
+        .select-field:focus {
+            outline: none;
+            border-color: #22c55e;
+        }
+        
+        .amount-button {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 14px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .amount-button.active {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            border-color: #22c55e;
+        }
+        
+        .amount-button:active {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .payment-method {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .payment-method.active {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.1);
+        }
+        
+        .payment-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a1f3d 0%, #0c0f1d 100%);
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: modalSlideUp 0.3s ease;
+        }
+        
+        @keyframes modalSlideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(12, 15, 29, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 0;
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active {
+            background: rgba(34, 197, 94, 0.2);
+        }
+        
+        .nav-item:active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-icon {
+            font-size: 18px;
+        }
+        
+        .nav-text {
+            font-size: 10px;
+            font-weight: 500;
+        }
+        
+        .mobile-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(12, 15, 29, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .back-button {
+            padding: 8px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        
+        .transaction-id {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 14px;
+            word-break: break-all;
+            margin-top: 12px;
+        }
+        
+        .copy-button {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid #22c55e;
+            color: #22c55e;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            margin-top: 12px;
+        }
+        
+        .copy-button:active {
+            background: rgba(34, 197, 94, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div class="px-4 py-3 flex items-center">
+            <button onclick="window.history.back()" class="back-button mr-3">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </button>
+            <h1 class="text-lg font-bold">Pul kiritish</h1>
+            <div class="ml-auto flex items-center gap-2">
+                <span class="text-sm font-semibold" id="currentBalance">0.00 so'm</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="px-4 py-4">
+        <!-- Balance Card -->
+        <div class="glass-effect rounded-2xl p-4 mb-4">
+            <div class="flex justify-between items-center mb-2">
+                <div class="text-sm text-gray-300">Joriy balans</div>
+                <i class="fas fa-wallet text-green-400"></i>
+            </div>
+            <div class="text-2xl font-bold text-green-400" id="balanceAmount">0.00 so'm</div>
+            <div class="text-xs text-gray-400 mt-1">Demo: <span id="demoBalance">0.00 so'm</span></div>
+        </div>
+
+        <!-- Deposit Form -->
+        <div class="glass-effect rounded-2xl p-4 mb-4">
+            <h2 class="text-lg font-bold mb-4">Miqdor tanlash</h2>
+            
+            <!-- Quick Amounts -->
+            <div class="grid grid-cols-2 gap-2 mb-4">
+                <button class="amount-button" onclick="setAmount(10000)">
+                    10,000 so'm
+                </button>
+                <button class="amount-button" onclick="setAmount(50000)">
+                    50,000 so'm
+                </button>
+                <button class="amount-button" onclick="setAmount(100000)">
+                    100,000 so'm
+                </button>
+                <button class="amount-button" onclick="setAmount(500000)">
+                    500,000 so'm
+                </button>
+            </div>
+            
+            <!-- Custom Amount -->
+            <div class="mb-4">
+                <label class="block text-sm mb-2">Yoki o'zingiz kiriting</label>
+                <div class="relative">
+                    <input type="number" id="depositAmount" class="input-field" placeholder="Miqdorni kiriting" min="10000" step="1000">
+                    <div class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                        so'm
+                    </div>
+                </div>
+                <div class="text-xs text-gray-400 mt-1">Minimum: 10,000 so'm</div>
+            </div>
+
+            <!-- Payment Methods -->
+            <h2 class="text-lg font-bold mb-3">To'lov usuli</h2>
+            <div class="space-y-3 mb-6">
+                <div class="payment-method" onclick="selectMethod('credit_card')">
+                    <div class="flex items-center gap-3">
+                        <div class="payment-icon" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-semibold">Kredit Karta</div>
+                            <div class="text-xs text-gray-400">Visa, Mastercard</div>
+                        </div>
+                        <i class="fas fa-check text-green-400 hidden" id="check_credit_card"></i>
+                    </div>
+                </div>
+                
+                <div class="payment-method" onclick="selectMethod('crypto')">
+                    <div class="flex items-center gap-3">
+                        <div class="payment-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-semibold">Cryptocurrency</div>
+                            <div class="text-xs text-gray-400">Bitcoin, USDT</div>
+                        </div>
+                        <i class="fas fa-check text-green-400 hidden" id="check_crypto"></i>
+                    </div>
+                </div>
+                
+                <div class="payment-method" onclick="selectMethod('bank_transfer')">
+                    <div class="flex items-center gap-3">
+                        <div class="payment-icon" style="background: linear-gradient(135deg, #10b981 0%, #047857 100%);">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-semibold">Bank o'tkazmasi</div>
+                            <div class="text-xs text-gray-400">Bank hisob raqami</div>
+                        </div>
+                        <i class="fas fa-check text-green-400 hidden" id="check_bank"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deposit Button -->
+            <button id="depositButton" class="btn-primary" onclick="processDeposit()">
+                <i class="fas fa-arrow-down"></i>
+                Pul kiritish
+            </button>
+        </div>
+
+        <!-- Information -->
+        <div class="info-box">
+            <h3 class="font-bold mb-2 flex items-center gap-2">
+                <i class="fas fa-info-circle"></i>
+                Muhim ma'lumotlar
+            </h3>
+            <ul class="text-sm space-y-2">
+                <li class="flex items-start gap-2">
+                    <i class="fas fa-check text-green-400 mt-1"></i>
+                    <span>Depositlar tezda amalga oshiriladi (5-30 daqiqa)</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <i class="fas fa-check text-green-400 mt-1"></i>
+                    <span>Deposit uchun qo'shimcha to'lovlar yo'q</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <i class="fas fa-check text-green-400 mt-1"></i>
+                    <span>Barcha tranzaksiyalar xavfsiz shifrlangan</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <i class="fas fa-check text-green-400 mt-1"></i>
+                    <span>Muammo bo'lsa, qo'llab-quvvatlash bilan bog'laning</span>
+                </li>
+            </ul>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="flex justify-around">
+            <a href="/" class="nav-item">
+                <i class="fas fa-home nav-icon"></i>
+                <span class="nav-text">Asosiy</span>
+            </a>
+            <a href="/deposit" class="nav-item active">
+                <i class="fas fa-arrow-down nav-icon"></i>
+                <span class="nav-text">Deposit</span>
+            </a>
+            <a href="/withdraw" class="nav-item">
+                <i class="fas fa-arrow-up nav-icon"></i>
+                <span class="nav-text">Withdraw</span>
+            </a>
+            <a href="/stats" class="nav-item">
+                <i class="fas fa-chart-bar nav-icon"></i>
+                <span class="nav-text">Stats</span>
+            </a>
+            <a href="/profile" class="nav-item">
+                <i class="fas fa-user nav-icon"></i>
+                <span class="nav-text">Profil</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Instructions Modal -->
+    <div id="instructionsModal" class="modal">
+        <div class="modal-content">
+            <div class="text-center">
+                <div class="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-university text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2" id="modalTitle">Bank ma'lumotlari</h3>
+                <div id="modalContent" class="text-left mb-6 overflow-y-auto max-h-60">
+                    <!-- Dynamic content -->
+                </div>
+                <div class="flex gap-2">
+                    <button class="btn-primary flex-1" onclick="copyDetails()">
+                        <i class="fas fa-copy mr-2"></i>Nusxalash
+                    </button>
+                    <button class="btn-secondary flex-1" onclick="closeModal()">
+                        <i class="fas fa-times mr-2"></i>Yopish
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let selectedMethod = '';
+        let transactionId = '';
+
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+        });
+
+        async function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/register-login';
+                return;
+            }
+
+            try {
+                const response = await fetch('https://gambling-h78m.onrender.com/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        currentUser = result.user;
+                        updateBalanceUI();
+                    } else {
+                        throw new Error(result.error);
+                    }
+                } else {
+                    localStorage.removeItem('token');
+                    window.location.href = '/register-login';
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                localStorage.removeItem('token');
+                window.location.href = '/register-login';
+            }
+        }
+
+        function updateBalanceUI() {
+            if (!currentUser) return;
+            
+            document.getElementById('currentBalance').textContent = `${currentUser.balance.toFixed(2)} so'm`;
+            document.getElementById('balanceAmount').textContent = `${currentUser.balance.toFixed(2)} so'm`;
+            document.getElementById('demoBalance').textContent = `${currentUser.demoBalance.toFixed(2)} so'm`;
+        }
+
+        function setAmount(amount) {
+            document.getElementById('depositAmount').value = amount;
+            
+            // Update button states
+            document.querySelectorAll('.amount-button').forEach(btn => {
+                btn.classList.remove('active');
+                btn.textContent = btn.textContent.replace(' ✓', '');
+            });
+            
+            // Find and activate the clicked button
+            event.target.classList.add('active');
+            event.target.textContent += ' ✓';
+        }
+
+        function selectMethod(method) {
+            selectedMethod = method;
+            
+            // Reset all checks
+            document.querySelectorAll('.payment-method').forEach(method => {
+                method.classList.remove('active');
+            });
+            document.querySelectorAll('.fa-check').forEach(check => {
+                check.classList.add('hidden');
+            });
+            
+            // Activate selected
+            event.target.classList.add('active');
+            document.getElementById(`check_${method}`).classList.remove('hidden');
+        }
+
+        async function processDeposit() {
+            const amount = parseFloat(document.getElementById('depositAmount').value);
+            
+            if (!amount || amount < 10000) {
+                alert('Iltimos, minimum 10,000 so\'m kiriting');
+                return;
+            }
+            
+            if (!selectedMethod) {
+                alert('Iltimos, to\'lov usulini tanlang');
+                return;
+            }
+            
+            // Generate transaction ID
+            transactionId = 'TXN' + Date.now() + Math.random().toString(36).substr(2, 9).toUpperCase();
+            
+            let modalContent = '';
+            let title = '';
+            
+            switch(selectedMethod) {
+                case 'credit_card':
+                    title = 'Kredit Karta Ma\'lumotlari';
+                    modalContent = `
+                        <div class="space-y-3">
+                            <div>
+                                <div class="text-sm text-gray-400">Karta raqami:</div>
+                                <div class="text-lg font-mono font-bold">9860 1234 5678 9012</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-400">Hisob egasi:</div>
+                                <div class="text-lg font-bold">LUCKYBET ADMIN</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-400">Amal qilish muddati:</div>
+                                <div class="text-lg">12/27</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-400">CVV:</div>
+                                <div class="text-lg">123</div>
+                            </div>
+                            <div class="transaction-id">
+                                Tranzaksiya ID: ${transactionId}
+                            </div>
+                            <div class="text-sm text-gray-400">
+                                Iltimos, ushbu ID ni to'lov tasdiqlanganda qo'shing.
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'crypto':
+                    title = 'Cryptocurrency Ma\'lumotlari';
+                    modalContent = `
+                        <div class="space-y-3">
+                            <div>
+                                <div class="text-sm text-gray-400">Bitcoin manzili:</div>
+                                <div class="text-lg font-mono text-sm break-all">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-400">USDT (TRC20):</div>
+                                <div class="text-lg font-mono text-sm break-all">TXYZ1234567890abcdefghijklmnopqrstuvw</div>
+                            </div>
+                            <div class="transaction-id">
+                                Tranzaksiya ID: ${transactionId}
+                            </div>
+                            <div class="text-sm text-gray-400">
+                                Faqat ko'rsatilgan manzilga yuboring. ID ni izoh sifatida qo'shing.
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'bank_transfer':
+                    title = 'Bank Ma\'lumotlari';
+                    modalContent = `
+                        <div class="space-y-3">
+                            <div>
+                                <div class="text-sm text-gray-400">Bank nomi:</div>
+                                <div class="text-lg font-bold">XYZ Bank</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-400">Hisob raqami:</div>
+                                <div class="text-lg font-mono font-bold">1234567890</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-400">Hisob egasi:</div>
+                                <div class="text-lg font-bold">LUCKYBET LTD</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-400">SWIFT:</div>
+                                <div class="text-lg">XYZBANKAA</div>
+                            </div>
+                            <div class="transaction-id">
+                                Tranzaksiya ID: ${transactionId}
+                            </div>
+                            <div class="text-sm text-gray-400">
+                                To'lov maqsadi sifatida tranzaksiya ID sini ko'rsating.
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            // Show modal with details
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalContent').innerHTML = modalContent;
+            document.getElementById('instructionsModal').style.display = 'flex';
+            
+            // Send deposit request to server
+            try {
+                const response = await fetch('https://gambling-h78m.onrender.com/api/user/deposit-request', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        amount: amount,
+                        paymentMethod: selectedMethod
+                    })
+                });
+                
+                const result = await response.json();
+                if (!result.success) {
+                    console.error('Deposit request failed:', result.error);
+                }
+            } catch (error) {
+                console.error('Failed to send deposit request:', error);
+            }
+        }
+
+        function copyDetails() {
+            const textToCopy = document.getElementById('modalContent').innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('Ma\'lumotlar nusxalandi!');
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('instructionsModal').style.display = 'none';
+            // Reset form
+            document.getElementById('depositAmount').value = '';
+            selectedMethod = '';
+            document.querySelectorAll('.amount-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.payment-method').forEach(method => {
+                method.classList.remove('active');
+            });
+            document.querySelectorAll('.fa-check').forEach(check => {
+                check.classList.add('hidden');
+            });
+        }
+
+        // Close modal on outside click
+        window.addEventListener('click', function(event) {
+            if (event.target === document.getElementById('instructionsModal')) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
