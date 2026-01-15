@@ -534,7 +534,7 @@
             if (gameState !== 'betting') return;
             
             const newBet = betAmount + amount;
-            if (newBet >= 10 && newBet <= 10000) {
+            if (newBet >= 10 && newBet <= 100000) {
                 betAmount = newBet;
                 updateBetDisplay();
                 updatePotentialWin();
@@ -545,7 +545,7 @@
         function setBet(amount) {
             if (gameState !== 'betting') return;
             
-            if (amount >= 10 && amount <= 10000) {
+            if (amount >= 10 && amount <= 100000) {
                 betAmount = amount;
                 updateBetDisplay();
                 updatePotentialWin();
