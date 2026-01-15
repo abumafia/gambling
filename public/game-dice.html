@@ -317,7 +317,7 @@
         // Adjust bet amount
         function adjustBet(amount) {
             const newBet = betAmount + amount;
-            if (newBet >= 10 && newBet <= 10000) {
+            if (newBet >= 10 && newBet <= 100000) {
                 betAmount = newBet;
                 updateBetDisplay();
                 updatePotentialWin();
@@ -326,7 +326,7 @@
 
         // Set bet amount
         function setBet(amount) {
-            if (amount >= 10 && amount <= 10000) {
+            if (amount >= 10 && amount <= 100000) {
                 betAmount = amount;
                 updateBetDisplay();
                 updatePotentialWin();
