@@ -329,7 +329,7 @@
         // Adjust bet amount
         function adjustBet(amount) {
             const newBet = betAmount + amount;
-            if (newBet >= 10 && newBet <= 10000) {
+            if (newBet >= 10 && newBet <= 100000) {
                 betAmount = newBet;
                 updateBetDisplay();
                 updatePotentialWin();
@@ -338,7 +338,7 @@
 
         // Set bet amount
         function setBet(amount) {
-            if (amount >= 10 && amount <= 10000) {
+            if (amount >= 10 && amount <= 100000) {
                 betAmount = amount;
                 updateBetDisplay();
                 updatePotentialWin();
@@ -353,7 +353,7 @@
         // Update potential win
         function updatePotentialWin() {
             if (currentChoice) {
-                const winAmount = betAmount * 1.95;
+                const winAmount = betAmount * 1.45;
                 potentialWin.textContent = `${winAmount.toLocaleString()} UZS`;
             }
         }
@@ -401,7 +401,7 @@
                     resultText.style.color = "#10b981";
                     
                     // Calculate win amount
-                    const winAmount = betAmount * 1.95;
+                    const winAmount = betAmount * 1.45;
                     
                     // Update balance
                     if (isDemo) {
